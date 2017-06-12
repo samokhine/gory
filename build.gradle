@@ -1,0 +1,17 @@
+plugins {
+    id 'io.franzbecker.gradle-lombok' version '1.8'
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'io.franzbecker.gradle-lombok'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    // Use JUnit test framework
+    testImplementation 'junit:junit:4.12'
+}
+
