@@ -8,9 +8,7 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class PartitionBuilder {
-	private int n, m;
-	
-	public List<Partition> build() {
+	static public List<Partition> build(int n, int m) {
 		List<Partition> partitions = new ArrayList<>();
 
 		int min = (int) Math.ceil(1.0*n/m);
@@ -27,7 +25,7 @@ public class PartitionBuilder {
 		return partitions;
 	}
 	
-	private void addNext(int n, int m, List<Partition> partitions, Partition current, int sum, int position) {
+	static private void addNext(int n, int m, List<Partition> partitions, Partition current, int sum, int position) {
 		if(sum == n) {
 			partitions.add(current);
 		} else if(position<m) {
