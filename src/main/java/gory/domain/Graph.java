@@ -20,26 +20,18 @@ public class Graph {
 	}
 	
 	public boolean addNode(Node newNode) {
-		boolean connected = getSize() == 0;
+		if(nodes.contains(newNode)) return false;
 		
 		for(Node node : nodes) {
 			int distance = node.distanceTo(newNode);
-			
-			if(distance == 0) { // the node is already in the graph
-				connected = false;
-				break;
-			}
-			else if(distance == CONNECTION_DISATNCE) {
-				connected = true;
+			if(distance == CONNECTION_DISATNCE) {
 				node.connect(newNode);
 			}
 		}
 		
-		if(connected) {
-			nodes.add(newNode);
-		}
+		nodes.add(newNode);
 		
-		return connected;
+		return true;
 	}
 	
 	public void log(OutputLogger log) {
