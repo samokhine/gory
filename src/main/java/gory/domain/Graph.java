@@ -26,6 +26,7 @@ public class Graph {
 			int distance = node.distanceTo(newNode);
 			if(distance == CONNECTION_DISATNCE) {
 				node.connect(newNode);
+				newNode.connect(node);
 			}
 		}
 		
@@ -35,19 +36,25 @@ public class Graph {
 	}
 	
 	public void log(OutputLogger log) {
+		if(nodes.isEmpty()) return;
+		
+		int sumOfDegrees = 0;
 		log.writeLine("Nodes:");
 		for(Node node : nodes) {
-			log.writeLine(node.toString());
+			int degree = node.getConnectedNodes().size();
+			sumOfDegrees += degree;
+			log.writeLine(node.toString()+" degree: "+degree);
 		}
 		log.writeLine("");
 
-		log.writeLine("Matrix:");
-		for(Node y : nodes) {
-			StringBuilder sb = new StringBuilder();
-			for(Node x : nodes) {
-				sb.append(x.getConnectedNodes().contains(y) ? 1 : 0);
-			}
-			log.writeLine(sb.toString());
+		double s2 = 0;
+		double avg = 1.0 * sumOfDegrees / nodes.size();
+		log.writeLine("Average: "+avg);
+		for(Node node : nodes) {
+			int degree = node.getConnectedNodes().size();
+			s2 += (degree - avg)*(degree - avg);
 		}
+		s2 = nodes.size() <= 1 ? 0 : s2/(nodes.size() - 1);
+		log.writeLine("Variance: "+s2);
 	}
 }
