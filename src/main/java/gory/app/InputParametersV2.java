@@ -8,13 +8,11 @@ import java.util.Properties;
 import lombok.Getter;
 
 @Getter
-public class InputParameters {
-	private int numberOfDigits; // m
-	private int sumOfDigits; // n
-	private int numberOfGraphBuildingSteps; // T
-	private int numberOfGraphs; // R
+public class InputParametersV2 {
+	private String strategyFileName;
+	private int distance;
 	
-	public InputParameters(String fileName) {
+	public InputParametersV2(String fileName) {
 
 		InputStream input = null;
 		try {
@@ -24,10 +22,8 @@ public class InputParameters {
 			Properties prop = new Properties();
 			prop.load(input);
 
-			numberOfDigits = Integer.valueOf(prop.getProperty("m"));
-			sumOfDigits = Integer.valueOf(prop.getProperty("n"));
-			numberOfGraphBuildingSteps = Integer.valueOf(prop.getProperty("T"));
-			numberOfGraphs = Integer.valueOf(prop.getProperty("R"));
+			strategyFileName = prop.getProperty("file");
+			distance = Integer.valueOf(prop.getProperty("distance"));
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {
@@ -41,4 +37,5 @@ public class InputParameters {
 		}
 
 	}
+
 }

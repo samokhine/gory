@@ -10,8 +10,8 @@ import gory.domain.Partition;
 public class GraphBuilder {
 	static private Random rand = new Random();
 	
-	static public Graph build(int numBuildingSteps, List<Partition> partitions) {
-		Graph graph = new Graph();
+	static public Graph build(String name, int numBuildingSteps, List<Partition> partitions) {
+		Graph graph = new Graph(name);
 	
 		Node seedNode = createRandomNode(partitions);
 		graph.addNode(seedNode);

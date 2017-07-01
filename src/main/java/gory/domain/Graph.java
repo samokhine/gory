@@ -4,12 +4,26 @@ import java.util.HashSet;
 import java.util.Set;
 
 import gory.service.OutputLogger;
+import lombok.Getter;
 
 public class Graph {
-	static public final int CONNECTION_DISATNCE = 1;
+	@Getter
+	private String name;
+
+	@Getter
+	private int connectionDistance = 1;
 	
 	private Set<Node> nodes = new HashSet<>();
 
+	public Graph(String name) {
+		this.name = name;
+	}
+
+	public Graph(String name, int connectionDistance) {
+		this.name = name;
+		this.connectionDistance = connectionDistance;
+	}
+	
 	@Override
 	public String toString() {
 		return nodes.toString();
@@ -24,7 +38,7 @@ public class Graph {
 		
 		for(Node node : nodes) {
 			int distance = node.distanceTo(newNode);
-			if(distance == CONNECTION_DISATNCE) {
+			if(distance == connectionDistance) {
 				node.connect(newNode);
 				newNode.connect(node);
 			}
@@ -36,6 +50,9 @@ public class Graph {
 	}
 	
 	public void log(OutputLogger log) {
+		log.writeLine(name);
+		log.writeLine("");
+
 		if(nodes.isEmpty()) return;
 		
 		int sumOfDegrees = 0;
@@ -56,5 +73,8 @@ public class Graph {
 		}
 		s2 = nodes.size() <= 1 ? 0 : s2/(nodes.size() - 1);
 		log.writeLine("Variance: "+s2);
+
+		log.writeLine("");
+		log.writeLine("");
 	}
 }
