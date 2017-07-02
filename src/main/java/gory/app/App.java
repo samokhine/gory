@@ -16,6 +16,7 @@ public class App {
     	List<Graph> graphs = StrategyFileParser.parse(new File(in.getStrategyFileName()), in.getDistance());
     	
     	for(Graph graph : graphs) {
+    		graph.findMaxCliques();
     		graph.log(out);
     	}
     	out.close();

@@ -3,6 +3,7 @@ package gory.domain;
 import java.util.HashSet;
 import java.util.Set;
 
+import gory.algorithm.BronKerbosch;
 import gory.service.OutputLogger;
 import lombok.Getter;
 
@@ -13,6 +14,7 @@ public class Graph {
 	@Getter
 	private int connectionDistance = 1;
 	
+	@Getter
 	private Set<Node> nodes = new HashSet<>();
 
 	public Graph(String name) {
@@ -49,32 +51,47 @@ public class Graph {
 		return true;
 	}
 	
-	public void log(OutputLogger log) {
-		log.writeLine(name);
-		log.writeLine("");
+	public Set<Graph> findMaxCliques() {
+		BronKerbosch algorithm = new BronKerbosch();
+		return algorithm.findMaxCliques(this);
+	}
+
+	public void log(OutputLogger logger) {
+		log(logger, true);
+	}
+
+	private void log(OutputLogger logger, boolean detailed) {
+		logger.writeLine(name);
+		logger.writeLine("");
 
 		if(nodes.isEmpty()) return;
 		
 		int sumOfDegrees = 0;
-		log.writeLine("Nodes:");
+		logger.writeLine("Nodes:");
 		for(Node node : nodes) {
 			int degree = node.getConnectedNodes().size();
 			sumOfDegrees += degree;
-			log.writeLine(node.toString()+" degree: "+degree);
+			logger.writeLine(node.toString()+(detailed ? " degree: "+degree : ""));
 		}
-		log.writeLine("");
+		logger.writeLine("");
 
+		if(!detailed) return;
+		
+		for(Graph clique : findMaxCliques()) {
+			clique.log(logger, false);
+		}
+		
 		double s2 = 0;
 		double avg = 1.0 * sumOfDegrees / nodes.size();
-		log.writeLine("Average: "+avg);
+		logger.writeLine("Average: "+avg);
 		for(Node node : nodes) {
 			int degree = node.getConnectedNodes().size();
 			s2 += (degree - avg)*(degree - avg);
 		}
 		s2 = nodes.size() <= 1 ? 0 : s2/(nodes.size() - 1);
-		log.writeLine("Variance: "+s2);
+		logger.writeLine("Variance: "+s2);
 
-		log.writeLine("");
-		log.writeLine("");
+		logger.writeLine("");
+		logger.writeLine("");
 	}
 }

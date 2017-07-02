@@ -1,6 +1,7 @@
 package gory.domain;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import lombok.Getter;
@@ -23,6 +24,13 @@ public class Partition {
 		}
 		
 		this.summands.addAll(summands);
+		
+		this.summands.sort(new Comparator<Integer>() {
+			@Override
+			public int compare(Integer o1, Integer o2) {
+				return -1*o1.compareTo(o2);
+			}
+		});
 	}
 	
 	public int getNumberOfDigits() {
