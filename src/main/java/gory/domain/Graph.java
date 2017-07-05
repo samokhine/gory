@@ -1,9 +1,10 @@
 package gory.domain;
 
-import java.util.HashMap;
+import java.text.DecimalFormat;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import gory.algorithm.BronKerbosch;
@@ -70,7 +71,20 @@ public class Graph {
 
 		if(nodes.isEmpty()) return;
 
-		Map<Integer, AtomicInteger> nodeDegreeDistribution = new HashMap<>();
+		int sumOfDegrees = 0;
+		logger.writeLine("Nodes:");
+		for(Node node : nodes) {
+			int degree = node.getConnectedNodes().size();
+			sumOfDegrees += degree;
+			logger.writeLine(node.toString()+(detailed ? 
+					" degree: "+degree : 
+					""));
+		}
+		logger.writeLine("");
+
+		if(!detailed) return;
+
+		Map<Integer, AtomicInteger> nodeDegreeDistribution = new TreeMap<>();
 		for(Node node : nodes) {
 			int degree = node.getConnectedNodes().size();
 			
@@ -81,23 +95,19 @@ public class Graph {
 			}
 			degreeCnt.incrementAndGet();
 		}
-		
-		int sumOfDegrees = 0;
-		logger.writeLine("Nodes:");
-		for(Node node : nodes) {
-			int degree = node.getConnectedNodes().size();
-			sumOfDegrees += degree;
-			logger.writeLine(node.toString()+(detailed ? 
-					" degree: "+degree+", distribution: "+(1.0*nodeDegreeDistribution.get(degree).get()/getSize()) : 
-					""));
+
+		DecimalFormat df = new DecimalFormat("0.0000");
+		logger.writeLine("Distribution of nodes:");
+		for(int degree : nodeDegreeDistribution.keySet()) {
+			logger.writeLine(degree+": "+df.format(1.0*nodeDegreeDistribution.get(degree).intValue()/getSize()));
 		}
 		logger.writeLine("");
 
-		if(!detailed) return;
-		
 		Set<Graph> cliques = findMaxCliques();
-		Map<Integer, AtomicInteger> cliqueSizeDistribution = new HashMap<>();
+		Map<Integer, AtomicInteger> cliqueSizeDistribution = new TreeMap<>();
 		for(Graph clique : cliques) {
+			clique.log(logger, false);
+
 			int size = clique.getSize();
 			
 			AtomicInteger cliqueSizeCnt = cliqueSizeDistribution.get(size);
@@ -108,10 +118,11 @@ public class Graph {
 			cliqueSizeCnt.incrementAndGet();
 		}
 		
-		for(Graph clique : cliques) {
-			clique.setName(clique.getName()+" distribution: "+1.0*cliqueSizeDistribution.get(clique.getSize()).get()/cliques.size());
-			clique.log(logger, false);
+		logger.writeLine("Distribution of cliques:");
+		for(int cliqueSize : cliqueSizeDistribution.keySet()) {
+			logger.writeLine(cliqueSize+": "+df.format(1.0*cliqueSizeDistribution.get(cliqueSize).intValue()/cliques.size()));
 		}
+		logger.writeLine("");
 		
 		double s2 = 0;
 		double avg = 1.0 * sumOfDegrees / nodes.size();
