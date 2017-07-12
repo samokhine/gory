@@ -1,4 +1,4 @@
-package gory.app;
+package experiment;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -8,13 +8,10 @@ import java.util.Properties;
 import lombok.Getter;
 
 @Getter
-public class InputParametersV1 {
+public class InputParametersV3 {
 	private int numberOfDigits; // m
-	private int sumOfDigits; // n
-	private int numberOfGraphBuildingSteps; // T
-	private int numberOfGraphs; // R
 	
-	public InputParametersV1(String fileName) {
+	public InputParametersV3(String fileName) {
 
 		InputStream input = null;
 		try {
@@ -25,9 +22,6 @@ public class InputParametersV1 {
 			prop.load(input);
 
 			numberOfDigits = Integer.valueOf(prop.getProperty("m"));
-			sumOfDigits = Integer.valueOf(prop.getProperty("n"));
-			numberOfGraphBuildingSteps = Integer.valueOf(prop.getProperty("T"));
-			numberOfGraphs = Integer.valueOf(prop.getProperty("R"));
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {
@@ -39,6 +33,6 @@ public class InputParametersV1 {
 				}
 			}
 		}
-
 	}
+
 }

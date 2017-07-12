@@ -99,7 +99,7 @@ public class Graph {
 		DecimalFormat df = new DecimalFormat("0.0000");
 		logger.writeLine("Distribution of nodes:");
 		for(int degree : nodeDegreeDistribution.keySet()) {
-			logger.writeLine(degree+": "+df.format(1.0*nodeDegreeDistribution.get(degree).intValue()/getSize()));
+			logger.writeLine(degree+" "+df.format(1.0*nodeDegreeDistribution.get(degree).intValue()/getSize()));
 		}
 		logger.writeLine("");
 
@@ -120,7 +120,7 @@ public class Graph {
 		
 		logger.writeLine("Distribution of cliques:");
 		for(int cliqueSize : cliqueSizeDistribution.keySet()) {
-			logger.writeLine(cliqueSize+": "+df.format(1.0*cliqueSizeDistribution.get(cliqueSize).intValue()/cliques.size()));
+			logger.writeLine(cliqueSize+" "+df.format(1.0*cliqueSizeDistribution.get(cliqueSize).intValue()/cliques.size()));
 		}
 		logger.writeLine("");
 		

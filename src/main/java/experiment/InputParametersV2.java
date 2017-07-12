@@ -1,4 +1,4 @@
-package gory.app;
+package experiment;
 
 import java.io.FileInputStream;
 import java.io.IOException;

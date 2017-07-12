@@ -44,6 +44,7 @@ public class Partition {
 
 	// position is 1-based
 	public int setAt(int position, int value) {
+		sumOfDigits = sumOfDigits - getAt(position) + value; 
 		return summands.set(position-1, value);
 	}
 
