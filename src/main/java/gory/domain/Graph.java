@@ -102,6 +102,18 @@ public class Graph {
 			logger.writeLine(degree+" "+df.format(1.0*nodeDegreeDistribution.get(degree).intValue()/getSize()));
 		}
 		logger.writeLine("");
+		
+		double s2 = 0;
+		double avg = 1.0 * sumOfDegrees / nodes.size();
+		logger.writeLine("Average: "+avg);
+		for(Node node : nodes) {
+			int degree = node.getConnectedPartitions().size();
+			s2 += (degree - avg)*(degree - avg);
+		}
+		s2 = nodes.size() <= 1 ? 0 : s2/(nodes.size() - 1);
+		logger.writeLine("Variance: "+s2);
+
+		logger.writeLine("");
 
 		Set<Graph> cliques = findMaxCliques();
 		Map<Integer, AtomicInteger> cliqueSizeDistribution = new TreeMap<>();
@@ -122,17 +134,6 @@ public class Graph {
 		for(int cliqueSize : cliqueSizeDistribution.keySet()) {
 			logger.writeLine(cliqueSize+" "+df.format(1.0*cliqueSizeDistribution.get(cliqueSize).intValue()/cliques.size()));
 		}
-		logger.writeLine("");
-		
-		double s2 = 0;
-		double avg = 1.0 * sumOfDegrees / nodes.size();
-		logger.writeLine("Average: "+avg);
-		for(Node node : nodes) {
-			int degree = node.getConnectedPartitions().size();
-			s2 += (degree - avg)*(degree - avg);
-		}
-		s2 = nodes.size() <= 1 ? 0 : s2/(nodes.size() - 1);
-		logger.writeLine("Variance: "+s2);
 
 		logger.writeLine("");
 		logger.writeLine("");
