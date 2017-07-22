@@ -2,7 +2,7 @@ package gory.app;
 
 import java.io.IOException;
 
-import experiment.Experiment1;
+import gory.experiment.Experiment1;
 
 public class App {
     public static void main(String[] args) throws IOException {

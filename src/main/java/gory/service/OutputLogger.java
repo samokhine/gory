@@ -17,6 +17,7 @@ public class OutputLogger {
 	}
 	
 	public void close() {
+		writer.flush();
 		writer.close();
 	}
 }

@@ -4,52 +4,63 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+@EqualsAndHashCode(of={"arr"})
 public class Partition {
 	@Getter
 	private int sumOfDigits;
 
-	private List<Integer> summands = new ArrayList<>();
+	private int[] arr;
 	
 	@Override
 	public String toString() {
-		return summands.toString();
+		return getSummands().toString();
 	}
 	
 	public Partition(List<Integer> summands) {
-		sumOfDigits = 0;
-		for(int summand : summands) {
-			sumOfDigits += summand;
-		}
-		
-		this.summands.addAll(summands);
-		
-		this.summands.sort(new Comparator<Integer>() {
+		summands.sort(new Comparator<Integer>() {
 			@Override
 			public int compare(Integer o1, Integer o2) {
 				return -1*o1.compareTo(o2);
 			}
 		});
+		
+		sumOfDigits = 0;
+		for(int summand : summands) {
+			sumOfDigits += summand;
+		}
+		
+		this.arr = new int[summands.size()];
+		for(int i=0; i<summands.size(); i++) {
+			this.arr[i] = summands.get(i);
+		}
 	}
 	
 	public int getNumberOfDigits() {
-		return summands.size();
+		return arr.length;
 	}
 	
 	// position is 1-based
 	public int getAt(int position) {
-		return summands.get(position-1);
+		return arr[position-1];
 	}
 
 	// position is 1-based
 	public int setAt(int position, int value) {
 		sumOfDigits = sumOfDigits - getAt(position) + value; 
-		return summands.set(position-1, value);
+		return arr[position-1] = value;
 	}
 
 	public List<Integer> getSummands() {
-		return new ArrayList<>(summands);
+		List<Integer> summonds = new ArrayList<>(this.arr.length);
+		
+		for(int i : arr) {
+			summonds.add(i);
+		}
+		
+		return summonds;
 	}
 	
 	public boolean isSameType(Partition partition) {
@@ -69,6 +80,6 @@ public class Partition {
 	}
 	
 	public Partition clone() {
-		return new Partition(summands);
+		return new Partition(getSummands());
 	}
 }

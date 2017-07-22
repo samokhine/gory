@@ -13,9 +13,9 @@ public class BronKerbosch {
 	public Set<Graph> findMaxCliques(Graph graph) {
 		Set<Set<Node>> cliques = new HashSet<>();
         
-		List<Node> potentialClique = new ArrayList<>();
-        ArrayList<Node> candidates = new ArrayList<>();
-        ArrayList<Node> alreadyFound = new ArrayList<>();
+		Set<Node> potentialClique = new HashSet<>();
+        Set<Node> candidates = new HashSet<>();
+        Set<Node> alreadyFound = new HashSet<>();
         
         candidates.addAll(graph.getNodes());
         findCliques(cliques, potentialClique,candidates,alreadyFound);
@@ -36,13 +36,13 @@ public class BronKerbosch {
         return graphs;
 	}
 	
-    private void findCliques(Set<Set<Node>> cliques, List<Node> potentialClique, List<Node> candidates, List<Node> alreadyFound) {
+    private void findCliques(Set<Set<Node>> cliques, Set<Node> potentialClique, Set<Node> candidates, Set<Node> alreadyFound) {
     	List<Node> candidatesArray = new ArrayList<>(candidates);
         if (!end(candidates, alreadyFound)) {
             // for each candidate_node in candidates do
             for (Node candidate : candidatesArray) {
-                List<Node> newCandidates = new ArrayList<>();
-                List<Node> newAlreadyFound = new ArrayList<>();
+                Set<Node> newCandidates = new HashSet<>();
+                Set<Node> newAlreadyFound = new HashSet<>();
 
                 // move candidate node to potential_clique
                 potentialClique.add(candidate);
@@ -51,7 +51,7 @@ public class BronKerbosch {
                 // create new_candidates by removing nodes in candidates not
                 // connected to candidate node
                 for (Node newCandidate : candidates) {
-                    if (candidate.getConnectedNodes().contains(newCandidate)) {
+                    if (candidate.getConnectedPartitions().contains(newCandidate.getPartition())) {
                         newCandidates.add(newCandidate);
                     }
                 }
@@ -59,7 +59,7 @@ public class BronKerbosch {
                 // create new_already_found by removing nodes in already_found
                 // not connected to candidate node
                 for (Node newFound : alreadyFound) {
-                    if (candidate.getConnectedNodes().contains(newFound)) {
+                    if (candidate.getConnectedPartitions().contains(newFound.getPartition())) {
                         newAlreadyFound.add(newFound);
                     }
                 }
@@ -84,14 +84,14 @@ public class BronKerbosch {
         }
     }
 	
-    private boolean end(List<Node> candidates, List<Node> alreadyFound) {
+    private boolean end(Set<Node> candidates, Set<Node> alreadyFound) {
         // if a node in alreadyFound is connected to all nodes in candidates
         boolean end = false;
         int edgecounter;
         for(Node found : alreadyFound) {
             edgecounter = 0;
             for (Node candidate : candidates) {
-                if(found.getConnectedNodes().contains(candidate)) {
+                if(found.getConnectedPartitions().contains(candidate.getPartition())) {
                     edgecounter++;
                 }
             }
@@ -101,81 +101,4 @@ public class BronKerbosch {
         }
         return end;
     }
-	/*
-	public Set<Set<Node>> maxCliques(Set<Node> people){
-        cliques = new HashSet();
-        ArrayList<Node> potential_clique = new ArrayList<Node>();
-        ArrayList<Node> candidates = new ArrayList<Node>();
-        ArrayList<Node> already_found = new ArrayList<Node>();
-        candidates.addAll(people);
-        findCliques(potential_clique,candidates,already_found);
-        return cliques;
-    }
-    
-    private void findCliques(ArrayList<Node> potential_clique, ArrayList<Node> candidates, ArrayList<Node> already_found) {
-    	ArrayList<Node> candidates_array = new ArrayList(candidates);
-        if (!end(candidates, already_found)) {
-            // for each candidate_node in candidates do
-            for (Node candidate : candidates_array) {
-                ArrayList<Node> new_candidates = new ArrayList<Node>();
-                ArrayList<Node> new_already_found = new ArrayList<Node>();
-
-                // move candidate node to potential_clique
-                potential_clique.add(candidate);
-                candidates.remove(candidate);
-
-                // create new_candidates by removing nodes in candidates not
-                // connected to candidate node
-                for (Node new_candidate : candidates) {
-                    if (candidate.Nodes.containsKey(new_candidate))
-                    {
-                        new_candidates.add(new_candidate);
-                    }
-                }
-
-                // create new_already_found by removing nodes in already_found
-                // not connected to candidate node
-                for (Node new_found : already_found) {
-                    if (candidate.Nodes.containsKey(new_found)) {
-                        new_already_found.add(new_found);
-                    }
-                }
-
-                // if new_candidates and new_already_found are empty
-                if (new_candidates.isEmpty() && new_already_found.isEmpty()) {
-                    // potential_clique is maximal_clique
-                    cliques.add(new HashSet<Node>(potential_clique));
-                }
-                else {
-                    findCliques(
-                        potential_clique,
-                        new_candidates,
-                        new_already_found);
-                }
-
-                // move candidate_node from potential_clique to already_found;
-                already_found.add(candidate);
-                potential_clique.remove(candidate);
-            }
-        }
-    }
-    
-    private boolean end(ArrayList<Node> candidates, ArrayList<Node> already_found) {
-        // if a node in already_found is connected to all nodes in candidates
-        boolean end = false;
-        int edgecounter;
-        for (Node found : already_found) {
-            edgecounter = 0;
-            for (Node candidate : candidates) {
-                if (found.Nodes.containsKey(candidate)) {
-                    edgecounter++;
-                }
-            }
-            if (edgecounter == candidates.size()) {
-                end = true;
-            }
-        }
-        return end;
-    }
-    */
 }

@@ -45,7 +45,7 @@ public class Graph {
 		
 		for(Node node : nodes) {
 			int distance = node.distanceTo(newNode);
-			if(distance == connectionDistance) {
+			if(distance <= connectionDistance) {
 				node.connect(newNode);
 				newNode.connect(node);
 			}
@@ -74,7 +74,7 @@ public class Graph {
 		int sumOfDegrees = 0;
 		logger.writeLine("Nodes:");
 		for(Node node : nodes) {
-			int degree = node.getConnectedNodes().size();
+			int degree = node.getConnectedPartitions().size();
 			sumOfDegrees += degree;
 			logger.writeLine(node.toString()+(detailed ? 
 					" degree: "+degree : 
@@ -86,7 +86,7 @@ public class Graph {
 
 		Map<Integer, AtomicInteger> nodeDegreeDistribution = new TreeMap<>();
 		for(Node node : nodes) {
-			int degree = node.getConnectedNodes().size();
+			int degree = node.getConnectedPartitions().size();
 			
 			AtomicInteger degreeCnt = nodeDegreeDistribution.get(degree);
 			if(degreeCnt == null) {
@@ -128,7 +128,7 @@ public class Graph {
 		double avg = 1.0 * sumOfDegrees / nodes.size();
 		logger.writeLine("Average: "+avg);
 		for(Node node : nodes) {
-			int degree = node.getConnectedNodes().size();
+			int degree = node.getConnectedPartitions().size();
 			s2 += (degree - avg)*(degree - avg);
 		}
 		s2 = nodes.size() <= 1 ? 0 : s2/(nodes.size() - 1);
