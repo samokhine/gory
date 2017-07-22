@@ -3,9 +3,9 @@ package gory.experiment;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Random;
 
 import gory.domain.Graph;
 import gory.domain.Node;
@@ -13,34 +13,33 @@ import gory.domain.Partition;
 import gory.service.OutputLogger;
 import gory.service.PartitionBuilder;
 
-public class Experiment1 implements Experiment {
-	private int distance; // d
+public class Experiment2 implements Experiment {
+	private int numberOfRandomPicks; // T
 	private int numberOfDigits; // m
+	private int sumOfDigits; // n
+	private int distance; // d
 	
 	public void run() throws IOException {
     	OutputLogger out = new OutputLogger("output.txt");
-    	out.writeLine("Running experiment 1");
+    	out.writeLine("Running experiment 2");
     	out.writeLine("");
     	
     	readParameters();
 		
-		List<Integer> summands = new ArrayList<>();
-    	for(int i=1; i<=2*numberOfDigits-1; i=i+2) {
-    		summands.add(i);
-    	}
+    	List<Partition> partitions = PartitionBuilder.build(sumOfDigits, numberOfDigits);
     	
-    	Node node = new Node(new Partition(summands));
-    	Graph graph = new Graph(numberOfDigits*numberOfDigits+" - "+numberOfDigits+" graph", distance);
+    	Random generator = new Random();
+    	
+    	Node node = new Node(partitions.get(generator.nextInt(partitions.size())));
+    	Graph graph = new Graph(sumOfDigits+" - "+numberOfDigits+" graph", distance);
     	graph.addNode(node);
     	
-    	for(Partition partition : PartitionBuilder.build(numberOfDigits*numberOfDigits, numberOfDigits)) {
-    		int d = node.getPartition().distanceTo(partition);
-    		if(d <= 0 || d > distance) continue;
-    		
-    		graph.addNode(new Node(partition));
+    	for(int pick=1; pick<=numberOfRandomPicks; pick++) {
+    		node = new Node(partitions.get(generator.nextInt(partitions.size())));
+        	graph.addNode(node);
     	}
-
     	graph.log(out);
+    	
     	out.close();
 	}
 	
@@ -53,7 +52,9 @@ public class Experiment1 implements Experiment {
 			Properties prop = new Properties();
 			prop.load(input);
 
+			numberOfRandomPicks = Integer.valueOf(prop.getProperty("T"));
 			numberOfDigits = Integer.valueOf(prop.getProperty("m"));
+			sumOfDigits = Integer.valueOf(prop.getProperty("n"));
 			distance = Integer.valueOf(prop.getProperty("d"));
 		} catch (IOException ex) {
 			ex.printStackTrace();
