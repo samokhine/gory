@@ -30,7 +30,8 @@ public class Experiment1 {
     	graph.addNode(node);
     	
     	for(Partition partition : PartitionBuilder.build(numberOfDigits*numberOfDigits, numberOfDigits)) {
-    		if(node.getPartition().distanceTo(partition) != 1) continue;
+    		int d = node.getPartition().distanceTo(partition);
+    		if(d <= 0 || d > distance) continue;
     		
     		graph.addNode(new Node(partition));
     	}
