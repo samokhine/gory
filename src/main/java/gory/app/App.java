@@ -8,6 +8,7 @@ import java.util.Properties;
 import gory.experiment.Experiment;
 import gory.experiment.Experiment1;
 import gory.experiment.Experiment2;
+import gory.experiment.Experiment3;
 
 public class App {
     public static void main(String[] args) throws IOException {
@@ -18,6 +19,8 @@ public class App {
 	    	experiment = new Experiment1();
     	} else if(experimentId == 2) {
 	    	experiment = new Experiment2();
+    	} else if(experimentId == 3) {
+	    	experiment = new Experiment3();
     	} else {
     		return;
     	}

@@ -18,7 +18,7 @@ public class Partition {
 	public String toString() {
 		return getSummands().toString();
 	}
-	
+
 	public Partition(List<Integer> summands) {
 		summands.sort(new Comparator<Integer>() {
 			@Override

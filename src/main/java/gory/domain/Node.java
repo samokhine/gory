@@ -3,31 +3,26 @@ package gory.domain;
 import java.util.HashSet;
 import java.util.Set;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
-@EqualsAndHashCode(of={"partition"})
-public class Node {
+public class Node extends Partition {
 	@Getter
-	private Partition partition;
-
-	@Getter
-	private Set<Partition> connectedPartitions = new HashSet<>();
+	private Set<Node> connectedNodes = new HashSet<>();
 	
 	public Node(Partition partition) {
-		this.partition = partition;
-	}
-	
-	@Override
-	public String toString() {
-		return partition.toString();
+		super(partition.getSummands());
 	}
 	
 	public void connect(Node node) {
-		connectedPartitions.add(node.getPartition());
+		connectedNodes.add(node);
+		node.getConnectedNodes().add(this);
 	}
 	
-	public int distanceTo(Node node) {
-		return node.getPartition().distanceTo(partition);
+	public boolean isConnectedTo(Node node) {
+		return connectedNodes.contains(node);
+	}
+	
+	public int getDegree() {
+		return connectedNodes.size();
 	}
 }

@@ -28,7 +28,7 @@ public class BronKerbosch {
         	cnt++;
         	Graph g = new Graph("Clique "+cnt, graph.getConnectionDistance());
         	for(Node node : clique) {
-        		g.addNode(new Node(node.getPartition()));
+        		g.addNode(new Node(node));
         	}
         	graphs.add(g);
         }
@@ -51,7 +51,7 @@ public class BronKerbosch {
                 // create new_candidates by removing nodes in candidates not
                 // connected to candidate node
                 for (Node newCandidate : candidates) {
-                    if (candidate.getConnectedPartitions().contains(newCandidate.getPartition())) {
+                    if (candidate.isConnectedTo(newCandidate)) {
                         newCandidates.add(newCandidate);
                     }
                 }
@@ -59,7 +59,7 @@ public class BronKerbosch {
                 // create new_already_found by removing nodes in already_found
                 // not connected to candidate node
                 for (Node newFound : alreadyFound) {
-                    if (candidate.getConnectedPartitions().contains(newFound.getPartition())) {
+                    if (candidate.isConnectedTo(newFound)) {
                         newAlreadyFound.add(newFound);
                     }
                 }
@@ -91,7 +91,7 @@ public class BronKerbosch {
         for(Node found : alreadyFound) {
             edgecounter = 0;
             for (Node candidate : candidates) {
-                if(found.getConnectedPartitions().contains(candidate.getPartition())) {
+                if(found.isConnectedTo(candidate)) {
                     edgecounter++;
                 }
             }

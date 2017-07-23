@@ -47,7 +47,6 @@ public class Graph {
 			int distance = node.distanceTo(newNode);
 			if(distance <= connectionDistance) {
 				node.connect(newNode);
-				newNode.connect(node);
 			}
 		}
 		
@@ -61,6 +60,25 @@ public class Graph {
 		return algorithm.findMaxCliques(this);
 	}
 
+	public double getClusteringCoefficient() {
+		double total = 0.0;
+        for (Node v : getNodes()) {
+            // Cumulate local clustering coefficient of vertex v.
+            int possible = v.getDegree() * (v.getDegree() - 1);
+            int actual = 0;
+            for (Node u : v.getConnectedNodes()) {
+                for (Node w : v.getConnectedNodes()) {
+                    if(u.isConnectedTo(w))
+                        actual++;
+                }
+            }
+            if (possible > 0) {
+                total += 1.0 * actual / possible;
+            }
+        }
+        return total / getSize();
+	}
+	
 	public void log(OutputLogger logger) {
 		log(logger, true);
 	}
@@ -74,7 +92,7 @@ public class Graph {
 		int sumOfDegrees = 0;
 		logger.writeLine("Nodes:");
 		for(Node node : nodes) {
-			int degree = node.getConnectedPartitions().size();
+			int degree = node.getDegree();
 			sumOfDegrees += degree;
 			logger.writeLine(node.toString()+(detailed ? 
 					" degree: "+degree : 
@@ -86,7 +104,7 @@ public class Graph {
 
 		Map<Integer, AtomicInteger> nodeDegreeDistribution = new TreeMap<>();
 		for(Node node : nodes) {
-			int degree = node.getConnectedPartitions().size();
+			int degree = node.getDegree();
 			
 			AtomicInteger degreeCnt = nodeDegreeDistribution.get(degree);
 			if(degreeCnt == null) {
@@ -107,7 +125,7 @@ public class Graph {
 		double avg = 1.0 * sumOfDegrees / nodes.size();
 		logger.writeLine("Average: "+avg);
 		for(Node node : nodes) {
-			int degree = node.getConnectedPartitions().size();
+			int degree = node.getDegree();
 			s2 += (degree - avg)*(degree - avg);
 		}
 		s2 = nodes.size() <= 1 ? 0 : s2/(nodes.size() - 1);

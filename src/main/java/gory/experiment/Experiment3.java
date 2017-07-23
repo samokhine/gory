@@ -13,13 +13,13 @@ import gory.domain.Partition;
 import gory.service.OutputLogger;
 import gory.service.PartitionBuilder;
 
-public class Experiment1 implements Experiment {
+public class Experiment3 implements Experiment {
 	private int distance; // d
 	private int numberOfDigits; // m
 	
 	public void run() throws IOException {
     	OutputLogger out = new OutputLogger("output.txt");
-    	out.writeLine("Running experiment 1");
+    	out.writeLine("Running experiment 3");
     	out.writeLine("");
     	
     	readParameters();
@@ -40,7 +40,7 @@ public class Experiment1 implements Experiment {
     		graph.addNode(new Node(partition));
     	}
     	
-    	graph.log(out);
+    	out.writeLine("Clustering coefficient: "+graph.getClusteringCoefficient());
     	out.close();
 	}
 	
@@ -67,4 +67,5 @@ public class Experiment1 implements Experiment {
 			}
 		}
 	}
+
 }
