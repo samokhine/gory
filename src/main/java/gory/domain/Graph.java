@@ -61,17 +61,31 @@ public class Graph {
 	}
 
 	public double getClusteringCoefficient() {
+		Set<Node> seen = new HashSet<>();
+		//StringBuilder str = new StringBuilder();;
 		double total = 0.0;
         for (Node v : getNodes()) {
+        	System.out.println(v);
             // Cumulate local clustering coefficient of vertex v.
-            int possible = v.getDegree() * (v.getDegree() - 1);
+            int possible = 0; //v.getDegree() * (v.getDegree() - 1);
             int actual = 0;
+            seen.clear();
             for (Node u : v.getConnectedNodes()) {
-                for (Node w : v.getConnectedNodes()) {
-                    if(u.isConnectedTo(w))
+                seen.add(u);
+            	for (Node w : v.getConnectedNodes()) {
+                	if(seen.contains(w)) continue;
+                	
+                	//str.setLength(0);
+                	//str.append(v + " " + u + " " + w);
+                	possible++;
+                    if(u.isConnectedTo(w)) {
                         actual++;
+                        //str.append(" triangle");
+                    }
+                    //System.out.println(str.toString());
                 }
             }
+            System.out.println("");
             if (possible > 0) {
                 total += 1.0 * actual / possible;
             }
