@@ -85,7 +85,7 @@ public class Graph {
                     //System.out.println(str.toString());
                 }
             }
-            System.out.println("");
+            //System.out.println("");
             if (possible > 0) {
                 total += 1.0 * actual / possible;
             }
