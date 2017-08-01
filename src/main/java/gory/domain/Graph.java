@@ -1,9 +1,7 @@
 package gory.domain;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -63,34 +61,6 @@ public class Graph {
 	}
 
 	public double getClusteringCoefficient() {
-        List<Node> nodes = new ArrayList<>(getNodes());
-		int Ntr = 0;
-		for(int i=0; i<nodes.size(); i++) {
-			for(int j=i+1; j<nodes.size(); j++) {
-				for(int k=j+1; k<nodes.size(); k++) {
-					Ntr += nodes.get(i).isConnectedTo(nodes.get(j)) ? 
-								nodes.get(i).isConnectedTo(nodes.get(k)) ? 
-										nodes.get(j).isConnectedTo(nodes.get(k)) ? 1 : 0
-									: 0
-							: 0;
-		        }
-	        }
-        }
-
-		int N3 = 0;
-		for(int i=0; i<nodes.size(); i++) {
-			for(int j=i+1; j<nodes.size(); j++) {
-				for(int k=j+1; k<nodes.size(); k++) {
-					N3 += (nodes.get(i).isConnectedTo(nodes.get(j)) ? 1 : 0)*(nodes.get(i).isConnectedTo(nodes.get(k)) ? 1 : 0) +
-							(nodes.get(j).isConnectedTo(nodes.get(i)) ? 1 : 0)*(nodes.get(j).isConnectedTo(nodes.get(k)) ? 1 : 0) +
-							(nodes.get(k).isConnectedTo(nodes.get(i)) ? 1 : 0)*(nodes.get(k).isConnectedTo(nodes.get(j)) ? 1 : 0);
-				}
-	        }
-        }
-
-		
-		return N3 > 0 ? 3.0 * Ntr / N3 : 0;
-		/*
 		Set<Node> seen = new HashSet<>();
 		//StringBuilder str = new StringBuilder();;
 		double total = 0.0;
@@ -121,7 +91,6 @@ public class Graph {
             }
         }
         return total / getSize();
-        */
 	}
 	
 	public void log(OutputLogger logger) {
