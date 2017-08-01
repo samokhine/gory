@@ -40,7 +40,7 @@ public class Experiment1 implements Experiment {
     		graph.addNode(new Node(partition));
     	}
     	
-    	graph.log(out);
+    	graph.logStats(out);
     	out.close();
 	}
 	

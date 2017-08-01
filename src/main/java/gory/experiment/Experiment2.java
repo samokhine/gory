@@ -38,7 +38,7 @@ public class Experiment2 implements Experiment {
     		node = new Node(partitions.get(generator.nextInt(partitions.size())));
         	graph.addNode(node);
     	}
-    	graph.log(out);
+    	graph.logStats(out);
     	
     	out.close();
 	}

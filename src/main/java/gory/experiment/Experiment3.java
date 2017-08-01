@@ -40,7 +40,11 @@ public class Experiment3 implements Experiment {
     		graph.addNode(new Node(partition));
     	}
     	
-    	out.writeLine("Clustering coefficient: "+graph.getClusteringCoefficient());
+    	graph.logNodes(out);
+
+    	graph.logMatrix(out);
+
+    	out.writeLine("Clustering coefficient: "+graph.getClusteringCoefficientUsingMatrix());
     	out.close();
 	}
 	

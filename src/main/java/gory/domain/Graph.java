@@ -2,6 +2,8 @@ package gory.domain;
 
 import java.text.DecimalFormat;
 import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -60,7 +62,7 @@ public class Graph {
 		return algorithm.findMaxCliques(this);
 	}
 
-	public double getClusteringCoefficient() {
+	public double getClusteringCoefficientUsingTriangles() {
 		Set<Node> seen = new HashSet<>();
 		//StringBuilder str = new StringBuilder();;
 		double total = 0.0;
@@ -93,11 +95,62 @@ public class Graph {
         return total / getSize();
 	}
 	
-	public void log(OutputLogger logger) {
-		log(logger, true);
+ 	public double getClusteringCoefficientUsingMatrix() {
+        List<Node> nodes = new ArrayList<>(getNodes());
+		int Ntr = 0;
+		for(int i=0; i<nodes.size(); i++) {
+			for(int j=i+1; j<nodes.size(); j++) {
+				for(int k=j+1; k<nodes.size(); k++) {
+					Ntr += nodes.get(i).isConnectedTo(nodes.get(j)) ? 
+								nodes.get(i).isConnectedTo(nodes.get(k)) ? 
+										nodes.get(j).isConnectedTo(nodes.get(k)) ? 1 : 0
+									: 0
+							: 0;
+		        }
+	        }
+        }
+
+		int N3 = 0;
+		for(int i=0; i<nodes.size(); i++) {
+			for(int j=i+1; j<nodes.size(); j++) {
+				for(int k=j+1; k<nodes.size(); k++) {
+					N3 += (nodes.get(i).isConnectedTo(nodes.get(j)) ? 1 : 0)*(nodes.get(i).isConnectedTo(nodes.get(k)) ? 1 : 0) +
+							(nodes.get(j).isConnectedTo(nodes.get(i)) ? 1 : 0)*(nodes.get(j).isConnectedTo(nodes.get(k)) ? 1 : 0) +
+							(nodes.get(k).isConnectedTo(nodes.get(i)) ? 1 : 0)*(nodes.get(k).isConnectedTo(nodes.get(j)) ? 1 : 0);
+				}
+	        }
+        }
+
+		
+		return N3 > 0 ? 3.0 * Ntr / N3 : 0;
+ 	} 
+	
+ 	public void logNodes(OutputLogger logger) {
+		logger.writeLine("Nodes:");
+		for(Node node : nodes) {
+			logger.writeLine(node.toString());
+		}
+		logger.writeLine("");
+ 	}
+ 	
+ 	public void logMatrix(OutputLogger logger) {
+		logger.writeLine("Adjacentcy matrix:");
+ 		StringBuilder sb = new StringBuilder();
+		for(Node n1 : nodes) {
+			sb.setLength(0);
+			for(Node n2 : nodes) {
+				sb.append(n1.isConnectedTo(n2) ? "1" : "0");
+			}
+			logger.writeLine(sb.toString());
+		}
+		logger.writeLine("");
+ 	}
+ 	
+	public void logStats(OutputLogger logger) {
+		logStats(logger, true);
 	}
 
-	private void log(OutputLogger logger, boolean detailed) {
+	private void logStats(OutputLogger logger, boolean detailed) {
 		logger.writeLine(name);
 		logger.writeLine("");
 
@@ -150,7 +203,7 @@ public class Graph {
 		Set<Graph> cliques = findMaxCliques();
 		Map<Integer, AtomicInteger> cliqueSizeDistribution = new TreeMap<>();
 		for(Graph clique : cliques) {
-			clique.log(logger, false);
+			clique.logStats(logger, false);
 
 			int size = clique.getSize();
 			
