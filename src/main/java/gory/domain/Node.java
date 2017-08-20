@@ -25,4 +25,22 @@ public class Node extends Partition {
 	public int getDegree() {
 		return connectedNodes.size();
 	}
+	
+	public double getClusteringCoefficientUsingTriangles() {
+        int possible = 0;
+        int actual = 0;
+        Set<Node> seen = new HashSet<>();
+        for (Node u : getConnectedNodes()) {
+            seen.add(u);
+        	for (Node w : getConnectedNodes()) {
+            	if(seen.contains(w)) continue;
+            	
+            	possible++;
+                if(u.isConnectedTo(w)) {
+                    actual++;
+                }
+            }
+        }
+        return possible > 0 ? 1.0 * actual / possible : 0;
+	}
 }
