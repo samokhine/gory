@@ -44,7 +44,9 @@ public class Experiment3 implements Experiment {
 
     	graph.logMatrix(out);
 
-    	out.writeLine("Clustering coefficient: "+graph.getClusteringCoefficientUsingMatrix());
+    	out.writeLine("Clustering coefficient for graph: "+graph.getClusteringCoefficientUsingMatrix());
+    	out.writeLine("Clustering coefficient for head of the family: "+node.getClusteringCoefficientUsingTriangles());
+
     	out.close();
 	}
 	

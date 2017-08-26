@@ -19,6 +19,12 @@ public class Experiment2 implements Experiment {
 	private int sumOfDigits; // n
 	private int distance; // d
 	
+	private boolean logNodes;
+	private boolean logMatrix;
+	private boolean logClusteringCoefficient;
+	private boolean logStatsOfDegrees; 
+	private boolean logCliques;
+
 	public void run() throws IOException {
     	OutputLogger out = new OutputLogger("output.txt");
     	out.writeLine("Running experiment 2");
@@ -38,7 +44,26 @@ public class Experiment2 implements Experiment {
     		node = new Node(partitions.get(generator.nextInt(partitions.size())));
         	graph.addNode(node);
     	}
-    	graph.logStats(out);
+
+    	if(logNodes) {
+    		graph.logNodes(out);
+    	}
+    	
+    	if(logMatrix) {
+    		graph.logMatrix(out);
+    	}
+    	
+    	if(logClusteringCoefficient) {
+    		graph.logClusteringCoefficient(out);
+    	}
+    	
+    	if(logStatsOfDegrees) {
+    		graph.logStatsOfDegrees(out); 
+    	}
+		
+    	if(logCliques) {
+    		graph.logCliques(out);
+    	}
     	
     	out.close();
 	}
@@ -56,6 +81,12 @@ public class Experiment2 implements Experiment {
 			numberOfDigits = Integer.valueOf(prop.getProperty("m"));
 			sumOfDigits = Integer.valueOf(prop.getProperty("n"));
 			distance = Integer.valueOf(prop.getProperty("d"));
+			
+			logNodes = Boolean.valueOf(prop.getProperty("logNodes"));
+			logMatrix = Boolean.valueOf(prop.getProperty("logMatrix"));
+			logClusteringCoefficient = Boolean.valueOf(prop.getProperty("logClusteringCoefficient"));
+			logStatsOfDegrees = Boolean.valueOf(prop.getProperty("logStatsOfDegrees")); 
+			logCliques = Boolean.valueOf(prop.getProperty("logCliques"));
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {

@@ -15,6 +15,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class Graph {
+	private static final DecimalFormat df = new DecimalFormat("0.0000");
+	
 	@Getter @Setter
 	private String name;
 
@@ -102,14 +104,6 @@ public class Graph {
 		return N3 > 0 ? 3.0 * Ntr / N3 : 0;
  	} 
 	
- 	public void logNodes(OutputLogger logger) {
-		logger.writeLine("Nodes:");
-		for(Node node : nodes) {
-			logger.writeLine(node.toString());
-		}
-		logger.writeLine("");
- 	}
- 	
  	public void logMatrix(OutputLogger logger) {
 		logger.writeLine("Adjacentcy matrix:");
  		StringBuilder sb = new StringBuilder();
@@ -123,29 +117,7 @@ public class Graph {
 		logger.writeLine("");
  	}
  	
-	public void logStats(OutputLogger logger) {
-		logStats(logger, true);
-	}
-
-	private void logStats(OutputLogger logger, boolean detailed) {
-		logger.writeLine(name);
-		logger.writeLine("");
-
-		if(nodes.isEmpty()) return;
-
-		int sumOfDegrees = 0;
-		logger.writeLine("Nodes:");
-		for(Node node : nodes) {
-			int degree = node.getDegree();
-			sumOfDegrees += degree;
-			logger.writeLine(node.toString()+(detailed ? 
-					" degree: "+degree : 
-					""));
-		}
-		logger.writeLine("");
-
-		if(!detailed) return;
-
+	public void logStatsOfDegrees(OutputLogger logger) {
 		Map<Integer, AtomicInteger> nodeDegreeDistribution = new TreeMap<>();
 		for(Node node : nodes) {
 			int degree = node.getDegree();
@@ -158,14 +130,13 @@ public class Graph {
 			degreeCnt.incrementAndGet();
 		}
 
-		DecimalFormat df = new DecimalFormat("0.0000");
 		logger.writeLine("Distribution of nodes:");
 		for(int degree : nodeDegreeDistribution.keySet()) {
 			logger.writeLine(degree+" "+df.format(1.0*nodeDegreeDistribution.get(degree).intValue()/getSize()));
 		}
-		logger.writeLine("");
 		
 		double s2 = 0;
+		int sumOfDegrees= getSumOfDegrees();
 		double avg = 1.0 * sumOfDegrees / nodes.size();
 		logger.writeLine("Average: "+avg);
 		for(Node node : nodes) {
@@ -176,11 +147,15 @@ public class Graph {
 		logger.writeLine("Variance: "+s2);
 
 		logger.writeLine("");
-
+	}
+	
+	public void logCliques(OutputLogger logger) {
+		logger.writeLine("Cliques:");
+		logger.writeLine("");
 		Set<Graph> cliques = findMaxCliques();
 		Map<Integer, AtomicInteger> cliqueSizeDistribution = new TreeMap<>();
 		for(Graph clique : cliques) {
-			clique.logStats(logger, false);
+			clique.logNodes(logger, false);
 
 			int size = clique.getSize();
 			
@@ -196,8 +171,33 @@ public class Graph {
 		for(int cliqueSize : cliqueSizeDistribution.keySet()) {
 			logger.writeLine(cliqueSize+" "+df.format(1.0*cliqueSizeDistribution.get(cliqueSize).intValue()/cliques.size()));
 		}
+	}
 
+	public void logNodes(OutputLogger logger) {
+		logNodes(logger, true); 
+	}
+
+	public void logNodes(OutputLogger logger, boolean detailed) {
+		if(detailed) logger.writeLine("Nodes:");
+		for(Node node : nodes) {
+			int degree = node.getDegree();
+			logger.writeLine(node.toString()+(detailed ? " degree: "+degree : ""));
+		}
 		logger.writeLine("");
+	}
+
+	public void logClusteringCoefficient(OutputLogger logger) {
+		logger.writeLine("Clustering coefficient for graph:");
+		logger.writeLine(""+getClusteringCoefficientUsingMatrix());
 		logger.writeLine("");
+	}
+	
+	public int getSumOfDegrees() {
+		int sumOfDegrees = 0;
+		for(Node node : nodes) {
+			int degree = node.getDegree();
+			sumOfDegrees += degree;
+		}
+		return sumOfDegrees;
 	}
 }
