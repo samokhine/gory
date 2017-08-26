@@ -17,6 +17,8 @@ public class Experiment1 implements Experiment {
 	private int distance; // d
 	private int numberOfDigits; // m
 	
+	private boolean removeHead;
+	
 	private boolean logNodes;
 	private boolean logMatrix;
 	private boolean logClusteringCoefficient;
@@ -36,15 +38,19 @@ public class Experiment1 implements Experiment {
     		summands.add(i);
     	}
     	
-    	Node node = new Node(new Partition(summands));
+    	Node head = new Node(new Partition(summands));
     	Graph graph = new Graph(numberOfDigits*numberOfDigits+" - "+numberOfDigits+" graph", distance);
-    	graph.addNode(node);
+    	graph.addNode(head);
     	
     	for(Partition partition : PartitionBuilder.build(numberOfDigits*numberOfDigits, numberOfDigits)) {
-    		int d = node.distanceTo(partition);
+    		int d = head.distanceTo(partition);
     		if(d <= 0 || d > distance) continue;
     		
     		graph.addNode(new Node(partition));
+    	}
+    	
+    	if(removeHead) {
+    		graph.removeNode(head);
     	}
     	
     	if(logNodes) {
@@ -59,9 +65,9 @@ public class Experiment1 implements Experiment {
     		graph.logClusteringCoefficient(out);
     	}
     	
-    	if(logClusteringCoefficientForHead) {
+    	if(!removeHead && logClusteringCoefficientForHead) {
 	    	out.writeLine("Clustering coefficient for head of the family:");
-	    	out.writeLine(""+node.getClusteringCoefficientUsingTriangles());
+	    	out.writeLine(""+head.getClusteringCoefficientUsingTriangles());
 	    	out.writeLine("");
     	}
     	
@@ -87,7 +93,9 @@ public class Experiment1 implements Experiment {
 
 			numberOfDigits = Integer.valueOf(prop.getProperty("m"));
 			distance = Integer.valueOf(prop.getProperty("d"));
-			
+
+			removeHead = Boolean.valueOf(prop.getProperty("removeHead"));
+
 			logNodes = Boolean.valueOf(prop.getProperty("logNodes"));
 			logMatrix = Boolean.valueOf(prop.getProperty("logMatrix"));
 			logClusteringCoefficient = Boolean.valueOf(prop.getProperty("logClusteringCoefficient"));

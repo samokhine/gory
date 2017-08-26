@@ -59,6 +59,14 @@ public class Graph {
 		return true;
 	}
 	
+	public void removeNode(Node nodeToRemove) {
+		nodes.remove(nodeToRemove);
+		
+		for(Node node : nodes) {
+			node.getConnectedNodes().remove(nodeToRemove);
+		}
+	}
+	
 	public Set<Graph> findMaxCliques() {
 		BronKerbosch algorithm = new BronKerbosch();
 		return algorithm.findMaxCliques(this);
