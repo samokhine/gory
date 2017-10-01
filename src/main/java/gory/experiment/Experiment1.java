@@ -18,6 +18,7 @@ public class Experiment1 implements Experiment {
 	private int numberOfDigits; // m
 	
 	private boolean removeHead;
+	private boolean onlyDirectDescendants;
 	
 	private boolean logNodes;
 	private boolean logMatrix;
@@ -44,7 +45,13 @@ public class Experiment1 implements Experiment {
     	
     	for(Partition partition : PartitionBuilder.build(numberOfDigits*numberOfDigits, numberOfDigits)) {
     		int d = head.distanceTo(partition);
-    		if(d <= 0 || d > distance) continue;
+    		if(d <= 0 || d > distance) {
+    			continue;
+    		}
+    		
+    		if(onlyDirectDescendants && !partition.getSummands().get(0).equals(summands.get(0))) {
+    			continue;
+    		}
     		
     		graph.addNode(new Node(partition));
     	}
@@ -95,6 +102,7 @@ public class Experiment1 implements Experiment {
 			distance = Integer.valueOf(prop.getProperty("d"));
 
 			removeHead = Boolean.valueOf(prop.getProperty("removeHead"));
+			onlyDirectDescendants = Boolean.valueOf(prop.getProperty("onlyDirectDescendants"));
 
 			logNodes = Boolean.valueOf(prop.getProperty("logNodes"));
 			logMatrix = Boolean.valueOf(prop.getProperty("logMatrix"));
