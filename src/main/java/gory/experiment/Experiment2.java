@@ -3,6 +3,7 @@ package gory.experiment;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
@@ -18,6 +19,7 @@ public class Experiment2 implements Experiment {
 	private int numberOfDigits; // m
 	private int sumOfDigits; // n
 	private int distance; // d
+	private boolean onlyFamilyOfTheHead;
 	
 	private boolean logNodes;
 	private boolean logMatrix;
@@ -33,6 +35,21 @@ public class Experiment2 implements Experiment {
     	readParameters();
 		
     	List<Partition> partitions = PartitionBuilder.build(sumOfDigits, numberOfDigits);
+    	if(onlyFamilyOfTheHead) {
+    		List<Integer> summands = new ArrayList<>();
+        	for(int i=1; i<=2*numberOfDigits-1; i=i+2) {
+        		summands.add(i);
+        	}
+        	
+        	Partition head = new Partition(summands);
+        	List<Partition> familyOfTheHead = new ArrayList<>();
+        	for(Partition partition : partitions) {
+        		if(partition.distanceTo(head)>distance) continue; 
+        	
+        		familyOfTheHead.add(partition);
+        	}
+        	partitions = familyOfTheHead;
+    	}
     	
     	Random generator = new Random();
     	
@@ -81,6 +98,7 @@ public class Experiment2 implements Experiment {
 			numberOfDigits = Integer.valueOf(prop.getProperty("m"));
 			sumOfDigits = Integer.valueOf(prop.getProperty("n"));
 			distance = Integer.valueOf(prop.getProperty("d"));
+			onlyFamilyOfTheHead = Boolean.valueOf(prop.getProperty("onlyFamilyOfTheHead"));
 			
 			logNodes = Boolean.valueOf(prop.getProperty("logNodes"));
 			logMatrix = Boolean.valueOf(prop.getProperty("logMatrix"));
