@@ -3,18 +3,26 @@ package gory.experiment;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
+import java.util.TreeMap;
 
 import gory.domain.Graph;
 import gory.domain.Node;
 import gory.domain.Partition;
 import gory.service.OutputLogger;
 import gory.service.PartitionBuilder;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 public class Experiment2 implements Experiment {
+	private static final DecimalFormat df = new DecimalFormat("0.0000");
+
+	private int numberOfRuns; // K
 	private int numberOfRandomPicks; // T
 	private int numberOfDigits; // m
 	private int sumOfDigits; // n
@@ -53,36 +61,149 @@ public class Experiment2 implements Experiment {
     	
     	Random generator = new Random();
     	
-    	Node node = new Node(partitions.get(generator.nextInt(partitions.size())));
-    	Graph graph = new Graph(sumOfDigits+" - "+numberOfDigits+" graph", distance);
-    	graph.addNode(node);
-    	
-    	for(int pick=1; pick<=numberOfRandomPicks; pick++) {
-    		node = new Node(partitions.get(generator.nextInt(partitions.size())));
-        	graph.addNode(node);
-    	}
+    	if(numberOfRuns<=1) {
+	    	Node node = new Node(partitions.get(generator.nextInt(partitions.size())));
+	    	Graph graph = new Graph(sumOfDigits+" - "+numberOfDigits+" graph", distance);
+	    	graph.addNode(node);
+	    	
+	    	for(int pick=1; pick<=numberOfRandomPicks; pick++) {
+	    		node = new Node(partitions.get(generator.nextInt(partitions.size())));
+	        	graph.addNode(node);
+	    	}
+	
+	    	if(logNodes) {
+	    		graph.logNodes(out);
+	    	}
+	    	
+	    	if(logMatrix) {
+	    		graph.logMatrix(out);
+	    	}
+	    	
+	    	if(logClusteringCoefficient) {
+	    		graph.logClusteringCoefficient(out);
+	    	}
+	    	
+	    	if(logStatsOfDegrees) {
+	    		graph.logStatsOfDegrees(out); 
+	    	}
+			
+	    	if(logCliques) {
+	    		graph.logCliques(out);
+	    	}
+    	} else {
+    		List<Double> clusteringCoefficients = new ArrayList<>();
+    		List<Map<Integer, ? extends Number>> nodeDegreeDistributions = new ArrayList<>();
+    		List<Map<Integer, ? extends Number>> cliqueSizeDistributions = new ArrayList<>();
+    		
+    		for(int run=1; run<=numberOfRuns; run++) {
+		    	Node node = new Node(partitions.get(generator.nextInt(partitions.size())));
+		    	Graph graph = new Graph(sumOfDigits+" - "+numberOfDigits+" graph", distance);
+		    	graph.addNode(node);
+		    	
+		    	for(int pick=1; pick<=numberOfRandomPicks; pick++) {
+		    		node = new Node(partitions.get(generator.nextInt(partitions.size())));
+		        	graph.addNode(node);
+		    	}
 
-    	if(logNodes) {
-    		graph.logNodes(out);
-    	}
-    	
-    	if(logMatrix) {
-    		graph.logMatrix(out);
-    	}
-    	
-    	if(logClusteringCoefficient) {
-    		graph.logClusteringCoefficient(out);
-    	}
-    	
-    	if(logStatsOfDegrees) {
-    		graph.logStatsOfDegrees(out); 
-    	}
-		
-    	if(logCliques) {
-    		graph.logCliques(out);
+		    	if(logClusteringCoefficient) {
+		    		clusteringCoefficients.add(graph.getClusteringCoefficientUsingMatrix());
+		    	}
+		    	
+		    	if(logStatsOfDegrees) {
+		    		nodeDegreeDistributions.add(graph.getNodeDegreeDistribution());
+		    	}
+
+		    	if(logCliques) {
+		    		cliqueSizeDistributions.add(graph.getCliqueSizeDistribution());
+		    	}
+    		}
+
+	    	if(logClusteringCoefficient) {
+	    		AverageAndStdDev averageStdDev = getAverageAndStdDev(clusteringCoefficients);
+	    		out.writeLine("Clustering coefficient for graph:");
+	    		out.writeLine(averageStdDev.toString());
+	    		out.writeLine("");
+	    	}
+
+	    	if(logStatsOfDegrees) {
+	    		Map<Integer, AverageAndStdDev> results = merge(nodeDegreeDistributions);
+	    		out.writeLine("Distribution of nodes:");
+	    		for(int degree : results.keySet()) {
+	    			out.writeLine(degree+" "+results.get(degree));
+	    		}
+	    		out.writeLine("");
+	    	}
+
+	    	if(logCliques) {
+	    		Map<Integer, AverageAndStdDev> results = merge(cliqueSizeDistributions);
+	    		out.writeLine("Distribution of cliques:");
+	    		for(int degree : results.keySet()) {
+	    			out.writeLine(degree+" "+results.get(degree));
+	    		}
+	    		out.writeLine("");
+	    	}
     	}
     	
     	out.close();
+	}
+	
+	@AllArgsConstructor
+	@Getter
+	private static class AverageAndStdDev {
+		double average;
+		double stdDev;
+		
+		@Override
+		public String toString() {
+			return df.format(average)+ "("+df.format(stdDev)+")";
+		}
+	}
+	
+	private AverageAndStdDev getAverageAndStdDev(List<Double> items) {
+		double average = 0;
+		double stdDev = 0;
+		
+		if(items.size() > 0) {
+			for(double item : items) {
+				average += item;
+			}
+			average /= items.size();
+
+			if(items.size() > 1) {
+				for(double item : items) {
+					stdDev += (item - average) * (item - average);
+				}
+				
+				stdDev /= (items.size() - 1);
+				
+				stdDev = Math.sqrt(stdDev);
+			}
+		}
+		
+		return new AverageAndStdDev(average, stdDev);
+		
+	}
+	
+	private Map<Integer, AverageAndStdDev> merge(List<Map<Integer, ? extends Number>> items) {
+		Map<Integer, List<Double>> m = new TreeMap<>();
+		
+		for(Map<Integer, ? extends Number> item : items) {
+			for(int key : item.keySet()) {
+				List<Double> l = m.get(key);
+				if(l == null) {
+					l = new ArrayList<>();
+					m.put(key, l);
+				}
+				l.add(item.get(key).doubleValue());
+			}
+		}
+		
+		Map<Integer, AverageAndStdDev> r = new TreeMap<>();
+		for(int key : m.keySet()) {
+			r.put(key, getAverageAndStdDev(m.get(key)));
+		}
+		
+		return r;
 	}
 	
 	private void readParameters() {
@@ -94,6 +215,7 @@ public class Experiment2 implements Experiment {
 			Properties prop = new Properties();
 			prop.load(input);
 
+			numberOfRuns = Integer.valueOf(prop.getProperty("K"));
 			numberOfRandomPicks = Integer.valueOf(prop.getProperty("T"));
 			numberOfDigits = Integer.valueOf(prop.getProperty("m"));
 			sumOfDigits = Integer.valueOf(prop.getProperty("n"));

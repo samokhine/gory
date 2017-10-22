@@ -126,21 +126,11 @@ public class Graph {
  	}
  	
 	public void logStatsOfDegrees(OutputLogger logger) {
-		Map<Integer, AtomicInteger> nodeDegreeDistribution = new TreeMap<>();
-		for(Node node : nodes) {
-			int degree = node.getDegree();
-			
-			AtomicInteger degreeCnt = nodeDegreeDistribution.get(degree);
-			if(degreeCnt == null) {
-				degreeCnt = new AtomicInteger();
-				nodeDegreeDistribution.put(degree, degreeCnt);
-			}
-			degreeCnt.incrementAndGet();
-		}
+		Map<Integer, Double> nodeDegreeDistribution = getNodeDegreeDistribution();
 
 		logger.writeLine("Distribution of nodes:");
 		for(int degree : nodeDegreeDistribution.keySet()) {
-			logger.writeLine(degree+" "+df.format(1.0*nodeDegreeDistribution.get(degree).intValue()/getSize()));
+			logger.writeLine(degree+" "+df.format(nodeDegreeDistribution.get(degree)));
 		}
 		
 		double s2 = 0;
@@ -157,13 +147,49 @@ public class Graph {
 		logger.writeLine("");
 	}
 	
+	public Map<Integer, Double> getNodeDegreeDistribution() {
+		Map<Integer, AtomicInteger> nodeDegreeDistribution = new TreeMap<>();
+		for(Node node : nodes) {
+			int degree = node.getDegree();
+			
+			AtomicInteger degreeCnt = nodeDegreeDistribution.get(degree);
+			if(degreeCnt == null) {
+				degreeCnt = new AtomicInteger();
+				nodeDegreeDistribution.put(degree, degreeCnt);
+			}
+			degreeCnt.incrementAndGet();
+		}
+		
+		Map<Integer, Double> result = new TreeMap<>();
+		for(int degree : nodeDegreeDistribution.keySet()) {
+			result.put(degree, 1.0*nodeDegreeDistribution.get(degree).intValue()/getSize());
+		}
+		
+		return result;
+	}
+	
 	public void logCliques(OutputLogger logger) {
 		logger.writeLine("Cliques:");
 		logger.writeLine("");
+
+		Map<Integer, Double> cliqueSizeDistribution = getCliqueSizeDistribution(logger);
+		logger.writeLine("Distribution of cliques:");
+		for(int cliqueSize : cliqueSizeDistribution.keySet()) {
+			logger.writeLine(cliqueSize+" "+df.format(cliqueSizeDistribution.get(cliqueSize)));
+		}
+	}
+
+	public Map<Integer, Double> getCliqueSizeDistribution() {
+		return getCliqueSizeDistribution(null);
+	}
+
+	private Map<Integer, Double> getCliqueSizeDistribution(OutputLogger logger) {
 		Set<Graph> cliques = findMaxCliques();
 		Map<Integer, AtomicInteger> cliqueSizeDistribution = new TreeMap<>();
 		for(Graph clique : cliques) {
-			clique.logNodes(logger, false);
+			if(logger != null) {
+				clique.logNodes(logger, false);
+			}
 
 			int size = clique.getSize();
 			
@@ -175,12 +201,19 @@ public class Graph {
 			cliqueSizeCnt.incrementAndGet();
 		}
 		
-		logger.writeLine("Distribution of cliques:");
-		for(int cliqueSize : cliqueSizeDistribution.keySet()) {
-			logger.writeLine(cliqueSize+" "+df.format(1.0*cliqueSizeDistribution.get(cliqueSize).intValue()/cliques.size()));
+		int numCliques = 0;
+		for(AtomicInteger numcliquesForSize : cliqueSizeDistribution.values()) {
+			numCliques += numcliquesForSize.get();
 		}
+		
+		Map<Integer, Double> result = new TreeMap<>();
+		for(int cliqueSize : cliqueSizeDistribution.keySet()) {
+			result.put(cliqueSize, 1.0*cliqueSizeDistribution.get(cliqueSize).intValue()/numCliques);
+		}
+		
+		return result;
 	}
-
+	
 	public void logNodes(OutputLogger logger) {
 		logNodes(logger, true); 
 	}
