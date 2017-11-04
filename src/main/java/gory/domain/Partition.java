@@ -19,6 +19,15 @@ public class Partition {
 		return getSummands().toString();
 	}
 
+	public Partition(String summonds) {
+		summonds = summonds.substring(1, summonds.length()-1);
+		arr = new int[summonds.split(",").length];
+		int i = 0;
+		for(String summond : summonds.split(",")) {
+			arr[i++] = Integer.valueOf(summond.trim());
+		}
+	}
+	
 	public Partition(List<Integer> summands) {
 		summands.sort(new Comparator<Integer>() {
 			@Override

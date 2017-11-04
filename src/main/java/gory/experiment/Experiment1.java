@@ -4,7 +4,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import gory.domain.Graph;
@@ -26,6 +28,7 @@ public class Experiment1 implements Experiment {
 	private boolean logClusteringCoefficientForHead;
 	private boolean logStatsOfDegrees; 
 	private boolean logCliques;
+	private Map<Partition, Partition> replace = new HashMap<>();
 	
 	public void run() throws IOException {
     	OutputLogger out = new OutputLogger("output.txt");
@@ -54,6 +57,11 @@ public class Experiment1 implements Experiment {
     		}
     		
     		graph.addNode(new Node(partition));
+    	}
+    	
+    	for(Partition oldPartition : replace.keySet()) {
+    		Partition newPartition = replace.get(oldPartition);
+    		graph.replaceNode(new Node(oldPartition), new Node(newPartition));
     	}
     	
     	if(removeHead) {
@@ -110,7 +118,20 @@ public class Experiment1 implements Experiment {
 			logClusteringCoefficientForHead = Boolean.valueOf(prop.getProperty("logClusteringCoefficientForHead"));
 			logStatsOfDegrees = Boolean.valueOf(prop.getProperty("logStatsOfDegrees")); 
 			logCliques = Boolean.valueOf(prop.getProperty("logCliques"));
-
+			
+			String replaceStr = prop.getProperty("replace");
+			if(replaceStr == null) replaceStr = "";
+			replaceStr = replaceStr.trim();
+			String replaceElements[] = replaceStr.split("\\],\\[");
+			for(String replaceElement : replaceElements) {
+				if(replaceElement.indexOf('[') != 0) replaceElement = "[" + replaceElement;
+				if(replaceElement.lastIndexOf(']') != replaceElement.length() - 1) replaceElement = replaceElement + "]";
+					
+				String arr[] = replaceElement.split("\\=\\>");
+				if(arr.length != 2) continue;
+				
+				replace.put(new Partition(arr[0]), new Partition(arr[1]));
+			}
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {

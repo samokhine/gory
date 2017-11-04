@@ -67,6 +67,11 @@ public class Graph {
 		}
 	}
 	
+	public void replaceNode(Node oldNode, Node newNode) {
+		removeNode(oldNode);
+		addNode(newNode);
+	}
+	
 	public Set<Graph> findMaxCliques() {
 		BronKerbosch algorithm = new BronKerbosch();
 		return algorithm.findMaxCliques(this);
