@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import gory.domain.Graph;
 import gory.domain.Node;
@@ -29,6 +31,7 @@ public class Experiment1 implements Experiment {
 	private boolean logStatsOfDegrees; 
 	private boolean logCliques;
 	private Map<Partition, Partition> replace = new HashMap<>();
+	private Set<Partition> insert = new HashSet<>(); 
 	
 	public void run() throws IOException {
     	OutputLogger out = new OutputLogger("output.txt");
@@ -37,35 +40,48 @@ public class Experiment1 implements Experiment {
     	
     	readParameters();
 		
-		List<Integer> summands = new ArrayList<>();
-    	for(int i=1; i<=2*numberOfDigits-1; i=i+2) {
-    		summands.add(i);
-    	}
-    	
-    	Node head = new Node(new Partition(summands));
     	Graph graph = new Graph(numberOfDigits*numberOfDigits+" - "+numberOfDigits+" graph", distance);
-    	graph.addNode(head);
-    	
-    	for(Partition partition : PartitionBuilder.build(numberOfDigits*numberOfDigits, numberOfDigits)) {
-    		int d = head.distanceTo(partition);
-    		if(d <= 0 || d > distance) {
-    			continue;
-    		}
-    		
-    		if(onlyDirectDescendants && !partition.getSummands().get(0).equals(summands.get(0))) {
-    			continue;
-    		}
-    		
-    		graph.addNode(new Node(partition));
-    	}
-    	
-    	for(Partition oldPartition : replace.keySet()) {
-    		Partition newPartition = replace.get(oldPartition);
-    		graph.replaceNode(new Node(oldPartition), new Node(newPartition));
-    	}
-    	
-    	if(removeHead) {
-    		graph.removeNode(head);
+    	if(insert.isEmpty()) {
+			List<Integer> summands = new ArrayList<>();
+	    	for(int i=1; i<=2*numberOfDigits-1; i=i+2) {
+	    		summands.add(i);
+	    	}
+	    	
+	    	Node head = new Node(new Partition(summands));
+	    	graph.addNode(head);
+	    	
+	    	for(Partition partition : PartitionBuilder.build(numberOfDigits*numberOfDigits, numberOfDigits)) {
+	    		int d = head.distanceTo(partition);
+	    		if(d <= 0 || d > distance) {
+	    			continue;
+	    		}
+	    		
+	    		if(onlyDirectDescendants && !partition.getSummands().get(0).equals(summands.get(0))) {
+	    			continue;
+	    		}
+	    		
+	    		graph.addNode(new Node(partition));
+	    	}
+	    	
+	    	for(Partition oldPartition : replace.keySet()) {
+	    		Partition newPartition = replace.get(oldPartition);
+	    		graph.replaceNode(new Node(oldPartition), new Node(newPartition));
+	    	}
+
+	    	if(removeHead) {
+	    		graph.removeNode(head);
+	    	} else {
+	        	if(logClusteringCoefficientForHead) {
+	    	    	out.writeLine("Clustering coefficient for head of the family:");
+	    	    	out.writeLine(""+head.getClusteringCoefficientUsingTriangles());
+	    	    	out.writeLine("");
+	        	}
+	    	}
+	    	
+    	} else {
+	    	for(Partition partition : insert) {
+	    		graph.addNode(new Node(partition));
+	    	}
     	}
     	
     	if(logNodes) {
@@ -78,12 +94,6 @@ public class Experiment1 implements Experiment {
     	
     	if(logClusteringCoefficient) {
     		graph.logClusteringCoefficient(out);
-    	}
-    	
-    	if(!removeHead && logClusteringCoefficientForHead) {
-	    	out.writeLine("Clustering coefficient for head of the family:");
-	    	out.writeLine(""+head.getClusteringCoefficientUsingTriangles());
-	    	out.writeLine("");
     	}
     	
     	if(logStatsOfDegrees) {
@@ -121,9 +131,10 @@ public class Experiment1 implements Experiment {
 			
 			String replaceStr = prop.getProperty("replace");
 			if(replaceStr == null) replaceStr = "";
-			replaceStr = replaceStr.trim();
+			replaceStr = replaceStr.replaceAll(" ", "");
 			String replaceElements[] = replaceStr.split("\\],\\[");
 			for(String replaceElement : replaceElements) {
+				if(replaceElement.isEmpty()) continue;
 				if(replaceElement.indexOf('[') != 0) replaceElement = "[" + replaceElement;
 				if(replaceElement.lastIndexOf(']') != replaceElement.length() - 1) replaceElement = replaceElement + "]";
 					
@@ -131,6 +142,18 @@ public class Experiment1 implements Experiment {
 				if(arr.length != 2) continue;
 				
 				replace.put(new Partition(arr[0]), new Partition(arr[1]));
+			}
+
+			String insertStr = prop.getProperty("insert");
+			if(insertStr == null) insertStr = "";
+			insertStr = insertStr.replaceAll(" ", "");
+			String insertElements[] = insertStr.split("\\],\\[");
+			for(String insertElement : insertElements) {
+				if(insertElement.isEmpty()) continue;
+				if(insertElement.indexOf('[') != 0) insertElement = "[" + insertElement;
+				if(insertElement.lastIndexOf(']') != insertElement.length() - 1) insertElement = insertElement + "]";
+
+				insert.add(new Partition(insertElement));
 			}
 		} catch (IOException ex) {
 			ex.printStackTrace();
