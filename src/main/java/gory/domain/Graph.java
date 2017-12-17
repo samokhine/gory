@@ -49,7 +49,7 @@ public class Graph {
 		
 		for(Node node : nodes) {
 			int distance = node.distanceTo(newNode);
-			if(distance <= connectionDistance) {
+			if(distance >= 0 && distance <= connectionDistance) {
 				node.connect(newNode);
 			}
 		}
