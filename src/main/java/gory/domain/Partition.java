@@ -77,7 +77,7 @@ public class Partition {
 	}
 	
 	public int distanceTo(Partition partition) {
-		if(!isSameType(partition)) return -1;
+		if(getNumberOfDigits() != partition.getNumberOfDigits()) return -1;
 		
 		int distance = 0;
 		for(int i=1; i<=getNumberOfDigits(); i++) {
