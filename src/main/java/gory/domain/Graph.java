@@ -193,7 +193,6 @@ public class Graph {
 		Map<Integer, AtomicInteger> cliqueSizeDistribution = new TreeMap<>();
 		for(Graph clique : cliques) {
 			if(logger != null) {
-				logger.writeLine("Coalition resource "+clique.getCoalitionResource());
 				clique.logNodes(logger, false);
 			}
 
@@ -218,6 +217,12 @@ public class Graph {
 		}
 		
 		return result;
+	}
+	
+	public void logCoalitionResource(OutputLogger logger) {
+		logger.writeLine("Coalition resource:");
+		logger.writeLine(""+getCoalitionResource());
+		logger.writeLine("");
 	}
 	
 	public int getCoalitionResource() {
@@ -249,7 +254,7 @@ public class Graph {
 	}
 
 	public void logClusteringCoefficient(OutputLogger logger) {
-		logger.writeLine("Clustering coefficient for graph:");
+		logger.writeLine("Clustering coefficient:");
 		logger.writeLine(""+getClusteringCoefficientUsingMatrix());
 		logger.writeLine("");
 	}

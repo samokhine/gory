@@ -30,6 +30,7 @@ public class Experiment1 implements Experiment {
 	private boolean logClusteringCoefficientForHead;
 	private boolean logStatsOfDegrees; 
 	private boolean logCliques;
+	private boolean logCoalitionResource;
 	private Map<Partition, Partition> replace = new HashMap<>();
 	private Set<Partition> insert = new HashSet<>(); 
 	
@@ -95,7 +96,11 @@ public class Experiment1 implements Experiment {
     	if(logClusteringCoefficient) {
     		graph.logClusteringCoefficient(out);
     	}
-    	
+
+    	if(logCoalitionResource) {
+    		graph.logCoalitionResource(out);
+    	}
+
     	if(logStatsOfDegrees) {
     		graph.logStatsOfDegrees(out); 
     	}
@@ -128,6 +133,7 @@ public class Experiment1 implements Experiment {
 			logClusteringCoefficientForHead = Boolean.valueOf(prop.getProperty("logClusteringCoefficientForHead"));
 			logStatsOfDegrees = Boolean.valueOf(prop.getProperty("logStatsOfDegrees")); 
 			logCliques = Boolean.valueOf(prop.getProperty("logCliques"));
+			logCoalitionResource = Boolean.valueOf(prop.getProperty("logCoalitionResource"));
 			
 			String replaceStr = prop.getProperty("replace");
 			if(replaceStr == null) replaceStr = "";
