@@ -23,6 +23,7 @@ public class Experiment1 implements Experiment {
 	
 	private boolean removeHead;
 	private boolean onlyDirectDescendants;
+	private boolean familyMxmPlusOne;
 	
 	private boolean logNodes;
 	private boolean logMatrix;
@@ -51,7 +52,14 @@ public class Experiment1 implements Experiment {
 	    	Node head = new Node(new Partition(summands));
 	    	graph.addNode(head);
 	    	
-	    	for(Partition partition : PartitionBuilder.build(numberOfDigits*numberOfDigits, numberOfDigits)) {
+	    	List<Partition> partitions = PartitionBuilder.build(numberOfDigits*numberOfDigits, numberOfDigits);
+	    	for(Partition partition : partitions) {
+	    		if(familyMxmPlusOne) {
+		    		if(partition.getAt(numberOfDigits) == 0) {
+		    			partition.setAt(numberOfDigits, 1);
+		    		}
+	    		}
+	    		
 	    		int d = head.distanceTo(partition);
 	    		if(d <= 0 || d > distance) {
 	    			continue;
@@ -118,24 +126,25 @@ public class Experiment1 implements Experiment {
 			input = new FileInputStream("input.properties");
 
 			// load a properties file
-			Properties prop = new Properties();
-			prop.load(input);
+			Properties properties = new Properties();
+			properties.load(input);
 
-			numberOfDigits = Integer.valueOf(prop.getProperty("m"));
-			distance = Integer.valueOf(prop.getProperty("d"));
+			numberOfDigits = Integer.valueOf(properties.getProperty("m"));
+			distance = Integer.valueOf(properties.getProperty("d"));
 
-			removeHead = Boolean.valueOf(prop.getProperty("removeHead"));
-			onlyDirectDescendants = Boolean.valueOf(prop.getProperty("onlyDirectDescendants"));
+			removeHead = readBooleanProperty(properties, "removeHead", false);
+			onlyDirectDescendants = readBooleanProperty(properties, "onlyDirectDescendants", false);
+			familyMxmPlusOne = readBooleanProperty(properties, "familyMxmPlusOne", false);
 
-			logNodes = Boolean.valueOf(prop.getProperty("logNodes"));
-			logMatrix = Boolean.valueOf(prop.getProperty("logMatrix"));
-			logClusteringCoefficient = Boolean.valueOf(prop.getProperty("logClusteringCoefficient"));
-			logClusteringCoefficientForHead = Boolean.valueOf(prop.getProperty("logClusteringCoefficientForHead"));
-			logStatsOfDegrees = Boolean.valueOf(prop.getProperty("logStatsOfDegrees")); 
-			logCliques = Boolean.valueOf(prop.getProperty("logCliques"));
-			logCoalitionResource = Boolean.valueOf(prop.getProperty("logCoalitionResource"));
+			logNodes = readBooleanProperty(properties, "logNodes", false);
+			logMatrix = readBooleanProperty(properties, "logMatrix", false);
+			logClusteringCoefficient = readBooleanProperty(properties, "logClusteringCoefficient", false);
+			logClusteringCoefficientForHead = readBooleanProperty(properties, "logClusteringCoefficientForHead", false);
+			logStatsOfDegrees = readBooleanProperty(properties, "logStatsOfDegrees", false); 
+			logCliques = readBooleanProperty(properties, "logCliques", false);
+			logCoalitionResource = readBooleanProperty(properties, "logCoalitionResource", false);
 			
-			String replaceStr = prop.getProperty("replace");
+			String replaceStr = properties.getProperty("replace");
 			if(replaceStr == null) replaceStr = "";
 			replaceStr = replaceStr.replaceAll(" ", "");
 			String replaceElements[] = replaceStr.split("\\],\\[");
@@ -150,7 +159,7 @@ public class Experiment1 implements Experiment {
 				replace.put(new Partition(arr[0]), new Partition(arr[1]));
 			}
 
-			String insertStr = prop.getProperty("insert");
+			String insertStr = properties.getProperty("insert");
 			if(insertStr == null) insertStr = "";
 			insertStr = insertStr.replaceAll(" ", "");
 			String insertElements[] = insertStr.split("\\],\\[");
@@ -171,6 +180,14 @@ public class Experiment1 implements Experiment {
 					e.printStackTrace();
 				}
 			}
+		}
+	}
+	
+	private boolean readBooleanProperty(Properties properties, String propertyName, boolean defaultValue) {
+		try {
+			return Boolean.valueOf(properties.getProperty(propertyName));
+		} catch(Exception e) {
+			return defaultValue;
 		}
 	}
 }
