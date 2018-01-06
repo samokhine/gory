@@ -32,6 +32,7 @@ public class Experiment1 implements Experiment {
 	private boolean logStatsOfDegrees; 
 	private boolean logCliques;
 	private boolean logCoalitionResource;
+	private boolean logDiameter;
 	private Map<Partition, Partition> replace = new HashMap<>();
 	private Set<Partition> insert = new HashSet<>(); 
 	
@@ -117,6 +118,10 @@ public class Experiment1 implements Experiment {
     		graph.logCliques(out);
     	}
     	
+    	if(logDiameter) {
+    		graph.logDiameter(out);
+    	}
+    	
     	out.close();
 	}
 	
@@ -143,6 +148,7 @@ public class Experiment1 implements Experiment {
 			logStatsOfDegrees = readBooleanProperty(properties, "logStatsOfDegrees", false); 
 			logCliques = readBooleanProperty(properties, "logCliques", false);
 			logCoalitionResource = readBooleanProperty(properties, "logCoalitionResource", false);
+			logDiameter = readBooleanProperty(properties, "logDiameter", false);
 			
 			String replaceStr = properties.getProperty("replace");
 			if(replaceStr == null) replaceStr = "";

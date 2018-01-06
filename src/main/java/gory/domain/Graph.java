@@ -10,6 +10,7 @@ import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import gory.algorithm.BronKerbosch;
+import gory.algorithm.Dijkstra;
 import gory.service.OutputLogger;
 import lombok.Getter;
 import lombok.Setter;
@@ -77,6 +78,17 @@ public class Graph {
 		return algorithm.findMaxCliques(this);
 	}
 
+	public void logDiameter(OutputLogger logger) {
+		logger.writeLine("Diameter:");
+		logger.writeLine(""+getDiameter());
+		logger.writeLine("");
+	}
+	
+	public int getDiameter() {
+		Dijkstra algorithm = new Dijkstra();
+		return algorithm.getDiameter(this);
+	}
+	
 	public double getClusteringCoefficientUsingTriangles() {
 		double total = 0.0;
         for (Node v : getNodes()) {
