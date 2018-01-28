@@ -33,13 +33,14 @@ public class Experiment1 implements Experiment {
 	private boolean logCliques;
 	private boolean logCoalitionResource;
 	private boolean logDiameter;
+	private boolean logDensityAdjacentMatrix;
 	private Map<Partition, Partition> replace = new HashMap<>();
 	private Set<Partition> insert = new HashSet<>(); 
 	
 	public void run() throws IOException {
-    	OutputLogger out = new OutputLogger("output.txt");
-    	out.writeLine("Running experiment 1");
-    	out.writeLine("");
+    	OutputLogger logger = new OutputLogger("output.txt");
+    	logger.writeLine("Running experiment 1");
+    	logger.writeLine("");
     	
     	readParameters();
 		
@@ -82,9 +83,9 @@ public class Experiment1 implements Experiment {
 	    		graph.removeNode(head);
 	    	} else {
 	        	if(logClusteringCoefficientForHead) {
-	    	    	out.writeLine("Clustering coefficient for head of the family:");
-	    	    	out.writeLine(""+head.getClusteringCoefficientUsingTriangles());
-	    	    	out.writeLine("");
+	    	    	logger.writeLine("Clustering coefficient for head of the family:");
+	    	    	logger.writeLine(""+head.getClusteringCoefficientUsingTriangles());
+	    	    	logger.writeLine("");
 	        	}
 	    	}
 	    	
@@ -95,34 +96,38 @@ public class Experiment1 implements Experiment {
     	}
     	
     	if(logNodes) {
-    		graph.logNodes(out);
+    		graph.logNodes(logger);
     	}
     	
     	if(logMatrix) {
-    		graph.logMatrix(out);
+    		graph.logMatrix(logger);
     	}
     	
     	if(logClusteringCoefficient) {
-    		graph.logClusteringCoefficient(out);
+    		graph.logClusteringCoefficient(logger);
     	}
 
     	if(logCoalitionResource) {
-    		graph.logCoalitionResource(out);
+    		graph.logCoalitionResource(logger);
     	}
 
     	if(logStatsOfDegrees) {
-    		graph.logStatsOfDegrees(out); 
+    		graph.logStatsOfDegrees(logger); 
     	}
 		
     	if(logCliques) {
-    		graph.logCliques(out);
+    		graph.logCliques(logger);
     	}
     	
     	if(logDiameter) {
-    		graph.logDiameter(out);
+    		graph.logDiameter(logger);
     	}
     	
-    	out.close();
+    	if(logDensityAdjacentMatrix) {
+    		graph.logDensityAdjacentMatrix(logger);
+    	}
+    	
+    	logger.close();
 	}
 	
 	private void readParameters() {
@@ -149,6 +154,7 @@ public class Experiment1 implements Experiment {
 			logCliques = readBooleanProperty(properties, "logCliques", false);
 			logCoalitionResource = readBooleanProperty(properties, "logCoalitionResource", false);
 			logDiameter = readBooleanProperty(properties, "logDiameter", false);
+			logDensityAdjacentMatrix = readBooleanProperty(properties, "logDensityAdjacentMatrix", false);
 			
 			String replaceStr = properties.getProperty("replace");
 			if(replaceStr == null) replaceStr = "";

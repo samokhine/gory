@@ -88,6 +88,23 @@ public class Graph {
 		Dijkstra algorithm = new Dijkstra();
 		return algorithm.getDiameter(this);
 	}
+
+	public void logDensityAdjacentMatrix(OutputLogger logger) {
+		logger.writeLine("DAM:");
+		logger.writeLine(""+df.format(getDensityAdjacentMatrix()));
+		logger.writeLine("");
+	}
+	
+	public double getDensityAdjacentMatrix() {
+		double dam = 0;
+		for(Node node : nodes) {
+			dam += node.getConnectedNodes().size();
+		}
+		
+		dam /= (getSize() * (getSize() - 1));
+		
+		return dam;
+	}
 	
 	public double getClusteringCoefficientUsingTriangles() {
 		double total = 0.0;
