@@ -19,7 +19,7 @@ import gory.service.PartitionBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-public class Experiment2 implements Experiment {
+public class Experiment2 extends BaseExperiment {
 	private static final DecimalFormat df = new DecimalFormat("0.0000");
 
 	private int numberOfRuns; // K
@@ -34,6 +34,9 @@ public class Experiment2 implements Experiment {
 	private boolean logClusteringCoefficient;
 	private boolean logStatsOfDegrees; 
 	private boolean logCliques;
+	//private boolean logCoalitionResource;
+	//private boolean logDiameter;
+	//private boolean logDensityAdjacentMatrix;
 
 	public void run() throws IOException {
     	OutputLogger out = new OutputLogger("output.txt");
@@ -72,23 +75,23 @@ public class Experiment2 implements Experiment {
 	    	}
 	
 	    	if(logNodes) {
-	    		graph.logNodes(out);
+	    		logNodes(graph, out);
 	    	}
 	    	
 	    	if(logMatrix) {
-	    		graph.logMatrix(out);
+	    		logMatrix(graph, out);
 	    	}
 	    	
 	    	if(logClusteringCoefficient) {
-	    		graph.logClusteringCoefficient(out);
+	    		logClusteringCoefficient(graph, out);
 	    	}
 	    	
 	    	if(logStatsOfDegrees) {
-	    		graph.logStatsOfDegrees(out); 
+	    		logStatsOfDegrees(graph, out); 
 	    	}
 			
 	    	if(logCliques) {
-	    		graph.logCliques(out);
+	    		logCliques(graph, out);
 	    	}
     	} else {
     		List<Double> clusteringCoefficients = new ArrayList<>();
@@ -114,7 +117,7 @@ public class Experiment2 implements Experiment {
 		    	}
 
 		    	if(logCliques) {
-		    		cliqueSizeDistributions.add(graph.getCliqueSizeDistribution());
+		    		cliqueSizeDistributions.add(getCliqueSizeDistribution(graph.getCliques()));
 		    	}
     		}
 
@@ -212,21 +215,26 @@ public class Experiment2 implements Experiment {
 			input = new FileInputStream("input.properties");
 
 			// load a properties file
-			Properties prop = new Properties();
-			prop.load(input);
+			Properties properties = new Properties();
+			properties.load(input);
 
-			numberOfRuns = Integer.valueOf(prop.getProperty("K"));
-			numberOfRandomPicks = Integer.valueOf(prop.getProperty("T"));
-			numberOfDigits = Integer.valueOf(prop.getProperty("m"));
-			sumOfDigits = Integer.valueOf(prop.getProperty("n"));
-			distance = Integer.valueOf(prop.getProperty("d"));
-			onlyFamilyOfTheHead = Boolean.valueOf(prop.getProperty("onlyFamilyOfTheHead"));
-			
-			logNodes = Boolean.valueOf(prop.getProperty("logNodes"));
-			logMatrix = Boolean.valueOf(prop.getProperty("logMatrix"));
-			logClusteringCoefficient = Boolean.valueOf(prop.getProperty("logClusteringCoefficient"));
-			logStatsOfDegrees = Boolean.valueOf(prop.getProperty("logStatsOfDegrees")); 
-			logCliques = Boolean.valueOf(prop.getProperty("logCliques"));
+			numberOfRuns = readProperty(properties, "K", 10);
+			numberOfRandomPicks = readProperty(properties, "T", 100);
+			numberOfDigits = readProperty(properties, "m", 4);
+			sumOfDigits = readProperty(properties, "n", 16);
+			distance = readProperty(properties, "d", 1);
+
+			onlyFamilyOfTheHead = readProperty(properties, "onlyFamilyOfTheHead", false);
+			logNodes = readProperty(properties, "logNodes", false);
+			logMatrix = readProperty(properties, "logMatrix", false);
+			logClusteringCoefficient = readProperty(properties, "logClusteringCoefficient", false);
+			logStatsOfDegrees = readProperty(properties, "logStatsOfDegrees", false); 
+			logCliques = readProperty(properties, "logCliques", false);
+			/*
+			logCoalitionResource = readProperty(properties, "logCoalitionResource", false);
+			logDiameter = readProperty(properties, "logDiameter", false);
+			logDensityAdjacentMatrix = readProperty(properties, "logDensityAdjacentMatrix", false);
+			*/
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {

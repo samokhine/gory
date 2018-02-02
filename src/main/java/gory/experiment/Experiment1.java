@@ -17,7 +17,7 @@ import gory.domain.Partition;
 import gory.service.OutputLogger;
 import gory.service.PartitionBuilder;
 
-public class Experiment1 implements Experiment {
+public class Experiment1 extends BaseExperiment {
 	private int distance; // d
 	private int numberOfDigits; // m
 	
@@ -96,35 +96,35 @@ public class Experiment1 implements Experiment {
     	}
     	
     	if(logNodes) {
-    		graph.logNodes(logger);
+    		logNodes(graph, logger);
     	}
     	
     	if(logMatrix) {
-    		graph.logMatrix(logger);
+    		logMatrix(graph, logger);
     	}
     	
     	if(logClusteringCoefficient) {
-    		graph.logClusteringCoefficient(logger);
+    		logClusteringCoefficient(graph, logger);
     	}
 
     	if(logCoalitionResource) {
-    		graph.logCoalitionResource(logger);
+    		logCoalitionResource(graph, logger);
     	}
 
     	if(logStatsOfDegrees) {
-    		graph.logStatsOfDegrees(logger); 
+    		logStatsOfDegrees(graph, logger); 
     	}
 		
     	if(logCliques) {
-    		graph.logCliques(logger);
+    		logCliques(graph, logger);
     	}
     	
     	if(logDiameter) {
-    		graph.logDiameter(logger);
+    		logDiameter(graph, logger);
     	}
     	
     	if(logDensityAdjacentMatrix) {
-    		graph.logDensityAdjacentMatrix(logger);
+    		logDensityAdjacentMatrix(graph, logger);
     	}
     	
     	logger.close();
@@ -139,22 +139,22 @@ public class Experiment1 implements Experiment {
 			Properties properties = new Properties();
 			properties.load(input);
 
-			numberOfDigits = Integer.valueOf(properties.getProperty("m"));
-			distance = Integer.valueOf(properties.getProperty("d"));
+			numberOfDigits = readProperty(properties, "m", 4);
+			distance = readProperty(properties, "d", 1);
 
-			removeHead = readBooleanProperty(properties, "removeHead", false);
-			onlyDirectDescendants = readBooleanProperty(properties, "onlyDirectDescendants", false);
-			familyMxmPlusOne = readBooleanProperty(properties, "familyMxmPlusOne", false);
+			removeHead = readProperty(properties, "removeHead", false);
+			onlyDirectDescendants = readProperty(properties, "onlyDirectDescendants", false);
+			familyMxmPlusOne = readProperty(properties, "familyMxmPlusOne", false);
 
-			logNodes = readBooleanProperty(properties, "logNodes", false);
-			logMatrix = readBooleanProperty(properties, "logMatrix", false);
-			logClusteringCoefficient = readBooleanProperty(properties, "logClusteringCoefficient", false);
-			logClusteringCoefficientForHead = readBooleanProperty(properties, "logClusteringCoefficientForHead", false);
-			logStatsOfDegrees = readBooleanProperty(properties, "logStatsOfDegrees", false); 
-			logCliques = readBooleanProperty(properties, "logCliques", false);
-			logCoalitionResource = readBooleanProperty(properties, "logCoalitionResource", false);
-			logDiameter = readBooleanProperty(properties, "logDiameter", false);
-			logDensityAdjacentMatrix = readBooleanProperty(properties, "logDensityAdjacentMatrix", false);
+			logNodes = readProperty(properties, "logNodes", false);
+			logMatrix = readProperty(properties, "logMatrix", false);
+			logClusteringCoefficient = readProperty(properties, "logClusteringCoefficient", false);
+			logClusteringCoefficientForHead = readProperty(properties, "logClusteringCoefficientForHead", false);
+			logStatsOfDegrees = readProperty(properties, "logStatsOfDegrees", false); 
+			logCliques = readProperty(properties, "logCliques", false);
+			logCoalitionResource = readProperty(properties, "logCoalitionResource", false);
+			logDiameter = readProperty(properties, "logDiameter", false);
+			logDensityAdjacentMatrix = readProperty(properties, "logDensityAdjacentMatrix", false);
 			
 			String replaceStr = properties.getProperty("replace");
 			if(replaceStr == null) replaceStr = "";
@@ -192,14 +192,6 @@ public class Experiment1 implements Experiment {
 					e.printStackTrace();
 				}
 			}
-		}
-	}
-	
-	private boolean readBooleanProperty(Properties properties, String propertyName, boolean defaultValue) {
-		try {
-			return Boolean.valueOf(properties.getProperty(propertyName));
-		} catch(Exception e) {
-			return defaultValue;
 		}
 	}
 }
