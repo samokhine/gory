@@ -100,13 +100,13 @@ public abstract class BaseExperiment implements Experiment {
 		double s2 = 0;
 		int sumOfDegrees= graph.getSumOfDegrees();
 		double avg = 1.0 * sumOfDegrees / graph.getSize();
-		logger.writeLine("Average: "+avg);
+		logger.writeLine("Average: "+df.format(avg));
 		for(Node node : graph.getNodes()) {
 			int degree = node.getDegree();
 			s2 += (degree - avg)*(degree - avg);
 		}
 		s2 = graph.getSize() <= 1 ? 0 : s2/(graph.getSize() - 1);
-		logger.writeLine("Variance: "+s2);
+		logger.writeLine("Variance: "+df.format(s2));
 
 		logger.writeLine("");
 	}

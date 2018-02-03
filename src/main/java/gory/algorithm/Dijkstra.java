@@ -45,7 +45,7 @@ public class Dijkstra {
 		
 		int maxDistance = 0;
 		for(int distance : shortestDistances.values()) {
-			if(distance > maxDistance) {
+			if(distance != Integer.MAX_VALUE && distance > maxDistance) {
 				maxDistance = distance;
 			}
 		}

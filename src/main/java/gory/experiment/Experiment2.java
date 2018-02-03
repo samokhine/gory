@@ -34,14 +34,14 @@ public class Experiment2 extends BaseExperiment {
 	private boolean logClusteringCoefficient;
 	private boolean logStatsOfDegrees; 
 	private boolean logCliques;
-	//private boolean logCoalitionResource;
-	//private boolean logDiameter;
-	//private boolean logDensityAdjacentMatrix;
+	private boolean logCoalitionResource;
+	private boolean logDiameter;
+	private boolean logDensityAdjacentMatrix;
 
 	public void run() throws IOException {
-    	OutputLogger out = new OutputLogger("output.txt");
-    	out.writeLine("Running experiment 2");
-    	out.writeLine("");
+    	OutputLogger logger = new OutputLogger("output.txt");
+    	logger.writeLine("Running experiment 2");
+    	logger.writeLine("");
     	
     	readParameters();
 		
@@ -75,24 +75,37 @@ public class Experiment2 extends BaseExperiment {
 	    	}
 	
 	    	if(logNodes) {
-	    		logNodes(graph, out);
+	    		logNodes(graph, logger);
 	    	}
 	    	
 	    	if(logMatrix) {
-	    		logMatrix(graph, out);
+	    		logMatrix(graph, logger);
 	    	}
 	    	
 	    	if(logClusteringCoefficient) {
-	    		logClusteringCoefficient(graph, out);
+	    		logClusteringCoefficient(graph, logger);
 	    	}
 	    	
+	    	if(logCoalitionResource) {
+	    		logCoalitionResource(graph, logger);
+	    	}
+
 	    	if(logStatsOfDegrees) {
-	    		logStatsOfDegrees(graph, out); 
+	    		logStatsOfDegrees(graph, logger); 
 	    	}
 			
 	    	if(logCliques) {
-	    		logCliques(graph, out);
+	    		logCliques(graph, logger);
 	    	}
+	    	
+	    	if(logDiameter) {
+	    		logDiameter(graph, logger);
+	    	}
+	    	
+	    	if(logDensityAdjacentMatrix) {
+	    		logDensityAdjacentMatrix(graph, logger);
+	    	}
+
     	} else {
     		List<Double> clusteringCoefficients = new ArrayList<>();
     		List<Map<Integer, ? extends Number>> nodeDegreeDistributions = new ArrayList<>();
@@ -123,31 +136,31 @@ public class Experiment2 extends BaseExperiment {
 
 	    	if(logClusteringCoefficient) {
 	    		AverageAndStdDev averageStdDev = getAverageAndStdDev(clusteringCoefficients);
-	    		out.writeLine("Clustering coefficient for graph:");
-	    		out.writeLine(averageStdDev.toString());
-	    		out.writeLine("");
+	    		logger.writeLine("Clustering coefficient for graph:");
+	    		logger.writeLine(averageStdDev.toString());
+	    		logger.writeLine("");
 	    	}
 
 	    	if(logStatsOfDegrees) {
 	    		Map<Integer, AverageAndStdDev> results = merge(nodeDegreeDistributions);
-	    		out.writeLine("Distribution of nodes:");
+	    		logger.writeLine("Distribution of nodes:");
 	    		for(int degree : results.keySet()) {
-	    			out.writeLine(degree+" "+results.get(degree));
+	    			logger.writeLine(degree+" "+results.get(degree));
 	    		}
-	    		out.writeLine("");
+	    		logger.writeLine("");
 	    	}
 
 	    	if(logCliques) {
 	    		Map<Integer, AverageAndStdDev> results = merge(cliqueSizeDistributions);
-	    		out.writeLine("Distribution of cliques:");
+	    		logger.writeLine("Distribution of cliques:");
 	    		for(int degree : results.keySet()) {
-	    			out.writeLine(degree+" "+results.get(degree));
+	    			logger.writeLine(degree+" "+results.get(degree));
 	    		}
-	    		out.writeLine("");
+	    		logger.writeLine("");
 	    	}
     	}
     	
-    	out.close();
+    	logger.close();
 	}
 	
 	@AllArgsConstructor
@@ -230,11 +243,9 @@ public class Experiment2 extends BaseExperiment {
 			logClusteringCoefficient = readProperty(properties, "logClusteringCoefficient", false);
 			logStatsOfDegrees = readProperty(properties, "logStatsOfDegrees", false); 
 			logCliques = readProperty(properties, "logCliques", false);
-			/*
 			logCoalitionResource = readProperty(properties, "logCoalitionResource", false);
 			logDiameter = readProperty(properties, "logDiameter", false);
 			logDensityAdjacentMatrix = readProperty(properties, "logDensityAdjacentMatrix", false);
-			*/
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {
