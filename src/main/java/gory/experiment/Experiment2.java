@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
+import java.util.Set;
 import java.util.TreeMap;
 
 import gory.domain.Graph;
@@ -110,6 +111,7 @@ public class Experiment2 extends BaseExperiment {
     		List<Double> clusteringCoefficients = new ArrayList<>();
     		List<Map<Integer, ? extends Number>> nodeDegreeDistributions = new ArrayList<>();
     		List<Map<Integer, ? extends Number>> cliqueSizeDistributions = new ArrayList<>();
+    		List<Map<Integer, ? extends Number>> cliqueCountDistributions = new ArrayList<>();
     		
     		for(int run=1; run<=numberOfRuns; run++) {
 		    	Node node = new Node(partitions.get(generator.nextInt(partitions.size())));
@@ -130,7 +132,9 @@ public class Experiment2 extends BaseExperiment {
 		    	}
 
 		    	if(logCliques) {
-		    		cliqueSizeDistributions.add(getCliqueSizeDistribution(graph.getCliques()));
+		    		Set<Graph> cliques = graph.getCliques();
+		    		cliqueSizeDistributions.add(getCliqueSizeDistribution(cliques));
+		    		cliqueCountDistributions.add(this.getCliquesCountBySize(cliques));
 		    	}
     		}
 
@@ -151,10 +155,11 @@ public class Experiment2 extends BaseExperiment {
 	    	}
 
 	    	if(logCliques) {
-	    		Map<Integer, AverageAndStdDev> results = merge(cliqueSizeDistributions);
+	    		Map<Integer, AverageAndStdDev> cliqueSizeDistributionResults = merge(cliqueSizeDistributions);
+	    		Map<Integer, AverageAndStdDev> cliqueCountDistributionResults = merge(cliqueCountDistributions);
 	    		logger.writeLine("Distribution of cliques:");
-	    		for(int degree : results.keySet()) {
-	    			logger.writeLine(degree+" "+results.get(degree));
+	    		for(int degree : cliqueSizeDistributionResults.keySet()) {
+	    			logger.writeLine(degree+" "+cliqueCountDistributionResults.get(degree)+" "+cliqueSizeDistributionResults.get(degree));
 	    		}
 	    		logger.writeLine("");
 	    	}

@@ -55,40 +55,46 @@ public abstract class BaseExperiment implements Experiment {
 			}
 		}
 		
+		Map<Integer, AtomicInteger> cliquesCountBySize = getCliquesCountBySize(cliques);
 		Map<Integer, Double> cliqueSizeDistribution = getCliqueSizeDistribution(cliques);
 		logger.writeLine("Distribution of cliques:");
 		for(int cliqueSize : cliqueSizeDistribution.keySet()) {
-			logger.writeLine(cliqueSize+" "+df.format(cliqueSizeDistribution.get(cliqueSize)));
+			logger.writeLine(cliqueSize+" "+cliquesCountBySize.get(cliqueSize).get()+" "+df.format(cliqueSizeDistribution.get(cliqueSize)));
 		}
-
+		logger.writeLine("");
 	}
 
 	public Map<Integer, Double> getCliqueSizeDistribution(Set<Graph> cliques) {
-		Map<Integer, AtomicInteger> cliqueSizeDistribution = new TreeMap<>();
+		Map<Integer, AtomicInteger> cliquesCountBySize = getCliquesCountBySize(cliques);
+		
+		int numCliques = 0;
+		for(AtomicInteger numcliquesForSize : cliquesCountBySize.values()) {
+			numCliques += numcliquesForSize.get();
+		}
+		
+		Map<Integer, Double> cliqueSizeDistribution = new TreeMap<>();
+		for(int cliqueSize : cliquesCountBySize.keySet()) {
+			cliqueSizeDistribution.put(cliqueSize, 1.0*cliquesCountBySize.get(cliqueSize).intValue()/numCliques);
+		}
+		
+		return cliqueSizeDistribution;
+	}
+
+	public Map<Integer, AtomicInteger> getCliquesCountBySize(Set<Graph> cliques) {
+		Map<Integer, AtomicInteger> cliquesCountBySize = new TreeMap<>();
 		for(Graph clique : cliques) {
 			int size = clique.getSize();
 			
-			AtomicInteger cliqueSizeCnt = cliqueSizeDistribution.get(size);
+			AtomicInteger cliqueSizeCnt = cliquesCountBySize.get(size);
 			if(cliqueSizeCnt == null) {
 				cliqueSizeCnt = new AtomicInteger();
-				cliqueSizeDistribution.put(size, cliqueSizeCnt);
+				cliquesCountBySize.put(size, cliqueSizeCnt);
 			}
 			cliqueSizeCnt.incrementAndGet();
 		}
 		
-		int numCliques = 0;
-		for(AtomicInteger numcliquesForSize : cliqueSizeDistribution.values()) {
-			numCliques += numcliquesForSize.get();
-		}
-		
-		Map<Integer, Double> result = new TreeMap<>();
-		for(int cliqueSize : cliqueSizeDistribution.keySet()) {
-			result.put(cliqueSize, 1.0*cliqueSizeDistribution.get(cliqueSize).intValue()/numCliques);
-		}
-		
-		return result;
+		return cliquesCountBySize;
 	}
-
 	public void logStatsOfDegrees(Graph graph, OutputLogger logger) {
 		Map<Integer, Double> nodeDegreeDistribution = graph.getNodeDegreeDistribution();
 
