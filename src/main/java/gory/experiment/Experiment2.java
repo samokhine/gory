@@ -140,7 +140,7 @@ public class Experiment2 extends BaseExperiment {
 
 	    	if(logClusteringCoefficient) {
 	    		AverageAndStdDev averageStdDev = getAverageAndStdDev(clusteringCoefficients);
-	    		logger.writeLine("Clustering coefficient for graph:");
+	    		logger.writeLine("Clustering coefficient:");
 	    		logger.writeLine(averageStdDev.toString());
 	    		logger.writeLine("");
 	    	}

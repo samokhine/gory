@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import gory.algorithm.BronKerbosch;
@@ -101,33 +105,68 @@ public class Graph {
 	}
 	
  	public double getClusteringCoefficientUsingMatrix() {
-        List<Node> nodes = new ArrayList<>(getNodes());
-		int Ntr = 0;
+		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
+		List<Node> nodes = new ArrayList<>(getNodes());
+		AtomicInteger Ntr = new AtomicInteger();
 		for(int i=0; i<nodes.size(); i++) {
-			for(int j=i+1; j<nodes.size(); j++) {
-				for(int k=j+1; k<nodes.size(); k++) {
-					Ntr += nodes.get(i).isConnectedTo(nodes.get(j)) ? 
-								nodes.get(i).isConnectedTo(nodes.get(k)) ? 
-										nodes.get(j).isConnectedTo(nodes.get(k)) ? 1 : 0
-									: 0
-							: 0;
-		        }
-	        }
+			final int iFinal = i;
+			executor.submit(new Callable<Void>() {
+				public Void call() {
+					for(int j=iFinal+1; j<nodes.size(); j++) {
+						int jFinal = j;
+						for(int k=j+1; k<nodes.size(); k++) {
+							int kFinal = k;
+							Ntr.updateAndGet(x -> x + (nodes.get(iFinal).isConnectedTo(nodes.get(jFinal)) ? 
+										nodes.get(iFinal).isConnectedTo(nodes.get(kFinal)) ? 
+												nodes.get(jFinal).isConnectedTo(nodes.get(kFinal)) ? 1 : 0
+											: 0
+									: 0));
+				        }
+			        }
+					
+					return null;
+				}
+			});
         }
 
-		int N3 = 0;
-		for(int i=0; i<nodes.size(); i++) {
-			for(int j=i+1; j<nodes.size(); j++) {
-				for(int k=j+1; k<nodes.size(); k++) {
-					N3 += (nodes.get(i).isConnectedTo(nodes.get(j)) ? 1 : 0)*(nodes.get(i).isConnectedTo(nodes.get(k)) ? 1 : 0) +
-							(nodes.get(j).isConnectedTo(nodes.get(i)) ? 1 : 0)*(nodes.get(j).isConnectedTo(nodes.get(k)) ? 1 : 0) +
-							(nodes.get(k).isConnectedTo(nodes.get(i)) ? 1 : 0)*(nodes.get(k).isConnectedTo(nodes.get(j)) ? 1 : 0);
-				}
-	        }
-        }
+		executor.shutdown();
+		try {
+			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
 
 		
-		return N3 > 0 ? 3.0 * Ntr / N3 : 0;
+		executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		AtomicInteger N3 = new AtomicInteger();
+		for(int i=0; i<nodes.size(); i++) {
+			final int iFinal = i;
+			executor.submit(new Callable<Void>() {
+				public Void call() {
+					for(int j=iFinal+1; j<nodes.size(); j++) {
+						int jFinal = j;
+						for(int k=j+1; k<nodes.size(); k++) {
+							int kFinal = k;
+							N3.updateAndGet(x -> x + ((nodes.get(iFinal).isConnectedTo(nodes.get(jFinal)) ? 1 : 0)*(nodes.get(iFinal).isConnectedTo(nodes.get(kFinal)) ? 1 : 0) +
+									(nodes.get(jFinal).isConnectedTo(nodes.get(iFinal)) ? 1 : 0)*(nodes.get(jFinal).isConnectedTo(nodes.get(kFinal)) ? 1 : 0) +
+									(nodes.get(kFinal).isConnectedTo(nodes.get(iFinal)) ? 1 : 0)*(nodes.get(kFinal).isConnectedTo(nodes.get(jFinal)) ? 1 : 0)));
+						}
+			        }
+					
+					return null;
+				}
+			});
+        }
+
+		executor.shutdown();
+		try {
+			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+		
+		return N3.get() > 0 ? 3.0 * Ntr.get() / N3.get() : 0;
  	} 
 	
 	public Map<Integer, Double> getNodeDegreeDistribution() {
