@@ -105,10 +105,19 @@ public class Graph {
 	}
 	
  	public double getClusteringCoefficientUsingMatrix() {
+		List<Node> nodes = new ArrayList<>(getNodes());
+ 		boolean[][] matrix = new boolean[nodes.size()][nodes.size()];
+
+		for(int i=0; i<getSize(); i++) {
+			for(int j=0; j<getSize(); j++) {
+				matrix[i][j] = nodes.get(i).isConnectedTo(nodes.get(j));
+			}
+		}
+ 		
 		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
-		List<Node> nodes = new ArrayList<>(getNodes());
 		AtomicInteger Ntr = new AtomicInteger();
+		int[] ntrs = new int[nodes.size()];
 		for(int i=0; i<nodes.size(); i++) {
 			final int iFinal = i;
 			executor.submit(new Callable<Void>() {
@@ -117,13 +126,14 @@ public class Graph {
 						int jFinal = j;
 						for(int k=j+1; k<nodes.size(); k++) {
 							int kFinal = k;
-							Ntr.updateAndGet(x -> x + (nodes.get(iFinal).isConnectedTo(nodes.get(jFinal)) ? 
-										nodes.get(iFinal).isConnectedTo(nodes.get(kFinal)) ? 
-												nodes.get(jFinal).isConnectedTo(nodes.get(kFinal)) ? 1 : 0
+							ntrs[iFinal] += (matrix[iFinal][jFinal] ? 
+											matrix[iFinal][kFinal] ? 
+												matrix[jFinal][kFinal] ? 1 : 0
 											: 0
-									: 0));
+									: 0);
 				        }
 			        }
+					Ntr.updateAndGet(x -> x +ntrs[iFinal]);
 					
 					return null;
 				}
@@ -137,9 +147,9 @@ public class Graph {
 			throw new RuntimeException(e);
 		}
 
-		
 		executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		AtomicInteger N3 = new AtomicInteger();
+		int[] n3s = new int[nodes.size()];
 		for(int i=0; i<nodes.size(); i++) {
 			final int iFinal = i;
 			executor.submit(new Callable<Void>() {
@@ -148,11 +158,12 @@ public class Graph {
 						int jFinal = j;
 						for(int k=j+1; k<nodes.size(); k++) {
 							int kFinal = k;
-							N3.updateAndGet(x -> x + ((nodes.get(iFinal).isConnectedTo(nodes.get(jFinal)) ? 1 : 0)*(nodes.get(iFinal).isConnectedTo(nodes.get(kFinal)) ? 1 : 0) +
-									(nodes.get(jFinal).isConnectedTo(nodes.get(iFinal)) ? 1 : 0)*(nodes.get(jFinal).isConnectedTo(nodes.get(kFinal)) ? 1 : 0) +
-									(nodes.get(kFinal).isConnectedTo(nodes.get(iFinal)) ? 1 : 0)*(nodes.get(kFinal).isConnectedTo(nodes.get(jFinal)) ? 1 : 0)));
+							n3s[iFinal] += ((matrix[iFinal][jFinal] ? 1 : 0)*(matrix[iFinal][kFinal] ? 1 : 0) +
+									(matrix[jFinal][iFinal] ? 1 : 0)*(matrix[jFinal][kFinal] ? 1 : 0) +
+									(matrix[kFinal][iFinal] ? 1 : 0)*(matrix[kFinal][jFinal] ? 1 : 0));
 						}
 			        }
+					N3.updateAndGet(x -> x + n3s[iFinal]);
 					
 					return null;
 				}
@@ -165,7 +176,7 @@ public class Graph {
 		} catch (InterruptedException e) {
 			throw new RuntimeException(e);
 		}
-		
+
 		return N3.get() > 0 ? 3.0 * Ntr.get() / N3.get() : 0;
  	} 
 	
