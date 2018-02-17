@@ -16,13 +16,11 @@ import gory.domain.Partition;
 import gory.service.OutputLogger;
 import gory.service.PartitionBuilder;
 
-public class Experiment2 extends BaseExperiment {
+public class Experiment3 extends BaseExperiment {
 	private int numberOfRuns; // K
 	private int numberOfRandomPicks; // T
-	private int numberOfDigits; // m
-	private int sumOfDigits; // n
 	private int distance; // d
-	private boolean onlyFamilyOfTheHead;
+	private int numberOfDigits; // m
 	
 	private boolean logNodes;
 	private boolean logMatrix;
@@ -32,46 +30,27 @@ public class Experiment2 extends BaseExperiment {
 	private boolean logCoalitionResource;
 	private boolean logDiameter;
 	private boolean logDensityAdjacentMatrix;
-
+	
 	public void run() throws IOException {
     	OutputLogger logger = new OutputLogger("output.txt");
-    	logger.writeLine("Running experiment 2");
+    	logger.writeLine("Running experiment 3");
     	logger.writeLine("");
     	
     	readParameters();
 		
-    	List<Partition> partitions = PartitionBuilder.build(sumOfDigits, numberOfDigits);
-    	if(onlyFamilyOfTheHead) {
-    		List<Integer> summands = new ArrayList<>();
-        	for(int i=1; i<=2*numberOfDigits-1; i=i+2) {
-        		summands.add(i);
-        	}
-        	
-        	Partition head = new Partition(summands);
-        	List<Partition> familyOfTheHead = new ArrayList<>();
-        	for(Partition partition : partitions) {
-        		int d = head.distanceTo(partition);
-        		if(d <= 0 || d > distance) {
-        			continue;
-        		}
-        	
-        		familyOfTheHead.add(partition);
-        	}
-        	partitions = familyOfTheHead;
+		List<Integer> summands = new ArrayList<>();
+    	for(int i=1; i<=2*numberOfDigits-1; i=i+2) {
+    		summands.add(i);
     	}
-    	
+
+    	List<Partition> partitions = PartitionBuilder.build(numberOfDigits*numberOfDigits, numberOfDigits);
+    	Node head = new Node(new Partition(summands));
+
     	Random random = new Random();
-    	
+
     	if(numberOfRuns<=1) {
-	    	Node node = new Node(partitions.get(random.nextInt(partitions.size())));
-	    	Graph graph = new Graph(sumOfDigits+" - "+numberOfDigits+" graph", distance);
-	    	graph.addNode(node);
-	    	
-	    	for(int pick=1; pick<=numberOfRandomPicks; pick++) {
-	    		node = new Node(partitions.get(random.nextInt(partitions.size())));
-	        	graph.addNode(node);
-	    	}
-	
+    		Graph graph = buildGraph(head, partitions, random);
+    		
 	    	if(logNodes) {
 	    		logNodes(graph, logger);
 	    	}
@@ -83,11 +62,11 @@ public class Experiment2 extends BaseExperiment {
 	    	if(logClusteringCoefficient) {
 	    		logClusteringCoefficient(graph, logger);
 	    	}
-	    	
+	
 	    	if(logCoalitionResource) {
 	    		logCoalitionResource(graph, logger);
 	    	}
-
+	
 	    	if(logStatsOfDegrees) {
 	    		logStatsOfDegrees(graph, logger); 
 	    	}
@@ -103,22 +82,14 @@ public class Experiment2 extends BaseExperiment {
 	    	if(logDensityAdjacentMatrix) {
 	    		logDensityAdjacentMatrix(graph, logger);
 	    	}
-
-    	} else {
-    		List<Double> clusteringCoefficients = new ArrayList<>();
+    	}  else {
+        	List<Double> clusteringCoefficients = new ArrayList<>();
     		List<Map<Integer, ? extends Number>> nodeDegreeDistributions = new ArrayList<>();
     		List<Map<Integer, ? extends Number>> cliqueSizeDistributions = new ArrayList<>();
     		List<Map<Integer, ? extends Number>> cliqueCountDistributions = new ArrayList<>();
     		
     		for(int run=1; run<=numberOfRuns; run++) {
-		    	Node node = new Node(partitions.get(random.nextInt(partitions.size())));
-		    	Graph graph = new Graph(sumOfDigits+" - "+numberOfDigits+" graph", distance);
-		    	graph.addNode(node);
-		    	
-		    	for(int pick=1; pick<=numberOfRandomPicks; pick++) {
-		    		node = new Node(partitions.get(random.nextInt(partitions.size())));
-		        	graph.addNode(node);
-		    	}
+        		Graph graph = buildGraph(head, partitions, random);
 
 		    	if(logClusteringCoefficient) {
 		    		clusteringCoefficients.add(graph.getClusteringCoefficientUsingMatrix());
@@ -165,6 +136,31 @@ public class Experiment2 extends BaseExperiment {
     	logger.close();
 	}
 	
+	private Graph buildGraph(Node head, List<Partition> partitions, Random random) {
+    	Graph graph = new Graph(numberOfDigits*numberOfDigits+" - "+numberOfDigits+" graph", distance);
+    	graph.addNode(head);
+    	
+    	for(Partition partition : partitions) {
+    		int d = head.distanceTo(partition);
+    		if(d <= 0 || d > distance) {
+    			continue;
+    		}
+    		
+    		graph.addNode(new Node(partition));
+    	}
+	
+    	int j = Math.min(numberOfRandomPicks, graph.getSize());
+    	for(int i=0; i<j; i++) {
+    		int n = random.nextInt(graph.getSize());
+    		Node node = graph.getNode(n);
+    		if(node != null) {
+    			graph.removeNode(node);
+    		}
+    	}
+    	
+    	return graph;
+	}
+	
 	private void readParameters() {
 		InputStream input = null;
 		try {
@@ -177,10 +173,8 @@ public class Experiment2 extends BaseExperiment {
 			numberOfRuns = readProperty(properties, "K", 10);
 			numberOfRandomPicks = readProperty(properties, "T", 100);
 			numberOfDigits = readProperty(properties, "m", 4);
-			sumOfDigits = readProperty(properties, "n", 16);
 			distance = readProperty(properties, "d", 1);
 
-			onlyFamilyOfTheHead = readProperty(properties, "onlyFamilyOfTheHead", false);
 			logNodes = readProperty(properties, "logNodes", false);
 			logMatrix = readProperty(properties, "logMatrix", false);
 			logClusteringCoefficient = readProperty(properties, "logClusteringCoefficient", false);

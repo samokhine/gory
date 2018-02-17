@@ -1,6 +1,8 @@
 package gory.experiment;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -10,10 +12,71 @@ import java.util.concurrent.atomic.AtomicInteger;
 import gory.domain.Graph;
 import gory.domain.Node;
 import gory.service.OutputLogger;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 public abstract class BaseExperiment implements Experiment {
-	private static final DecimalFormat df = new DecimalFormat("0.0000");
+	protected static final DecimalFormat df = new DecimalFormat("0.0000");
 
+	@AllArgsConstructor
+	@Getter
+	protected static class AverageAndStdDev {
+		double average;
+		double stdDev;
+		
+		@Override
+		public String toString() {
+			return df.format(average)+ "("+df.format(stdDev)+")";
+		}
+	}
+	
+	protected AverageAndStdDev getAverageAndStdDev(List<Double> items) {
+		double average = 0;
+		double stdDev = 0;
+		
+		if(items.size() > 0) {
+			for(double item : items) {
+				average += item;
+			}
+			average /= items.size();
+
+			if(items.size() > 1) {
+				for(double item : items) {
+					stdDev += (item - average) * (item - average);
+				}
+				
+				stdDev /= (items.size() - 1);
+				
+				stdDev = Math.sqrt(stdDev);
+			}
+		}
+		
+		return new AverageAndStdDev(average, stdDev);
+		
+	}
+	
+	protected Map<Integer, AverageAndStdDev> merge(List<Map<Integer, ? extends Number>> items) {
+		Map<Integer, List<Double>> m = new TreeMap<>();
+		
+		for(Map<Integer, ? extends Number> item : items) {
+			for(int key : item.keySet()) {
+				List<Double> l = m.get(key);
+				if(l == null) {
+					l = new ArrayList<>();
+					m.put(key, l);
+				}
+				l.add(item.get(key).doubleValue());
+			}
+		}
+		
+		Map<Integer, AverageAndStdDev> r = new TreeMap<>();
+		for(int key : m.keySet()) {
+			r.put(key, getAverageAndStdDev(m.get(key)));
+		}
+		
+		return r;
+	}
+	
 	protected boolean readProperty(Properties properties, String propertyName, boolean defaultValue) {
 		try {
 			return Boolean.valueOf(properties.getProperty(propertyName));

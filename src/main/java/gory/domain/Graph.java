@@ -1,6 +1,7 @@
 package gory.domain;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,22 @@ public class Graph {
 	
 	public int getSize() {
 		return nodes.size();
+	}
+	
+	/*
+	 * n is zero based
+	 */
+	public Node getNode(int n) {
+		int i=0;
+		Iterator<Node> iterator = nodes.iterator();
+		while(iterator.hasNext()) {
+			Node node = iterator.next();
+			if(i == n) {
+				return node;
+			}
+			i++;
+		}
+		return null;
 	}
 	
 	public boolean addNode(Node newNode) {
