@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -30,6 +31,7 @@ public class Experiment3 extends BaseExperiment {
 	private boolean logCoalitionResource;
 	private boolean logDiameter;
 	private boolean logDensityAdjacentMatrix;
+	private Set<Partition> deletes = new HashSet<>(); 
 	
 	public void run() throws IOException {
     	OutputLogger logger = new OutputLogger("output.txt");
@@ -49,7 +51,16 @@ public class Experiment3 extends BaseExperiment {
     	Random random = new Random();
 
     	if(numberOfRuns<=1) {
-    		Graph graph = buildGraph(head, partitions, random);
+    		Graph graph = buildGraph(head, 
+    				partitions, 
+    				deletes.isEmpty() ? numberOfRandomPicks : 0,
+    				random);
+    		
+    		if(!deletes.isEmpty()) {
+    			for(Partition delete : deletes) {
+    				graph.removeNode(new Node(delete));
+    			}
+    		}
     		
 	    	if(logNodes) {
 	    		logNodes(graph, logger);
@@ -89,7 +100,7 @@ public class Experiment3 extends BaseExperiment {
     		List<Map<Integer, ? extends Number>> cliqueCountDistributions = new ArrayList<>();
     		
     		for(int run=1; run<=numberOfRuns; run++) {
-        		Graph graph = buildGraph(head, partitions, random);
+        		Graph graph = buildGraph(head, partitions, numberOfRandomPicks, random);
 
 		    	if(logClusteringCoefficient) {
 		    		clusteringCoefficients.add(graph.getClusteringCoefficientUsingMatrix());
@@ -136,7 +147,7 @@ public class Experiment3 extends BaseExperiment {
     	logger.close();
 	}
 	
-	private Graph buildGraph(Node head, List<Partition> partitions, Random random) {
+	private Graph buildGraph(Node head, List<Partition> partitions, int numToDelete, Random random) {
     	Graph graph = new Graph(numberOfDigits*numberOfDigits+" - "+numberOfDigits+" graph", distance);
     	graph.addNode(head);
     	
@@ -149,7 +160,7 @@ public class Experiment3 extends BaseExperiment {
     		graph.addNode(new Node(partition));
     	}
 	
-    	int j = Math.min(numberOfRandomPicks, graph.getSize());
+    	int j = Math.min(numToDelete, graph.getSize());
     	for(int i=0; i<j; i++) {
     		int n = random.nextInt(graph.getSize());
     		Node node = graph.getNode(n);
@@ -183,6 +194,18 @@ public class Experiment3 extends BaseExperiment {
 			logCoalitionResource = readProperty(properties, "logCoalitionResource", false);
 			logDiameter = readProperty(properties, "logDiameter", false);
 			logDensityAdjacentMatrix = readProperty(properties, "logDensityAdjacentMatrix", false);
+			
+			String deleteStr = properties.getProperty("delete");
+			if(deleteStr == null) deleteStr = "";
+			deleteStr = deleteStr.replaceAll(" ", "");
+			String deleteElements[] = deleteStr.split("\\],\\[");
+			for(String deleteElement : deleteElements) {
+				if(deleteElement.isEmpty()) continue;
+				if(deleteElement.indexOf('[') != 0) deleteElement = "[" + deleteElement;
+				if(deleteElement.lastIndexOf(']') != deleteElement.length() - 1) deleteElement = deleteElement + "]";
+
+				deletes.add(new Partition(deleteElement));
+			}
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {
