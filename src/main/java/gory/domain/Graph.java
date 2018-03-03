@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
@@ -240,5 +241,68 @@ public class Graph {
 			sumOfDegrees += degree;
 		}
 		return sumOfDegrees;
+	}
+
+	public void deleteAllCliquesOfSize(int size) {	    		
+		deleteAllCliquesOfSize(size, false);
+	}
+
+	public void deleteAllCliquesOfSize(int size, boolean deleteHead) {	    		
+		Set<Graph> cliques = getCliques();
+	
+		for(Graph clique : cliques) {
+			if(clique.getSize() != size) continue;
+	
+			Set<Node> nodes = clique.getNodes();
+			for(Node node : nodes) {
+				removeNode(node);
+			}
+		}
+		
+		if(deleteHead) {
+			deleteHead();
+		}
+	}
+
+	public void deleteNumberOfCliques(int number) {
+		deleteNumberOfCliques(number, false);
+	}
+	
+	public void deleteNumberOfCliques(int number, boolean deleteHead) {
+		List<Graph> cliques = new ArrayList<>(getCliques());
+
+		int iteration = 0;
+		Random random = new Random();
+		while(iteration < number && !cliques.isEmpty()) {
+			int n = random.nextInt(cliques.size());
+			Graph clique = cliques.get(n);
+
+			Set<Node> nodes = clique.getNodes();
+			for(Node node : nodes) {
+				removeNode(node);
+			}
+
+			cliques.remove(n);
+			
+			iteration++;
+		}
+		
+		if(deleteHead) {
+			deleteHead();
+		}
+	}
+	
+	public void deleteHead() {
+		if(getSize() == 0) return;
+		
+		int numberOfDigits = getNodes().iterator().next().getNumberOfDigits();
+		
+		List<Integer> summands = new ArrayList<>();
+    	for(int i=1; i<=2*numberOfDigits-1; i=i+2) {
+    		summands.add(i);
+    	}
+    	
+    	Partition head = new Partition(summands);
+    	removeNode(new Node(head));
 	}
 }

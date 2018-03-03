@@ -29,6 +29,7 @@ public class Experiment2 extends BaseExperiment {
 	private boolean logClusteringCoefficient;
 	private boolean logStatsOfDegrees; 
 	private boolean logCliques;
+	private boolean logDistributionOfCliques;
 	private boolean logCoalitionResource;
 	private boolean logDiameter;
 	private boolean logDensityAdjacentMatrix;
@@ -92,8 +93,16 @@ public class Experiment2 extends BaseExperiment {
 	    		logStatsOfDegrees(graph, logger); 
 	    	}
 			
-	    	if(logCliques) {
-	    		logCliques(graph, logger);
+	    	if(logCliques || logDistributionOfCliques) {
+	    		Set<Graph> cliques = graph.getCliques();
+	    		
+	    		if(logCliques) {
+	    			logCliques(cliques, logger);
+	    		}
+	    	
+	    		if(logDistributionOfCliques) {
+	    			logDistributionOfCliques(cliques, logger);
+	    		}
 	    	}
 	    	
 	    	if(logDiameter) {
@@ -128,7 +137,7 @@ public class Experiment2 extends BaseExperiment {
 		    		nodeDegreeDistributions.add(graph.getNodeDegreeDistribution());
 		    	}
 
-		    	if(logCliques) {
+		    	if(logDistributionOfCliques) {
 		    		Set<Graph> cliques = graph.getCliques();
 		    		cliqueSizeDistributions.add(getCliqueSizeDistribution(cliques));
 		    		cliqueCountDistributions.add(this.getCliquesCountBySize(cliques));
@@ -151,7 +160,7 @@ public class Experiment2 extends BaseExperiment {
 	    		logger.writeLine("");
 	    	}
 
-	    	if(logCliques) {
+	    	if(logDistributionOfCliques) {
 	    		Map<Integer, AverageAndStdDev> cliqueSizeDistributionResults = merge(cliqueSizeDistributions);
 	    		Map<Integer, AverageAndStdDev> cliqueCountDistributionResults = merge(cliqueCountDistributions);
 	    		logger.writeLine("Distribution of cliques:");
@@ -186,6 +195,7 @@ public class Experiment2 extends BaseExperiment {
 			logClusteringCoefficient = readProperty(properties, "logClusteringCoefficient", false);
 			logStatsOfDegrees = readProperty(properties, "logStatsOfDegrees", false); 
 			logCliques = readProperty(properties, "logCliques", false);
+			logDistributionOfCliques = readProperty(properties, "logDistributionOfCliques", false); 
 			logCoalitionResource = readProperty(properties, "logCoalitionResource", false);
 			logDiameter = readProperty(properties, "logDiameter", false);
 			logDensityAdjacentMatrix = readProperty(properties, "logDensityAdjacentMatrix", false);

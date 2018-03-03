@@ -30,19 +30,19 @@ public abstract class BaseExperiment implements Experiment {
 		}
 	}
 	
-	protected AverageAndStdDev getAverageAndStdDev(List<Double> items) {
+	protected AverageAndStdDev getAverageAndStdDev(List<? extends Number> items) {
 		double average = 0;
 		double stdDev = 0;
 		
 		if(items.size() > 0) {
-			for(double item : items) {
-				average += item;
+			for(Number item : items) {
+				average += item.doubleValue();
 			}
 			average /= items.size();
 
 			if(items.size() > 1) {
-				for(double item : items) {
-					stdDev += (item - average) * (item - average);
+				for(Number item : items) {
+					stdDev += (item.doubleValue() - average) * (item.doubleValue() - average);
 				}
 				
 				stdDev /= (items.size() - 1);
@@ -105,10 +105,12 @@ public abstract class BaseExperiment implements Experiment {
 		}
 		logger.writeLine("");
  	}
- 	
-	public void logCliques(Graph graph, OutputLogger logger) {
-		Set<Graph> cliques = graph.getCliques();
 
+	public void logCliques(Graph graph, OutputLogger logger) {
+		logCliques(graph.getCliques(), logger);
+	}
+
+	public void logCliques(Set<Graph> cliques, OutputLogger logger) {
 		logger.writeLine("Cliques:");
 		logger.writeLine("");
 
@@ -117,7 +119,13 @@ public abstract class BaseExperiment implements Experiment {
 				logNodes(clique, logger, false);
 			}
 		}
-		
+	}
+
+	public void logDistributionOfCliques(Graph graph, OutputLogger logger) {
+		logDistributionOfCliques(graph.getCliques(), logger);
+	}
+
+	public void logDistributionOfCliques(Set<Graph> cliques, OutputLogger logger) {
 		Map<Integer, AtomicInteger> cliquesCountBySize = getCliquesCountBySize(cliques);
 		Map<Integer, Double> cliqueSizeDistribution = getCliqueSizeDistribution(cliques);
 		logger.writeLine("Distribution of cliques:");
@@ -126,7 +134,7 @@ public abstract class BaseExperiment implements Experiment {
 		}
 		logger.writeLine("");
 	}
-
+	
 	public Map<Integer, Double> getCliqueSizeDistribution(Set<Graph> cliques) {
 		Map<Integer, AtomicInteger> cliquesCountBySize = getCliquesCountBySize(cliques);
 		

@@ -31,6 +31,7 @@ public class Experiment1 extends BaseExperiment {
 	private boolean logClusteringCoefficientForHead;
 	private boolean logStatsOfDegrees; 
 	private boolean logCliques;
+	private boolean logDistributionOfCliques;
 	private boolean logCoalitionResource;
 	private boolean logDiameter;
 	private boolean logDensityAdjacentMatrix;
@@ -115,8 +116,16 @@ public class Experiment1 extends BaseExperiment {
     		logStatsOfDegrees(graph, logger); 
     	}
 		
-    	if(logCliques) {
-    		logCliques(graph, logger);
+    	if(logCliques || logDistributionOfCliques) {
+    		Set<Graph> cliques = graph.getCliques();
+    		
+    		if(logCliques) {
+    			logCliques(cliques, logger);
+    		}
+    	
+    		if(logDistributionOfCliques) {
+    			logDistributionOfCliques(cliques, logger);
+    		}
     	}
     	
     	if(logDiameter) {
@@ -152,6 +161,7 @@ public class Experiment1 extends BaseExperiment {
 			logClusteringCoefficientForHead = readProperty(properties, "logClusteringCoefficientForHead", false);
 			logStatsOfDegrees = readProperty(properties, "logStatsOfDegrees", false); 
 			logCliques = readProperty(properties, "logCliques", false);
+			logDistributionOfCliques = readProperty(properties, "logDistributionOfCliques", false); 
 			logCoalitionResource = readProperty(properties, "logCoalitionResource", false);
 			logDiameter = readProperty(properties, "logDiameter", false);
 			logDensityAdjacentMatrix = readProperty(properties, "logDensityAdjacentMatrix", false);

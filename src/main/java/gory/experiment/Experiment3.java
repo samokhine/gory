@@ -28,10 +28,15 @@ public class Experiment3 extends BaseExperiment {
 	private boolean logClusteringCoefficient;
 	private boolean logStatsOfDegrees; 
 	private boolean logCliques;
+	private boolean logDistributionOfCliques;
 	private boolean logCoalitionResource;
 	private boolean logDiameter;
 	private boolean logDensityAdjacentMatrix;
+	
 	private Set<Partition> deletes = new HashSet<>(); 
+	private boolean deleteHead;
+	private int deletAllCliquesOfSize;
+	private int numberOfCliquesToDelete;
 	
 	public void run() throws IOException {
     	OutputLogger logger = new OutputLogger("output.txt");
@@ -60,6 +65,10 @@ public class Experiment3 extends BaseExperiment {
     			for(Partition delete : deletes) {
     				graph.removeNode(new Node(delete));
     			}
+    		} else if(deletAllCliquesOfSize > 0) {
+    			graph.deleteAllCliquesOfSize(deletAllCliquesOfSize, deleteHead);
+	    	} else if(numberOfCliquesToDelete > 0) {
+    			graph.deleteNumberOfCliques(numberOfCliquesToDelete, deleteHead);
     		}
     		
 	    	if(logNodes) {
@@ -81,9 +90,17 @@ public class Experiment3 extends BaseExperiment {
 	    	if(logStatsOfDegrees) {
 	    		logStatsOfDegrees(graph, logger); 
 	    	}
-			
-	    	if(logCliques) {
-	    		logCliques(graph, logger);
+
+	    	if(logCliques || logDistributionOfCliques) {
+	    		Set<Graph> cliques = graph.getCliques();
+	    		
+	    		if(logCliques) {
+	    			logCliques(cliques, logger);
+	    		}
+	    	
+	    		if(logDistributionOfCliques) {
+	    			logDistributionOfCliques(cliques, logger);
+	    		}
 	    	}
 	    	
 	    	if(logDiameter) {
@@ -98,10 +115,17 @@ public class Experiment3 extends BaseExperiment {
     		List<Map<Integer, ? extends Number>> nodeDegreeDistributions = new ArrayList<>();
     		List<Map<Integer, ? extends Number>> cliqueSizeDistributions = new ArrayList<>();
     		List<Map<Integer, ? extends Number>> cliqueCountDistributions = new ArrayList<>();
+    		List<Integer> diameters = new ArrayList<>();
     		
     		for(int run=1; run<=numberOfRuns; run++) {
         		Graph graph = buildGraph(head, partitions, numberOfRandomPicks, random);
 
+        		if(deletAllCliquesOfSize>0) {
+        			graph.deleteAllCliquesOfSize(deletAllCliquesOfSize, deleteHead);
+        		} else if(numberOfCliquesToDelete > 0) {
+        			graph.deleteNumberOfCliques(numberOfCliquesToDelete, deleteHead);
+        		}
+        		
 		    	if(logClusteringCoefficient) {
 		    		clusteringCoefficients.add(graph.getClusteringCoefficientUsingMatrix());
 		    	}
@@ -110,10 +134,14 @@ public class Experiment3 extends BaseExperiment {
 		    		nodeDegreeDistributions.add(graph.getNodeDegreeDistribution());
 		    	}
 
-		    	if(logCliques) {
+		    	if(logDistributionOfCliques) {
 		    		Set<Graph> cliques = graph.getCliques();
 		    		cliqueSizeDistributions.add(getCliqueSizeDistribution(cliques));
 		    		cliqueCountDistributions.add(this.getCliquesCountBySize(cliques));
+		    	}
+		    	
+		    	if(logDiameter) {
+		    		diameters.add(graph.getDiameter());
 		    	}
     		}
 
@@ -133,13 +161,20 @@ public class Experiment3 extends BaseExperiment {
 	    		logger.writeLine("");
 	    	}
 
-	    	if(logCliques) {
+	    	if(logDistributionOfCliques) {
 	    		Map<Integer, AverageAndStdDev> cliqueSizeDistributionResults = merge(cliqueSizeDistributions);
 	    		Map<Integer, AverageAndStdDev> cliqueCountDistributionResults = merge(cliqueCountDistributions);
 	    		logger.writeLine("Distribution of cliques:");
 	    		for(int degree : cliqueSizeDistributionResults.keySet()) {
 	    			logger.writeLine(degree+" "+cliqueCountDistributionResults.get(degree)+" "+cliqueSizeDistributionResults.get(degree));
 	    		}
+	    		logger.writeLine("");
+	    	}
+	    	
+	    	if(logDiameter) {
+	    		AverageAndStdDev averageStdDev = getAverageAndStdDev(diameters);
+	    		logger.writeLine("Diameter:");
+	    		logger.writeLine(averageStdDev.toString());
 	    		logger.writeLine("");
 	    	}
     	}
@@ -191,6 +226,7 @@ public class Experiment3 extends BaseExperiment {
 			logClusteringCoefficient = readProperty(properties, "logClusteringCoefficient", false);
 			logStatsOfDegrees = readProperty(properties, "logStatsOfDegrees", false); 
 			logCliques = readProperty(properties, "logCliques", false);
+			logDistributionOfCliques = readProperty(properties, "logDistributionOfCliques", false); 
 			logCoalitionResource = readProperty(properties, "logCoalitionResource", false);
 			logDiameter = readProperty(properties, "logDiameter", false);
 			logDensityAdjacentMatrix = readProperty(properties, "logDensityAdjacentMatrix", false);
@@ -206,6 +242,9 @@ public class Experiment3 extends BaseExperiment {
 
 				deletes.add(new Partition(deleteElement));
 			}
+			deleteHead = readProperty(properties, "deleteHead", false);
+			deletAllCliquesOfSize = readProperty(properties, "deletAllCliquesOfSize", 0);
+			numberOfCliquesToDelete = readProperty(properties, "numberOfCliquesToDelete", 0);
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {
