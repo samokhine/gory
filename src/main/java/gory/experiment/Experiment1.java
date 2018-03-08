@@ -23,6 +23,7 @@ public class Experiment1 extends BaseExperiment {
 	
 	private boolean removeHead;
 	private boolean onlyDirectDescendants;
+	private boolean onlyLeft, onlyRight;
 	private boolean familyMxmPlusOne;
 	
 	private boolean logNodes;
@@ -68,7 +69,11 @@ public class Experiment1 extends BaseExperiment {
 	    			continue;
 	    		}
 	    		
-	    		if(onlyDirectDescendants && !partition.getSummands().get(0).equals(summands.get(0))) {
+	    		if(onlyDirectDescendants && partition.getAt(1) != head.getAt(1)) {
+	    			continue;
+	    		} else if(onlyLeft && partition.getAt(1) - 1 != head.getAt(1)) {
+	    			continue;
+	    		} else if(onlyRight && partition.getAt(1) + 1 != head.getAt(1)) {
 	    			continue;
 	    		}
 	    		
@@ -153,6 +158,8 @@ public class Experiment1 extends BaseExperiment {
 
 			removeHead = readProperty(properties, "removeHead", false);
 			onlyDirectDescendants = readProperty(properties, "onlyDirectDescendants", false);
+			onlyLeft = readProperty(properties, "onlyLeft", false);
+			onlyRight = readProperty(properties, "onlyRight", false);
 			familyMxmPlusOne = readProperty(properties, "familyMxmPlusOne", false);
 
 			logNodes = readProperty(properties, "logNodes", false);
