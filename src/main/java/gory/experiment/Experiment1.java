@@ -38,6 +38,7 @@ public class Experiment1 extends BaseExperiment {
 	private boolean logDensityAdjacentMatrix;
 	private Map<Partition, Partition> replace = new HashMap<>();
 	private Set<Partition> insert = new HashSet<>(); 
+	private Set<Partition> delete = new HashSet<>(); 
 	
 	public void run() throws IOException {
     	OutputLogger logger = new OutputLogger("output.txt");
@@ -99,6 +100,10 @@ public class Experiment1 extends BaseExperiment {
 	    	for(Partition partition : insert) {
 	    		graph.addNode(new Node(partition));
 	    	}
+    	}
+    	
+    	for(Partition p : delete) {
+    		graph.removeNode(new Node(p));
     	}
     	
     	if(logNodes) {
@@ -188,17 +193,8 @@ public class Experiment1 extends BaseExperiment {
 				replace.put(new Partition(arr[0]), new Partition(arr[1]));
 			}
 
-			String insertStr = properties.getProperty("insert");
-			if(insertStr == null) insertStr = "";
-			insertStr = insertStr.replaceAll(" ", "");
-			String insertElements[] = insertStr.split("\\],\\[");
-			for(String insertElement : insertElements) {
-				if(insertElement.isEmpty()) continue;
-				if(insertElement.indexOf('[') != 0) insertElement = "[" + insertElement;
-				if(insertElement.lastIndexOf(']') != insertElement.length() - 1) insertElement = insertElement + "]";
-
-				insert.add(new Partition(insertElement));
-			}
+			insert = parseListOfPartitions(properties.getProperty("insert"));
+			delete = parseListOfPartitions(properties.getProperty("delete"));
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {

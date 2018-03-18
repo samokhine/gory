@@ -2,6 +2,7 @@ package gory.experiment;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -11,6 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import gory.domain.Graph;
 import gory.domain.Node;
+import gory.domain.Partition;
 import gory.service.OutputLogger;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -91,6 +93,23 @@ public abstract class BaseExperiment implements Experiment {
 		} catch(Exception e) {
 			return defaultValue;
 		}
+	}
+	
+	protected Set<Partition> parseListOfPartitions(String str) {
+		Set<Partition> partitions = new HashSet<>();
+		
+		if(str == null) str = "";
+		str = str.replaceAll(" ", "");
+		String insertElements[] = str.split("\\],\\[");
+		for(String insertElement : insertElements) {
+			if(insertElement.isEmpty()) continue;
+			if(insertElement.indexOf('[') != 0) insertElement = "[" + insertElement;
+			if(insertElement.lastIndexOf(']') != insertElement.length() - 1) insertElement = insertElement + "]";
+
+			partitions.add(new Partition(insertElement));
+		}
+		
+		return partitions;
 	}
 	
  	public void logMatrix(Graph graph, OutputLogger logger) {
