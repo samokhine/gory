@@ -197,26 +197,34 @@ public class Graph {
 
 		return N3.get() > 0 ? 3.0 * Ntr.get() / N3.get() : 0;
  	} 
-	
-	public Map<Integer, Double> getNodeDegreeDistribution() {
-		Map<Integer, AtomicInteger> nodeDegreeDistribution = new TreeMap<>();
+
+	public Map<Integer, AtomicInteger> getNodeDegreeCount() {
+		Map<Integer, AtomicInteger> nodeDegreeCount = new TreeMap<>();
 		for(Node node : nodes) {
 			int degree = node.getDegree();
 			
-			AtomicInteger degreeCnt = nodeDegreeDistribution.get(degree);
+			AtomicInteger degreeCnt = nodeDegreeCount.get(degree);
 			if(degreeCnt == null) {
 				degreeCnt = new AtomicInteger();
-				nodeDegreeDistribution.put(degree, degreeCnt);
+				nodeDegreeCount.put(degree, degreeCnt);
 			}
 			degreeCnt.incrementAndGet();
 		}
 		
-		Map<Integer, Double> result = new TreeMap<>();
-		for(int degree : nodeDegreeDistribution.keySet()) {
-			result.put(degree, 1.0*nodeDegreeDistribution.get(degree).intValue()/getSize());
+		return nodeDegreeCount;
+	}
+
+	public Map<Integer, Double> getNodeDegreeDistribution() {
+		return getNodeDegreeDistribution(getNodeDegreeCount());
+	}
+	
+	public Map<Integer, Double> getNodeDegreeDistribution(Map<Integer, AtomicInteger> nodeDegreeCount) {
+		Map<Integer, Double> nodDegreeDistribution = new TreeMap<>();
+		for(int degree : nodeDegreeCount.keySet()) {
+			nodDegreeDistribution.put(degree, 1.0*nodeDegreeCount.get(degree).intValue()/getSize());
 		}
 		
-		return result;
+		return nodDegreeDistribution;
 	}
 	
 	public int getCoalitionResource() {

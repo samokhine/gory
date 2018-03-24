@@ -186,11 +186,12 @@ public abstract class BaseExperiment implements Experiment {
 		return cliquesCountBySize;
 	}
 	public void logStatsOfDegrees(Graph graph, OutputLogger logger) {
-		Map<Integer, Double> nodeDegreeDistribution = graph.getNodeDegreeDistribution();
+		Map<Integer, AtomicInteger> nodeDegreeCount = graph.getNodeDegreeCount();
+		Map<Integer, Double> nodeDegreeDistribution = graph.getNodeDegreeDistribution(nodeDegreeCount);
 
 		logger.writeLine("Distribution of nodes:");
 		for(int degree : nodeDegreeDistribution.keySet()) {
-			logger.writeLine(degree+" "+df.format(nodeDegreeDistribution.get(degree)));
+			logger.writeLine(degree+" "+nodeDegreeCount.get(degree).get()+" "+df.format(nodeDegreeDistribution.get(degree)));
 		}
 		
 		double s2 = 0;
