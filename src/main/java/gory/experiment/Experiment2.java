@@ -97,7 +97,7 @@ public class Experiment2 extends BaseExperiment {
 	    		Set<Graph> cliques = graph.getCliques();
 	    		
 	    		if(logCliques) {
-	    			logCliques(cliques, logger);
+	    			logCliques(graph, cliques, logger);
 	    		}
 	    	
 	    		if(logDistributionOfCliques) {

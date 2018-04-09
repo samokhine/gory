@@ -126,10 +126,10 @@ public abstract class BaseExperiment implements Experiment {
  	}
 
 	public void logCliques(Graph graph, OutputLogger logger) {
-		logCliques(graph.getCliques(), logger);
+		logCliques(graph, graph.getCliques(), logger);
 	}
 
-	public void logCliques(Set<Graph> cliques, OutputLogger logger) {
+	public void logCliques(Graph graph, Set<Graph> cliques, OutputLogger logger) {
 		logger.writeLine("Cliques:");
 		logger.writeLine("");
 
@@ -140,6 +140,34 @@ public abstract class BaseExperiment implements Experiment {
 		}
 	}
 
+	public void logNodesByCliques(Graph graph, Set<Graph> cliques, OutputLogger logger) {
+		logger.writeLine("Nodes by cliques:");
+		logger.writeLine("");
+
+		for(Node node : graph.getNodes()) {
+			String line = node.toString() + " " + node.getDegree();
+			int sum = 0;
+			for(Graph clique : cliques) {
+				boolean found = false;
+				for(Node cliqueNode : clique.getNodes()) {
+					if(cliqueNode.equals(node)) {
+						found = true;
+						break;
+					}
+				}
+				if(found) {
+					line += " 1";
+					sum++;
+				} else {
+					line += " 0";
+				}
+			}
+			line += " "+sum;
+			logger.writeLine(line);
+		}
+		logger.writeLine("");
+	}
+	
 	public void logDistributionOfCliques(Graph graph, OutputLogger logger) {
 		logDistributionOfCliques(graph.getCliques(), logger);
 	}
