@@ -140,7 +140,6 @@ public abstract class BaseExperiment implements Experiment {
 		}
 	}
 
-	
 	public void logNodesByCliques(Graph graph, Set<Graph> cliques, OutputLogger logger) {
 		logger.writeLine("Nodes by cliques:");
 		logger.writeLine("");
