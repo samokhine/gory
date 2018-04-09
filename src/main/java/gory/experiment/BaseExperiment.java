@@ -163,6 +163,7 @@ public abstract class BaseExperiment implements Experiment {
 				}
 			}
 			line += " "+sum;
+			line += " "+df.format(1.0*sum/cliques.size());
 			logger.writeLine(line);
 		}
 		logger.writeLine("");
