@@ -25,6 +25,7 @@ public class Experiment1 extends BaseExperiment {
 	private boolean onlyDirectDescendants;
 	private boolean onlyLeft, onlyRight;
 	private boolean familyMxmPlusOne;
+	private Set<Integer> deleteCliques = new HashSet<>();
 	
 	private boolean logNodes;
 	private boolean logMatrix;
@@ -103,6 +104,23 @@ public class Experiment1 extends BaseExperiment {
 	    	}
     	}
     	
+    	Set<Graph> cliques = null;
+    	if(logCliques || logDistributionOfCliques || logNodesByCliques || !deleteCliques.isEmpty()) {
+    		cliques = graph.getCliques();
+    	}
+    	
+    	if(!deleteCliques.isEmpty()) {
+    		int cliqueNum = 0;
+    		for(Graph clique : cliques) {
+    			cliqueNum++;
+    			if(!deleteCliques.contains(cliqueNum)) continue;
+    			
+    			for(Node node : clique.getNodes()) {
+    				graph.removeNode(node);
+    			}
+    		}
+    	}
+    	
     	for(Partition p : delete) {
     		graph.removeNode(new Node(p));
     	}
@@ -127,21 +145,17 @@ public class Experiment1 extends BaseExperiment {
     		logStatsOfDegrees(graph, logger); 
     	}
 		
-    	if(logCliques || logDistributionOfCliques || logNodesByCliques) {
-    		Set<Graph> cliques = graph.getCliques();
-    		
-    		if(logCliques) {
-    			logCliques(graph, cliques, logger);
-    		}
-    	
-    		if(logDistributionOfCliques) {
-    			logDistributionOfCliques(cliques, logger);
-    		}
-    		
-    		if(logNodesByCliques) {
-    			logNodesByCliques(graph, cliques, logger);
-    		}
-    	}
+		if(logCliques) {
+			logCliques(graph, cliques, logger);
+		}
+	
+		if(logDistributionOfCliques) {
+			logDistributionOfCliques(cliques, logger);
+		}
+		
+		if(logNodesByCliques) {
+			logNodesByCliques(graph, cliques, logger);
+		}
     	
     	if(logDiameter) {
     		logDiameter(graph, logger);
@@ -201,6 +215,14 @@ public class Experiment1 extends BaseExperiment {
 
 			insert = parseListOfPartitions(properties.getProperty("insert"));
 			delete = parseListOfPartitions(properties.getProperty("delete"));
+			
+			String deleteCliquesStr = properties.getProperty("deleteCliques");
+			for(String cliqueNumber : deleteCliquesStr.split(",")) {
+				cliqueNumber = cliqueNumber.trim();
+				if(cliqueNumber.isEmpty()) continue;
+				
+				deleteCliques.add(Integer.valueOf(cliqueNumber));
+			}
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {

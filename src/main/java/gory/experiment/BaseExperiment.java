@@ -133,7 +133,9 @@ public abstract class BaseExperiment implements Experiment {
 		logger.writeLine("Cliques:");
 		logger.writeLine("");
 
+		int cnt = 0;
 		for(Graph clique : cliques) {
+			logger.writeLine("#"+(++cnt));
 			if(logger != null) {
 				logNodes(clique, logger, false);
 			}
