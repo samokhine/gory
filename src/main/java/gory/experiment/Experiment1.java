@@ -74,9 +74,11 @@ public class Experiment1 extends BaseExperiment {
 	    		
 	    		if(onlyDirectDescendants && partition.getAt(1) != head.getAt(1)) {
 	    			continue;
-	    		} else if(onlyLeft && partition.getAt(1) - 1 != head.getAt(1)) {
+	    		}
+	    		if(onlyLeft && partition.getAt(1) - 1 != head.getAt(1)) {
 	    			continue;
-	    		} else if(onlyRight && partition.getAt(1) + 1 != head.getAt(1)) {
+	    		}
+	    		if(onlyRight && partition.getAt(1) + 1 != head.getAt(1)) {
 	    			continue;
 	    		}
 	    		
