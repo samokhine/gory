@@ -121,6 +121,7 @@ public class Experiment1 extends BaseExperiment {
     				graph.removeNode(node);
     			}
     		}
+    		cliques = graph.getCliques();
     	}
     	
     	for(Partition p : delete) {
