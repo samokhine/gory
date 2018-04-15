@@ -149,8 +149,10 @@ public abstract class BaseExperiment implements Experiment {
 		for(Node node : graph.getNodes()) {
 			String line = node.toString() + " " + node.getDegree();
 			int sum = 0;
+			int cliqueNum = 0;
 			for(Graph clique : cliques) {
 				boolean found = false;
+				cliqueNum++;
 				for(Node cliqueNode : clique.getNodes()) {
 					if(cliqueNode.equals(node)) {
 						found = true;
@@ -158,14 +160,14 @@ public abstract class BaseExperiment implements Experiment {
 					}
 				}
 				if(found) {
-					line += " 1";
+					line += " |Cl="+cliqueNum+",s="+clique.getSize()+"|";
 					sum++;
-				} else {
-					line += " 0";
 				}
 			}
-			line += " "+sum;
-			line += " "+df.format(1.0*sum/cliques.size());
+			if(sum>0) {
+				line += " "+sum;
+				line += " "+df.format(1.0*sum/cliques.size());
+			}
 			logger.writeLine(line);
 		}
 		logger.writeLine("");
