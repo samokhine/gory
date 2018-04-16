@@ -220,11 +220,13 @@ public class Experiment1 extends BaseExperiment {
 			delete = parseListOfPartitions(properties.getProperty("delete"));
 			
 			String deleteCliquesStr = properties.getProperty("deleteCliques");
-			for(String cliqueNumber : deleteCliquesStr.split(",")) {
-				cliqueNumber = cliqueNumber.trim();
-				if(cliqueNumber.isEmpty()) continue;
-				
-				deleteCliques.add(Integer.valueOf(cliqueNumber));
+				if(deleteCliquesStr != null) {
+				for(String cliqueNumber : deleteCliquesStr.split(",")) {
+					cliqueNumber = cliqueNumber.trim();
+					if(cliqueNumber.isEmpty()) continue;
+					
+					deleteCliques.add(Integer.valueOf(cliqueNumber));
+				}
 			}
 		} catch (IOException ex) {
 			ex.printStackTrace();
