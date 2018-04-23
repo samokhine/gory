@@ -111,7 +111,18 @@ public abstract class BaseExperiment implements Experiment {
 		
 		return partitions;
 	}
-	
+
+	protected Partition parsePartition(String str) {
+		if(str == null) str = "";
+		str = str.replaceAll(" ", "");
+		if(str.isEmpty()) return null;
+
+		if(str.indexOf('[') != 0) str = "[" + str;
+		if(str.lastIndexOf(']') != str.length() - 1) str = str + "]";
+
+		return new Partition(str);
+	}
+
  	public void logMatrix(Graph graph, OutputLogger logger) {
 		logger.writeLine("Adjacentcy matrix:");
  		StringBuilder sb = new StringBuilder();

@@ -38,6 +38,7 @@ public class Experiment1 extends BaseExperiment {
 	private boolean logDiameter;
 	private boolean logDensityAdjacentMatrix;
 	private boolean logNodesByCliques;
+	private Partition head;
 	private Map<Partition, Partition> replace = new HashMap<>();
 	private Set<Partition> insert = new HashSet<>(); 
 	private Set<Partition> delete = new HashSet<>(); 
@@ -51,13 +52,19 @@ public class Experiment1 extends BaseExperiment {
 		
     	Graph graph = new Graph(numberOfDigits*numberOfDigits+" - "+numberOfDigits+" graph", distance);
     	if(insert.isEmpty()) {
-			List<Integer> summands = new ArrayList<>();
-	    	for(int i=1; i<=2*numberOfDigits-1; i=i+2) {
-	    		summands.add(i);
-	    	}
-	    	
-	    	Node head = new Node(new Partition(summands));
-	    	graph.addNode(head);
+    		Node headNode;
+    		if(head == null) {
+				List<Integer> summands = new ArrayList<>();
+		    	for(int i=1; i<=2*numberOfDigits-1; i=i+2) {
+		    		summands.add(i);
+		    	}
+		    	
+		    	headNode = new Node(new Partition(summands));
+    		} else {
+		    	headNode = new Node(head);
+    		}
+    		
+	    	graph.addNode(headNode);
 	    	
 	    	List<Partition> partitions = PartitionBuilder.build(numberOfDigits*numberOfDigits, numberOfDigits);
 	    	for(Partition partition : partitions) {
@@ -67,18 +74,18 @@ public class Experiment1 extends BaseExperiment {
 		    		}
 	    		}
 	    		
-	    		int d = head.distanceTo(partition);
+	    		int d = headNode.distanceTo(partition);
 	    		if(d <= 0 || d > distance) {
 	    			continue;
 	    		}
 	    		
-	    		if(onlyDirectDescendants && partition.getAt(1) != head.getAt(1)) {
+	    		if(onlyDirectDescendants && partition.getAt(1) != headNode.getAt(1)) {
 	    			continue;
 	    		}
-	    		if(onlyLeft && partition.getAt(1) - 1 != head.getAt(1)) {
+	    		if(onlyLeft && partition.getAt(1) - 1 != headNode.getAt(1)) {
 	    			continue;
 	    		}
-	    		if(onlyRight && partition.getAt(1) + 1 != head.getAt(1)) {
+	    		if(onlyRight && partition.getAt(1) + 1 != headNode.getAt(1)) {
 	    			continue;
 	    		}
 	    		
@@ -91,11 +98,11 @@ public class Experiment1 extends BaseExperiment {
 	    	}
 
 	    	if(removeHead) {
-	    		graph.removeNode(head);
+	    		graph.removeNode(headNode);
 	    	} else {
 	        	if(logClusteringCoefficientForHead) {
 	    	    	logger.writeLine("Clustering coefficient for head of the family:");
-	    	    	logger.writeLine(""+head.getClusteringCoefficientUsingTriangles());
+	    	    	logger.writeLine(""+headNode.getClusteringCoefficientUsingTriangles());
 	    	    	logger.writeLine("");
 	        	}
 	    	}
@@ -216,6 +223,7 @@ public class Experiment1 extends BaseExperiment {
 				replace.put(new Partition(arr[0]), new Partition(arr[1]));
 			}
 
+			head = parsePartition(properties.getProperty("head"));
 			insert = parseListOfPartitions(properties.getProperty("insert"));
 			delete = parseListOfPartitions(properties.getProperty("delete"));
 			
