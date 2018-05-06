@@ -20,7 +20,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 public abstract class BaseExperiment implements Experiment {
-	protected static final DecimalFormat df = new DecimalFormat("0.0000");
+	protected static final DecimalFormat df2 = new DecimalFormat("0.00");
+	protected static final DecimalFormat df4 = new DecimalFormat("0.0000");
 
 	@AllArgsConstructor
 	@Getter
@@ -30,7 +31,7 @@ public abstract class BaseExperiment implements Experiment {
 		
 		@Override
 		public String toString() {
-			return df.format(average)+ "("+df.format(stdDev)+")";
+			return df4.format(average)+ "("+df4.format(stdDev)+")";
 		}
 	}
 	
@@ -176,7 +177,7 @@ public abstract class BaseExperiment implements Experiment {
 			}
 			if(sum>0) {
 				line += " "+sum;
-				line += " "+df.format(1.0*sum/cliques.size());
+				line += " "+df4.format(1.0*sum/cliques.size());
 			}
 			logger.writeLine(line);
 		}
@@ -186,14 +187,21 @@ public abstract class BaseExperiment implements Experiment {
 	public void logCliquesMatrices(Set<Graph> cliques, OutputLogger logger) {
 		Map<Integer, Set<Graph>> cliquesBySize = new TreeMap<>(); // sorted by key which is size
 		
+		int maxNumCliquesOfSize = 0, maxSize = 0;
 		for(Graph clique : cliques) {
 			int size = clique.getSize();
+			if(size > maxSize) {
+				maxSize = size;
+			}
 			Set<Graph> cliquesOfSize = cliquesBySize.get(size);
 			if(cliquesOfSize == null) {
 				cliquesOfSize = new HashSet<>();
 				cliquesBySize.put(size, cliquesOfSize);
 			}
 			cliquesOfSize.add(clique);
+			if(cliquesOfSize.size()>maxNumCliquesOfSize) {
+				maxNumCliquesOfSize = cliquesOfSize.size();
+			}
 		}
 		
 		List<Integer> sizes = new ArrayList<>();
@@ -201,7 +209,7 @@ public abstract class BaseExperiment implements Experiment {
 			sizes.add(size);
 		}		
 		
-		int columnWidth = 10;
+		int columnWidth = 3+Integer.toString(maxSize).length()+Integer.toString(maxNumCliquesOfSize).length();
 		for(int i=0; i<sizes.size(); i++) {
 			int size = sizes.get(i);
 			Set<Graph> cliquesOfSize = cliquesBySize.get(size);
@@ -215,7 +223,7 @@ public abstract class BaseExperiment implements Experiment {
 			for(Graph clique1 : cliquesOfSize) {
 				line = StringUtils.leftPad(clique1.getName(), columnWidth, " ");
 				for(Graph clique2 : cliquesOfSize) {
-					line += StringUtils.leftPad(""+df.format(clique1.getDistance(clique2)), columnWidth, " ");
+					line += StringUtils.leftPad(""+df2.format(clique1.getDistance(clique2)), columnWidth, " ");
 				}
 				logger.writeLine(line);
 			}
@@ -233,7 +241,7 @@ public abstract class BaseExperiment implements Experiment {
 				for(Graph clique1 : cliquesOfNextSize) {
 					line = StringUtils.leftPad(clique1.getName(), columnWidth, " ");
 					for(Graph clique2 : cliquesOfSize) {
-						line += StringUtils.leftPad(""+df.format(clique1.getDistance(clique2)), columnWidth, " ");
+						line += StringUtils.leftPad(""+df2.format(clique1.getDistance(clique2)), columnWidth, " ");
 					}
 					logger.writeLine(line);
 				}
@@ -251,7 +259,7 @@ public abstract class BaseExperiment implements Experiment {
 		Map<Integer, Double> cliqueSizeDistribution = getCliqueSizeDistribution(cliques);
 		logger.writeLine("Distribution of cliques:");
 		for(int cliqueSize : cliqueSizeDistribution.keySet()) {
-			logger.writeLine(cliqueSize+" "+cliquesCountBySize.get(cliqueSize).get()+" "+df.format(cliqueSizeDistribution.get(cliqueSize)));
+			logger.writeLine(cliqueSize+" "+cliquesCountBySize.get(cliqueSize).get()+" "+df4.format(cliqueSizeDistribution.get(cliqueSize)));
 		}
 		logger.writeLine("");
 	}
@@ -293,19 +301,19 @@ public abstract class BaseExperiment implements Experiment {
 
 		logger.writeLine("Distribution of nodes:");
 		for(int degree : nodeDegreeDistribution.keySet()) {
-			logger.writeLine(degree+" "+nodeDegreeCount.get(degree).get()+" "+df.format(nodeDegreeDistribution.get(degree)));
+			logger.writeLine(degree+" "+nodeDegreeCount.get(degree).get()+" "+df4.format(nodeDegreeDistribution.get(degree)));
 		}
 		
 		double s2 = 0;
 		int sumOfDegrees= graph.getSumOfDegrees();
 		double avg = 1.0 * sumOfDegrees / graph.getSize();
-		logger.writeLine("Average: "+df.format(avg));
+		logger.writeLine("Average: "+df4.format(avg));
 		for(Node node : graph.getNodes()) {
 			int degree = node.getDegree();
 			s2 += (degree - avg)*(degree - avg);
 		}
 		s2 = graph.getSize() <= 1 ? 0 : s2/(graph.getSize() - 1);
-		logger.writeLine("Variance: "+df.format(s2));
+		logger.writeLine("Variance: "+df4.format(s2));
 
 		logger.writeLine("");
 	}
@@ -318,7 +326,7 @@ public abstract class BaseExperiment implements Experiment {
 	
 	public void logDensityAdjacentMatrix(Graph graph, OutputLogger logger) {
 		logger.writeLine("DAM:");
-		logger.writeLine(""+df.format(graph.getDensityAdjacentMatrix()));
+		logger.writeLine(""+df4.format(graph.getDensityAdjacentMatrix()));
 		logger.writeLine("");
 	}
 	
