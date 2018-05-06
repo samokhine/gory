@@ -10,6 +10,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang3.StringUtils;
+
 import gory.domain.Graph;
 import gory.domain.Node;
 import gory.domain.Partition;
@@ -144,9 +146,8 @@ public abstract class BaseExperiment implements Experiment {
 		logger.writeLine("Cliques:");
 		logger.writeLine("");
 
-		int cnt = 0;
 		for(Graph clique : cliques) {
-			logger.writeLine("#"+(++cnt));
+			logger.writeLine(clique.getName());
 			if(logger != null) {
 				logNodes(clique, logger, false);
 			}
@@ -160,10 +161,8 @@ public abstract class BaseExperiment implements Experiment {
 		for(Node node : graph.getNodes()) {
 			String line = node.toString() + " " + node.getDegree();
 			int sum = 0;
-			int cliqueNum = 0;
 			for(Graph clique : cliques) {
 				boolean found = false;
-				cliqueNum++;
 				for(Node cliqueNode : clique.getNodes()) {
 					if(cliqueNode.equals(node)) {
 						found = true;
@@ -171,7 +170,7 @@ public abstract class BaseExperiment implements Experiment {
 					}
 				}
 				if(found) {
-					line += " |Cl="+cliqueNum+",s="+clique.getSize()+"|";
+					line += " |"+clique.getName()+"|";
 					sum++;
 				}
 			}
@@ -182,6 +181,65 @@ public abstract class BaseExperiment implements Experiment {
 			logger.writeLine(line);
 		}
 		logger.writeLine("");
+	}
+	
+	public void logCliquesMatrices(Set<Graph> cliques, OutputLogger logger) {
+		Map<Integer, Set<Graph>> cliquesBySize = new TreeMap<>(); // sorted by key which is size
+		
+		for(Graph clique : cliques) {
+			int size = clique.getSize();
+			Set<Graph> cliquesOfSize = cliquesBySize.get(size);
+			if(cliquesOfSize == null) {
+				cliquesOfSize = new HashSet<>();
+				cliquesBySize.put(size, cliquesOfSize);
+			}
+			cliquesOfSize.add(clique);
+		}
+		
+		List<Integer> sizes = new ArrayList<>();
+		for(int size : cliquesBySize.keySet()) {
+			sizes.add(size);
+		}		
+		
+		int columnWidth = 10;
+		for(int i=0; i<sizes.size(); i++) {
+			int size = sizes.get(i);
+			Set<Graph> cliquesOfSize = cliquesBySize.get(size);
+
+			String line = StringUtils.leftPad("", columnWidth, " ");
+			for(Graph clique2 : cliquesOfSize) {
+				line += StringUtils.leftPad(clique2.getName(), columnWidth, " ");
+			}
+			logger.writeLine(line);
+			
+			for(Graph clique1 : cliquesOfSize) {
+				line = StringUtils.leftPad(clique1.getName(), columnWidth, " ");
+				for(Graph clique2 : cliquesOfSize) {
+					line += StringUtils.leftPad(""+df.format(clique1.getDistance(clique2)), columnWidth, " ");
+				}
+				logger.writeLine(line);
+			}
+			logger.writeLine("");
+			
+			if(i<sizes.size()-1) {
+				Set<Graph> cliquesOfNextSize = cliquesBySize.get(sizes.get(i+1));
+
+				line = StringUtils.leftPad("", columnWidth, " ");
+				for(Graph clique2 : cliquesOfSize) {
+					line += StringUtils.leftPad(clique2.getName(), columnWidth, " ");
+				}
+				logger.writeLine(line);
+				
+				for(Graph clique1 : cliquesOfNextSize) {
+					line = StringUtils.leftPad(clique1.getName(), columnWidth, " ");
+					for(Graph clique2 : cliquesOfSize) {
+						line += StringUtils.leftPad(""+df.format(clique1.getDistance(clique2)), columnWidth, " ");
+					}
+					logger.writeLine(line);
+				}
+				logger.writeLine("");
+			}
+		}
 	}
 	
 	public void logDistributionOfCliques(Graph graph, OutputLogger logger) {

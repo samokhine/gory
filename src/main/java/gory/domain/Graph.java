@@ -3,6 +3,7 @@ package gory.domain;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -91,9 +92,41 @@ public class Graph {
 		addNode(newNode);
 	}
 	
+	public double getDistance(Graph graph) {
+		int union = 0;
+		int intersection = 0;
+		
+		for(Node node : graph.getNodes()) {
+			union++;
+			if(getNodes().contains(node)) {
+				intersection++;
+			}
+		}
+		for(Node node : getNodes()) {
+			if(!graph.getNodes().contains(node)) {
+				union++;
+			}
+		}
+
+		return 1.0 - 1.0*intersection/union;
+	}
+	
 	public Set<Graph> getCliques() {
 		BronKerbosch algorithm = new BronKerbosch();
-		return algorithm.findMaxCliques(this);
+		
+		Set<Graph> cliques = algorithm.findMaxCliques(this);
+	
+		Map<Integer, Integer> countBySize = new HashMap<>();
+		for(Graph clique : cliques) {
+			int size = clique.getSize();
+			Integer count = countBySize.get(size);
+			if(count == null) count = 0;
+			countBySize.put(size, ++count);
+			
+			clique.setName("C"+size+"-"+count);
+		}
+		
+		return cliques;
 	}
 
 	public int getDiameter() {
