@@ -10,8 +10,14 @@ repositories {
     jcenter()
 }
 
+configurations {
+    // configuration that holds jars to include in the jar
+    extraLibs
+}
+
 dependencies {
-	compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
+	extraLibs group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
+	configurations.compile.extendsFrom(configurations.extraLibs)
 }
 
 sourceCompatibility = 1.8
@@ -22,5 +28,8 @@ jar {
             'Implementation-Version': '0.1',
             'Main-Class': 'gory.app.App'
         )
+    }
+    from {
+    	configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
