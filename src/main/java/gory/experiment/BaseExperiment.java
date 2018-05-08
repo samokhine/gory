@@ -2,6 +2,7 @@ package gory.experiment;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -214,40 +215,46 @@ public abstract class BaseExperiment implements Experiment {
 			int size = sizes.get(i);
 			Set<Graph> cliquesOfSize = cliquesBySize.get(size);
 
-			String line = StringUtils.leftPad("", columnWidth, " ");
-			for(Graph clique2 : cliquesOfSize) {
-				line += StringUtils.leftPad(clique2.getName(), columnWidth, " ");
-			}
-			logger.writeLine(line);
-			
-			for(Graph clique1 : cliquesOfSize) {
-				line = StringUtils.leftPad(clique1.getName(), columnWidth, " ");
-				for(Graph clique2 : cliquesOfSize) {
-					line += StringUtils.leftPad(""+df2.format(clique1.getDistance(clique2)), columnWidth, " ");
-				}
-				logger.writeLine(line);
-			}
-			logger.writeLine("");
+			logCliquesMatricesHelper(cliquesOfSize, cliquesOfSize, columnWidth, logger);
 			
 			if(i<sizes.size()-1) {
 				Set<Graph> cliquesOfNextSize = cliquesBySize.get(sizes.get(i+1));
 
-				line = StringUtils.leftPad("", columnWidth, " ");
-				for(Graph clique2 : cliquesOfSize) {
-					line += StringUtils.leftPad(clique2.getName(), columnWidth, " ");
-				}
-				logger.writeLine(line);
-				
-				for(Graph clique1 : cliquesOfNextSize) {
-					line = StringUtils.leftPad(clique1.getName(), columnWidth, " ");
-					for(Graph clique2 : cliquesOfSize) {
-						line += StringUtils.leftPad(""+df2.format(clique1.getDistance(clique2)), columnWidth, " ");
-					}
-					logger.writeLine(line);
-				}
-				logger.writeLine("");
+				logCliquesMatricesHelper(cliquesOfNextSize, cliquesOfSize, columnWidth, logger);
 			}
 		}
+	}
+	
+	private void logCliquesMatricesHelper(Set<Graph> cliques1, Set<Graph> cliques2, int columnWidth, OutputLogger logger) {
+		String line = StringUtils.leftPad("", columnWidth, " ");
+		for(Graph clique2 : cliques2) {
+			line += StringUtils.leftPad(clique2.getName(), columnWidth, " ");
+		}
+		logger.writeLine(line);
+
+		for(Graph clique1 : cliques1) {
+			line = StringUtils.leftPad(clique1.getName(), columnWidth, " ");
+			Map<String, AtomicInteger> distanceCounts = new HashMap<>();
+			for(Graph clique2 : cliques2) {
+				String distance = df2.format(clique1.getDistance(clique2));
+				line += StringUtils.leftPad(distance, columnWidth, " ");
+				
+				AtomicInteger distanceCount = distanceCounts.get(distance);
+				if(distanceCount == null) {
+					distanceCount = new AtomicInteger();
+					distanceCounts.put(distance, distanceCount);
+				}
+				distanceCount.incrementAndGet();
+			}
+
+			for(String distance : distanceCounts.keySet()) {
+				int count = distanceCounts.get(distance).get();
+				line += "  "+distance+"("+count+") - "+df2.format(1.0*count/cliques2.size());
+			}
+				
+			logger.writeLine(line);
+		}
+		logger.writeLine("");
 	}
 	
 	public void logDistributionOfCliques(Graph graph, OutputLogger logger) {
