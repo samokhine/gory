@@ -92,23 +92,16 @@ public class Graph {
 		addNode(newNode);
 	}
 	
-	public double getDistance(Graph graph) {
-		int union = 0;
+	public int getDistance(Graph graph) {
 		int intersection = 0;
 		
 		for(Node node : graph.getNodes()) {
-			union++;
 			if(getNodes().contains(node)) {
 				intersection++;
 			}
 		}
-		for(Node node : getNodes()) {
-			if(!graph.getNodes().contains(node)) {
-				union++;
-			}
-		}
 
-		return 1.0 - 1.0*intersection/union;
+		return intersection;
 	}
 	
 	public Set<Graph> getCliques() {

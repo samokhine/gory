@@ -236,7 +236,7 @@ public abstract class BaseExperiment implements Experiment {
 			line = StringUtils.leftPad(clique1.getName(), columnWidth, " ");
 			Map<String, AtomicInteger> distanceCounts = new HashMap<>();
 			for(Graph clique2 : cliques2) {
-				String distance = df2.format(clique1.getDistance(clique2));
+				String distance = ""+clique1.getDistance(clique2);
 				line += StringUtils.leftPad(distance, columnWidth, " ");
 				
 				AtomicInteger distanceCount = distanceCounts.get(distance);
