@@ -12,6 +12,7 @@ import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
+import org.graphstream.graph.implementations.SingleGraph;
 
 import gory.domain.Graph;
 import gory.domain.Node;
@@ -223,6 +224,38 @@ public abstract class BaseExperiment implements Experiment {
 				logCliquesMatricesHelper(cliquesOfNextSize, cliquesOfSize, columnWidth, logger);
 			}
 		}
+	}
+	
+	public void displayGraph(Graph graph) {
+		String styleSheet =
+	            "node {" +
+	    	    "	fill-color: green;" +
+	            "	text-color: red;" +
+	            "	text-size: 15;" +
+	            "}";
+		
+		org.graphstream.graph.Graph gsGraph = new SingleGraph("");
+
+		// add nodes
+		for(Node node : graph.getNodes()) {
+			String nodeId = node.toString();
+			org.graphstream.graph.Node gsNode = gsGraph.addNode(nodeId);
+			gsNode.addAttribute("ui.label", nodeId);
+		}
+
+		// add edges
+		for(Node node : graph.getNodes()) {
+			for(Node connectedNode : node.getConnectedNodes()) {
+				if(gsGraph.getEdge(connectedNode.toString()+" - "+node.toString()) != null) {
+					continue;
+				}
+				
+				gsGraph.addEdge(node.toString()+" - "+connectedNode.toString(), node.toString(), connectedNode.toString());
+			}
+		}
+		
+		gsGraph.addAttribute("ui.stylesheet", styleSheet);
+		gsGraph.display();
 	}
 	
 	private void logCliquesMatricesHelper(Set<Graph> cliques1, Set<Graph> cliques2, int columnWidth, OutputLogger logger) {
