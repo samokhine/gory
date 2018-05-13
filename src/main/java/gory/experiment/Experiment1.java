@@ -40,6 +40,7 @@ public class Experiment1 extends BaseExperiment {
 	private boolean logDensityAdjacentMatrix;
 	private boolean logNodesByCliques;
 	private boolean displayGraph;
+	private boolean displayGraphOfCliques;
 	private Partition head;
 	private Map<Partition, Partition> replace = new HashMap<>();
 	private Set<Partition> insert = new HashSet<>(); 
@@ -116,7 +117,7 @@ public class Experiment1 extends BaseExperiment {
     	}
     	
     	Set<Graph> cliques = null;
-    	if(logCliques || logDistributionOfCliques || logNodesByCliques || !deleteCliques.isEmpty() || logCliquesMatrices) {
+    	if(logCliques || logDistributionOfCliques || logNodesByCliques || !deleteCliques.isEmpty() || logCliquesMatrices || displayGraphOfCliques) {
     		cliques = graph.getCliques();
     	}
     	
@@ -184,7 +185,11 @@ public class Experiment1 extends BaseExperiment {
     	if(displayGraph) {
     		displayGraph(graph);
     	}
-    	
+
+    	if(displayGraphOfCliques) {
+    		displayGraphOfCliques(cliques);
+    	}
+
     	logger.close();
 	}
 	
@@ -219,6 +224,7 @@ public class Experiment1 extends BaseExperiment {
 			logDensityAdjacentMatrix = readProperty(properties, "logDensityAdjacentMatrix", false);
 			logNodesByCliques = readProperty(properties, "logNodesByCliques", false);
 			displayGraph = readProperty(properties, "displayGraph", false);
+			displayGraphOfCliques = readProperty(properties, "displayGraphOfCliques", false);
 			
 			String replaceStr = properties.getProperty("replace");
 			if(replaceStr == null) replaceStr = "";

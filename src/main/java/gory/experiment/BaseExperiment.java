@@ -226,38 +226,6 @@ public abstract class BaseExperiment implements Experiment {
 		}
 	}
 	
-	public void displayGraph(Graph graph) {
-		String styleSheet =
-	            "node {" +
-	    	    "	fill-color: green;" +
-	            "	text-color: red;" +
-	            "	text-size: 15;" +
-	            "}";
-		
-		org.graphstream.graph.Graph gsGraph = new SingleGraph("");
-
-		// add nodes
-		for(Node node : graph.getNodes()) {
-			String nodeId = node.toString();
-			org.graphstream.graph.Node gsNode = gsGraph.addNode(nodeId);
-			gsNode.addAttribute("ui.label", nodeId);
-		}
-
-		// add edges
-		for(Node node : graph.getNodes()) {
-			for(Node connectedNode : node.getConnectedNodes()) {
-				if(gsGraph.getEdge(connectedNode.toString()+" - "+node.toString()) != null) {
-					continue;
-				}
-				
-				gsGraph.addEdge(node.toString()+" - "+connectedNode.toString(), node.toString(), connectedNode.toString());
-			}
-		}
-		
-		gsGraph.addAttribute("ui.stylesheet", styleSheet);
-		gsGraph.display();
-	}
-	
 	private void logCliquesMatricesHelper(Set<Graph> cliques1, Set<Graph> cliques2, int columnWidth, OutputLogger logger) {
 		String line = StringUtils.leftPad("", columnWidth, " ");
 		for(Graph clique2 : cliques2) {
@@ -289,6 +257,78 @@ public abstract class BaseExperiment implements Experiment {
 		}
 		logger.writeLine("");
 	}
+
+	public void displayGraphOfCliques(Set<Graph> cliques) {
+		org.graphstream.graph.Graph gsGraph = new SingleGraph("");
+
+		// add nodes
+		for(Graph clique : cliques) {
+			String nodeId = clique.getName();
+			org.graphstream.graph.Node gsNode = gsGraph.addNode(nodeId);
+			gsNode.addAttribute("ui.label", nodeId);
+		}
+
+		// add edges
+		for(Graph clique1 : cliques) {
+			for(Graph clique2 : cliques) {
+				int distance = clique1.getDistance(clique2);
+				if(distance <= 0) continue;
+
+				if(gsGraph.getEdge(clique2.getName()+" - "+clique1.getName()) != null) {
+					continue;
+				}
+				
+				gsGraph.addEdge(clique1.getName()+" - "+clique2.getName(), clique1.getName(), clique2.getName());
+			}
+		}
+		
+		gsGraph.addAttribute("ui.stylesheet", "node {" +
+	    	    "	fill-color: green;" +
+	            "	text-color: red;" +
+	            "	text-size: 15;" +
+	            "}");
+		gsGraph.addAttribute("ui.quality");
+		gsGraph.addAttribute("ui.antialias");
+		
+		gsGraph.display();
+		
+		gsGraph.addAttribute("ui.screenshot", "graphOfCliques.png");
+	}
+	
+	public void displayGraph(Graph graph) {
+		org.graphstream.graph.Graph gsGraph = new SingleGraph("");
+
+		// add nodes
+		for(Node node : graph.getNodes()) {
+			String nodeId = node.toString();
+			org.graphstream.graph.Node gsNode = gsGraph.addNode(nodeId);
+			gsNode.addAttribute("ui.label", nodeId);
+		}
+
+		// add edges
+		for(Node node : graph.getNodes()) {
+			for(Node connectedNode : node.getConnectedNodes()) {
+				if(gsGraph.getEdge(connectedNode.toString()+" - "+node.toString()) != null) {
+					continue;
+				}
+				
+				gsGraph.addEdge(node.toString()+" - "+connectedNode.toString(), node.toString(), connectedNode.toString());
+			}
+		}
+		
+		gsGraph.addAttribute("ui.stylesheet", "node {" +
+	    	    "	fill-color: green;" +
+	            "	text-color: red;" +
+	            "	text-size: 15;" +
+	            "}");
+		gsGraph.addAttribute("ui.quality");
+		gsGraph.addAttribute("ui.antialias");
+		
+		gsGraph.display();
+		
+		gsGraph.addAttribute("ui.screenshot", "graph.png");
+	}
+
 	
 	public void logDistributionOfCliques(Graph graph, OutputLogger logger) {
 		logDistributionOfCliques(graph.getCliques(), logger);
