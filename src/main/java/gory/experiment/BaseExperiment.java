@@ -292,6 +292,12 @@ public abstract class BaseExperiment implements Experiment {
 		
 		gsGraph.display();
 		
+		try {
+			Thread.sleep(1_000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
 		gsGraph.addAttribute("ui.screenshot", "graphOfCliques.png");
 	}
 	
