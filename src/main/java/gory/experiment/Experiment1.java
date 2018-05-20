@@ -25,7 +25,7 @@ public class Experiment1 extends BaseExperiment {
 	private boolean onlyDirectDescendants;
 	private boolean onlyLeft, onlyRight;
 	private boolean familyMxmPlusOne;
-	private Set<Integer> deleteCliques = new HashSet<>();
+	private Set<String> deleteCliques = new HashSet<>();
 	
 	private boolean logNodes;
 	private boolean logMatrix;
@@ -122,10 +122,8 @@ public class Experiment1 extends BaseExperiment {
     	}
     	
     	if(!deleteCliques.isEmpty()) {
-    		int cliqueNum = 0;
     		for(Graph clique : cliques) {
-    			cliqueNum++;
-    			if(!deleteCliques.contains(cliqueNum)) continue;
+    			if(!deleteCliques.contains(clique.getName())) continue;
     			
     			for(Node node : clique.getNodes()) {
     				graph.removeNode(node);
@@ -247,11 +245,11 @@ public class Experiment1 extends BaseExperiment {
 			
 			String deleteCliquesStr = properties.getProperty("deleteCliques");
 				if(deleteCliquesStr != null) {
-				for(String cliqueNumber : deleteCliquesStr.split(",")) {
-					cliqueNumber = cliqueNumber.trim();
-					if(cliqueNumber.isEmpty()) continue;
+				for(String cliqueName : deleteCliquesStr.split(",")) {
+					cliqueName = cliqueName.trim();
+					if(cliqueName.isEmpty()) continue;
 					
-					deleteCliques.add(Integer.valueOf(cliqueNumber));
+					deleteCliques.add(cliqueName);
 				}
 			}
 		} catch (IOException ex) {
