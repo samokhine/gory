@@ -53,6 +53,12 @@ public class Experiment4 extends BaseExperiment {
     	int numSteps = 0;
 		while(true) {
 			cliques = new ArrayList<>(graph.getCliques());
+
+			int diameter = graph.getDiameter();
+			if(diameter >= diameterThreshold) {
+				break;
+			}
+
     		numSteps ++;
 
     		if(deleteAnyClique) {
@@ -87,14 +93,10 @@ public class Experiment4 extends BaseExperiment {
     		} else {
     			break;
     		}
-
-			int diameter = graph.getDiameter();
-			if(diameter >= diameterThreshold) {
-				break;
-			}
 		}
 		
 		logger.writeLine("Number of steps: "+numSteps);
+		logger.writeLine("");
 		
     	if(logNodes) {
     		logNodes(graph, logger);
