@@ -46,8 +46,21 @@ public class Experiment4 extends BaseExperiment {
     	readParameters();
 		
     	Graph graph = new Graph(numberOfDigits*numberOfDigits+" - "+numberOfDigits+" graph", distance);
+    	
+		List<Integer> summands = new ArrayList<>();
+    	for(int i=1; i<=2*numberOfDigits-1; i=i+2) {
+    		summands.add(i);
+    	}
+    	PartitionNode headNode = new PartitionNode(new Partition(summands));
+    	graph.addNode(headNode);
+    	
     	List<Partition> partitions = PartitionBuilder.build(numberOfDigits*numberOfDigits, numberOfDigits);
     	for(Partition partition : partitions) {
+    		int d = headNode.distanceTo(new PartitionNode(partition));
+    		if(d <= 0 || d > distance) {
+    			continue;
+    		}
+
     		graph.addNode(new PartitionNode(partition));
     	}
     	
@@ -59,6 +72,7 @@ public class Experiment4 extends BaseExperiment {
 			cliques = new ArrayList<>(cliquesSet);
 			
 			graphOfCliques = buildGraphOfCliques(cliquesSet, "Graph of cliques");
+
 			int diameter = graphOfCliques.getDiameter();
 			if(diameter >= diameterThreshold) {
 				break;
@@ -67,7 +81,9 @@ public class Experiment4 extends BaseExperiment {
     		numSteps ++;
 
     		if(deleteAnyClique) {
-				int randomIndex = ThreadLocalRandom.current().nextInt(0, cliques.size());
+    			if(cliques.isEmpty()) break;
+
+    			int randomIndex = ThreadLocalRandom.current().nextInt(0, cliques.size());
 				Graph randomClique = cliques.get(randomIndex);
 				for(INode node : randomClique.getNodes()) {
 					graph.removeNode(node);
