@@ -12,8 +12,9 @@ import java.util.Random;
 import java.util.Set;
 
 import gory.domain.Graph;
-import gory.domain.Node;
+import gory.domain.INode;
 import gory.domain.Partition;
+import gory.domain.PartitionNode;
 import gory.service.OutputLogger;
 import gory.service.PartitionBuilder;
 
@@ -51,7 +52,7 @@ public class Experiment3 extends BaseExperiment {
     	}
 
     	List<Partition> partitions = PartitionBuilder.build(numberOfDigits*numberOfDigits, numberOfDigits);
-    	Node head = new Node(new Partition(summands));
+    	PartitionNode head = new PartitionNode(new Partition(summands));
 
     	Random random = new Random();
 
@@ -63,12 +64,18 @@ public class Experiment3 extends BaseExperiment {
     		
     		if(!deletes.isEmpty()) {
     			for(Partition delete : deletes) {
-    				graph.removeNode(new Node(delete));
+    				graph.removeNode(new PartitionNode(delete));
     			}
     		} else if(deletAllCliquesOfSize > 0) {
-    			graph.deleteAllCliquesOfSize(deletAllCliquesOfSize, deleteHead);
+    			graph.deleteAllCliquesOfSize(deletAllCliquesOfSize);
+    			if(deleteHead) {
+    				graph.removeNode(head);
+    			}
 	    	} else if(numberOfCliquesToDelete > 0) {
-    			graph.deleteNumberOfCliques(numberOfCliquesToDelete, deleteHead);
+    			graph.deleteNumberOfCliques(numberOfCliquesToDelete);
+    			if(deleteHead) {
+    				graph.removeNode(head);
+    			}
     		}
     		
 	    	if(logNodes) {
@@ -121,9 +128,15 @@ public class Experiment3 extends BaseExperiment {
         		Graph graph = buildGraph(head, partitions, numberOfRandomPicks, random);
 
         		if(deletAllCliquesOfSize>0) {
-        			graph.deleteAllCliquesOfSize(deletAllCliquesOfSize, deleteHead);
+        			graph.deleteAllCliquesOfSize(deletAllCliquesOfSize);
+        			if(deleteHead) {
+        				graph.removeNode(head);
+        			}
         		} else if(numberOfCliquesToDelete > 0) {
-        			graph.deleteNumberOfCliques(numberOfCliquesToDelete, deleteHead);
+        			graph.deleteNumberOfCliques(numberOfCliquesToDelete);
+        			if(deleteHead) {
+        				graph.removeNode(head);
+        			}
         		}
         		
 		    	if(logClusteringCoefficient) {
@@ -182,23 +195,23 @@ public class Experiment3 extends BaseExperiment {
     	logger.close();
 	}
 	
-	private Graph buildGraph(Node head, List<Partition> partitions, int numToDelete, Random random) {
+	private Graph buildGraph(PartitionNode head, List<Partition> partitions, int numToDelete, Random random) {
     	Graph graph = new Graph(numberOfDigits*numberOfDigits+" - "+numberOfDigits+" graph", distance);
     	graph.addNode(head);
     	
     	for(Partition partition : partitions) {
-    		int d = head.distanceTo(partition);
+    		int d = head.distanceTo(new PartitionNode(partition));
     		if(d <= 0 || d > distance) {
     			continue;
     		}
     		
-    		graph.addNode(new Node(partition));
+    		graph.addNode(new PartitionNode(partition));
     	}
 	
     	int j = Math.min(numToDelete, graph.getSize());
     	for(int i=0; i<j; i++) {
     		int n = random.nextInt(graph.getSize());
-    		Node node = graph.getNode(n);
+    		INode node = graph.getNode(n);
     		if(node != null) {
     			graph.removeNode(node);
     		}

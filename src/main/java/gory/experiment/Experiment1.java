@@ -12,8 +12,9 @@ import java.util.Properties;
 import java.util.Set;
 
 import gory.domain.Graph;
-import gory.domain.Node;
+import gory.domain.INode;
 import gory.domain.Partition;
+import gory.domain.PartitionNode;
 import gory.service.OutputLogger;
 import gory.service.PartitionBuilder;
 
@@ -55,16 +56,16 @@ public class Experiment1 extends BaseExperiment {
 		
     	Graph graph = new Graph(numberOfDigits*numberOfDigits+" - "+numberOfDigits+" graph", distance);
     	if(insert.isEmpty()) {
-    		Node headNode;
+    		PartitionNode headNode;
     		if(head == null) {
 				List<Integer> summands = new ArrayList<>();
 		    	for(int i=1; i<=2*numberOfDigits-1; i=i+2) {
 		    		summands.add(i);
 		    	}
 		    	
-		    	headNode = new Node(new Partition(summands));
+		    	headNode = new PartitionNode(new Partition(summands));
     		} else {
-		    	headNode = new Node(head);
+		    	headNode = new PartitionNode(head);
     		}
     		
 	    	graph.addNode(headNode);
@@ -77,27 +78,27 @@ public class Experiment1 extends BaseExperiment {
 		    		}
 	    		}
 	    		
-	    		int d = headNode.distanceTo(partition);
+	    		int d = headNode.distanceTo(new PartitionNode(partition));
 	    		if(d <= 0 || d > distance) {
 	    			continue;
 	    		}
 	    		
-	    		if(onlyDirectDescendants && partition.getAt(1) != headNode.getAt(1)) {
+	    		if(onlyDirectDescendants && partition.getAt(1) != headNode.getPartition().getAt(1)) {
 	    			continue;
 	    		}
-	    		if(onlyLeft && partition.getAt(1) - 1 != headNode.getAt(1)) {
+	    		if(onlyLeft && partition.getAt(1) - 1 != headNode.getPartition().getAt(1)) {
 	    			continue;
 	    		}
-	    		if(onlyRight && partition.getAt(1) + 1 != headNode.getAt(1)) {
+	    		if(onlyRight && partition.getAt(1) + 1 != headNode.getPartition().getAt(1)) {
 	    			continue;
 	    		}
 	    		
-	    		graph.addNode(new Node(partition));
+	    		graph.addNode(new PartitionNode(partition));
 	    	}
 	    	
 	    	for(Partition oldPartition : replace.keySet()) {
 	    		Partition newPartition = replace.get(oldPartition);
-	    		graph.replaceNode(new Node(oldPartition), new Node(newPartition));
+	    		graph.replaceNode(new PartitionNode(oldPartition), new PartitionNode(newPartition));
 	    	}
 
 	    	if(removeHead) {
@@ -112,7 +113,7 @@ public class Experiment1 extends BaseExperiment {
 	    	
     	} else {
 	    	for(Partition partition : insert) {
-	    		graph.addNode(new Node(partition));
+	    		graph.addNode(new PartitionNode(partition));
 	    	}
     	}
     	
@@ -125,7 +126,7 @@ public class Experiment1 extends BaseExperiment {
     		for(Graph clique : cliques) {
     			if(!deleteCliques.contains(clique.getName())) continue;
     			
-    			for(Node node : clique.getNodes()) {
+    			for(INode node : clique.getNodes()) {
     				graph.removeNode(node);
     			}
     		}
@@ -133,7 +134,7 @@ public class Experiment1 extends BaseExperiment {
     	}
     	
     	for(Partition p : delete) {
-    		graph.removeNode(new Node(p));
+    		graph.removeNode(new PartitionNode(p));
     	}
     	
     	if(logNodes) {
@@ -181,11 +182,11 @@ public class Experiment1 extends BaseExperiment {
     	}
     	
     	if(displayGraph) {
-    		displayGraph(graph);
+    		displayGraph(graph, "graph");
     	}
 
     	if(displayGraphOfCliques) {
-    		displayGraphOfCliques(cliques);
+    		displayGraph(buildGraphOfCliques(cliques, "Graph of cliques"), "graphOfCliques");
     	}
 
     	logger.close();

@@ -8,8 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gory.domain.Graph;
-import gory.domain.Node;
+import gory.domain.INode;
 import gory.domain.Partition;
+import gory.domain.PartitionNode;
 
 public class StrategyFileParser {
 	static public List<Graph> parse(File file, int connectionDistance) throws IOException {
@@ -35,7 +36,7 @@ public class StrategyFileParser {
 	    	if(current == null) continue;
 	    	
 	    	Partition partition = parseLine(line);
-	    	Node node = new Node(partition);
+	    	INode node = new PartitionNode(partition);
 	    	
 	    	current.addNode(node);
 	    }

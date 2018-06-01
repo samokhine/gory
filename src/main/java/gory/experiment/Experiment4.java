@@ -6,14 +6,16 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.ArrayList;
 import java.util.TreeMap;
 import java.util.HashSet;
 import java.util.concurrent.ThreadLocalRandom;
 
 import gory.domain.Graph;
-import gory.domain.Node;
+import gory.domain.INode;
 import gory.domain.Partition;
+import gory.domain.PartitionNode;
 import gory.service.OutputLogger;
 import gory.service.PartitionBuilder;
 
@@ -46,15 +48,18 @@ public class Experiment4 extends BaseExperiment {
     	Graph graph = new Graph(numberOfDigits*numberOfDigits+" - "+numberOfDigits+" graph", distance);
     	List<Partition> partitions = PartitionBuilder.build(numberOfDigits*numberOfDigits, numberOfDigits);
     	for(Partition partition : partitions) {
-    		graph.addNode(new Node(partition));
+    		graph.addNode(new PartitionNode(partition));
     	}
     	
     	List<Graph> cliques = null;
+    	Graph graphOfCliques;
     	int numSteps = 0;
 		while(true) {
-			cliques = new ArrayList<>(graph.getCliques());
-
-			int diameter = graph.getDiameter();
+			Set<Graph> cliquesSet = graph.getCliques();
+			cliques = new ArrayList<>(cliquesSet);
+			
+			graphOfCliques = buildGraphOfCliques(cliquesSet, "Graph of cliques");
+			int diameter = graphOfCliques.getDiameter();
 			if(diameter >= diameterThreshold) {
 				break;
 			}
@@ -64,7 +69,7 @@ public class Experiment4 extends BaseExperiment {
     		if(deleteAnyClique) {
 				int randomIndex = ThreadLocalRandom.current().nextInt(0, cliques.size());
 				Graph randomClique = cliques.get(randomIndex);
-				for(Node node : randomClique.getNodes()) {
+				for(INode node : randomClique.getNodes()) {
 					graph.removeNode(node);
 				}
     		} else if(deleteAnyCliqueOfSize>0) {
@@ -86,7 +91,7 @@ public class Experiment4 extends BaseExperiment {
 	    			Integer numCliquesOfSize = cliquesBySize.get(deleteAnyCliqueOfSize).size();
     				int randomIndex = ThreadLocalRandom.current().nextInt(0, numCliquesOfSize);
     				Graph randomClique = cliquesBySize.get(deleteAnyCliqueOfSize).get(randomIndex);
-    				for(Node node : randomClique.getNodes()) {
+    				for(INode node : randomClique.getNodes()) {
     					graph.removeNode(node);
     				}
     			}
@@ -127,7 +132,7 @@ public class Experiment4 extends BaseExperiment {
     	}
 
     	if(logDiameter) {
-    		logDiameter(graph, logger);
+    		logDiameter(graphOfCliques, logger);
     	}
     	
     	if(logDensityAdjacentMatrix) {
@@ -135,11 +140,11 @@ public class Experiment4 extends BaseExperiment {
     	}
 
     	if(displayGraph) {
-    		displayGraph(graph);
+    		displayGraph(graph, "graph");
     	}
 	
     	if(displayGraphOfCliques) {
-    		displayGraphOfCliques(new HashSet<>(cliques));
+    		displayGraph(graphOfCliques, "graphOfCliques");
     	}
 	}
 	

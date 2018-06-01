@@ -15,7 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.graphstream.graph.implementations.SingleGraph;
 
 import gory.domain.Graph;
-import gory.domain.Node;
+import gory.domain.INode;
 import gory.domain.Partition;
 import gory.service.OutputLogger;
 import lombok.AllArgsConstructor;
@@ -128,12 +128,12 @@ public abstract class BaseExperiment implements Experiment {
 		return new Partition(str);
 	}
 
- 	public void logMatrix(Graph graph, OutputLogger logger) {
+	protected void logMatrix(Graph graph, OutputLogger logger) {
 		logger.writeLine("Adjacentcy matrix:");
  		StringBuilder sb = new StringBuilder();
-		for(Node n1 : graph.getNodes()) {
+		for(INode n1 : graph.getNodes()) {
 			sb.setLength(0);
-			for(Node n2 : graph.getNodes()) {
+			for(INode n2 : graph.getNodes()) {
 				sb.append(n1.isConnectedTo(n2) ? "1" : "0");
 			}
 			logger.writeLine(sb.toString());
@@ -141,11 +141,11 @@ public abstract class BaseExperiment implements Experiment {
 		logger.writeLine("");
  	}
 
-	public void logCliques(Graph graph, OutputLogger logger) {
+	protected void logCliques(Graph graph, OutputLogger logger) {
 		logCliques(graph, graph.getCliques(), logger);
 	}
 
-	public void logCliques(Graph graph, Set<Graph> cliques, OutputLogger logger) {
+	protected void logCliques(Graph graph, Set<Graph> cliques, OutputLogger logger) {
 		logger.writeLine("Cliques:");
 		logger.writeLine("");
 
@@ -157,16 +157,16 @@ public abstract class BaseExperiment implements Experiment {
 		}
 	}
 
-	public void logNodesByCliques(Graph graph, Set<Graph> cliques, OutputLogger logger) {
+	protected void logNodesByCliques(Graph graph, Set<Graph> cliques, OutputLogger logger) {
 		logger.writeLine("Nodes by cliques:");
 		logger.writeLine("");
 
-		for(Node node : graph.getNodes()) {
+		for(INode node : graph.getNodes()) {
 			String line = node.toString() + " " + node.getDegree();
 			int sum = 0;
 			for(Graph clique : cliques) {
 				boolean found = false;
-				for(Node cliqueNode : clique.getNodes()) {
+				for(INode cliqueNode : clique.getNodes()) {
 					if(cliqueNode.equals(node)) {
 						found = true;
 						break;
@@ -186,7 +186,7 @@ public abstract class BaseExperiment implements Experiment {
 		logger.writeLine("");
 	}
 	
-	public void logCliquesMatrices(Set<Graph> cliques, OutputLogger logger) {
+	protected void logCliquesMatrices(Set<Graph> cliques, OutputLogger logger) {
 		Map<Integer, Set<Graph>> cliquesBySize = new TreeMap<>(); // sorted by key which is size
 		
 		int maxNumCliquesOfSize = 0, maxSize = 0;
@@ -226,6 +226,25 @@ public abstract class BaseExperiment implements Experiment {
 		}
 	}
 	
+	protected Graph buildGraphOfCliques(Set<Graph> cliques, String name) {
+		int connectionDistance = 0;
+
+		for(Graph clique : cliques) {
+			int size= clique.getSize();
+			if(size > connectionDistance) {
+				connectionDistance = size;
+			}
+		}
+		
+		Graph graph = new Graph(name, connectionDistance);
+		
+		for(Graph clique : cliques) {
+			graph.addNode(clique);
+		}
+		
+		return graph;
+	}
+	
 	private void logCliquesMatricesHelper(Set<Graph> cliques1, Set<Graph> cliques2, int columnWidth, OutputLogger logger) {
 		String line = StringUtils.leftPad("", columnWidth, " ");
 		for(Graph clique2 : cliques2) {
@@ -237,7 +256,7 @@ public abstract class BaseExperiment implements Experiment {
 			line = StringUtils.leftPad(clique1.getName(), columnWidth, " ");
 			Map<String, AtomicInteger> distanceCounts = new HashMap<>();
 			for(Graph clique2 : cliques2) {
-				String distance = ""+clique1.getDistance(clique2);
+				String distance = ""+clique1.distanceTo(clique2);
 				line += StringUtils.leftPad(distance, columnWidth, " ");
 				
 				AtomicInteger distanceCount = distanceCounts.get(distance);
@@ -258,6 +277,7 @@ public abstract class BaseExperiment implements Experiment {
 		logger.writeLine("");
 	}
 
+	/*
 	public void displayGraphOfCliques(Set<Graph> cliques) {
 		org.graphstream.graph.Graph gsGraph = new SingleGraph("");
 
@@ -271,7 +291,7 @@ public abstract class BaseExperiment implements Experiment {
 		// add edges
 		for(Graph clique1 : cliques) {
 			for(Graph clique2 : cliques) {
-				int distance = clique1.getDistance(clique2);
+				int distance = clique1.distanceTo(clique2);
 				if(distance <= 0) continue;
 
 				if(gsGraph.getEdge(clique2.getName()+" - "+clique1.getName()) != null) {
@@ -300,20 +320,21 @@ public abstract class BaseExperiment implements Experiment {
 		
 		gsGraph.addAttribute("ui.screenshot", "graphOfCliques.png");
 	}
+	*/
 	
-	public void displayGraph(Graph graph) {
+	public void displayGraph(Graph graph, String fileName) {
 		org.graphstream.graph.Graph gsGraph = new SingleGraph("");
 
 		// add nodes
-		for(Node node : graph.getNodes()) {
+		for(INode node : graph.getNodes()) {
 			String nodeId = node.toString();
 			org.graphstream.graph.Node gsNode = gsGraph.addNode(nodeId);
 			gsNode.addAttribute("ui.label", nodeId);
 		}
 
 		// add edges
-		for(Node node : graph.getNodes()) {
-			for(Node connectedNode : node.getConnectedNodes()) {
+		for(INode node : graph.getNodes()) {
+			for(INode connectedNode : node.getConnectedNodes()) {
 				if(gsGraph.getEdge(connectedNode.toString()+" - "+node.toString()) != null) {
 					continue;
 				}
@@ -332,7 +353,7 @@ public abstract class BaseExperiment implements Experiment {
 		
 		gsGraph.display();
 		
-		gsGraph.addAttribute("ui.screenshot", "graph.png");
+		gsGraph.addAttribute("ui.screenshot", fileName+".png");
 	}
 
 	
@@ -394,7 +415,7 @@ public abstract class BaseExperiment implements Experiment {
 		int sumOfDegrees= graph.getSumOfDegrees();
 		double avg = 1.0 * sumOfDegrees / graph.getSize();
 		logger.writeLine("Average: "+df4.format(avg));
-		for(Node node : graph.getNodes()) {
+		for(INode node : graph.getNodes()) {
 			int degree = node.getDegree();
 			s2 += (degree - avg)*(degree - avg);
 		}
@@ -428,7 +449,7 @@ public abstract class BaseExperiment implements Experiment {
 
 	public void logNodes(Graph graph, OutputLogger logger, boolean detailed) {
 		if(detailed) logger.writeLine("Nodes:");
-		for(Node node : graph.getNodes()) {
+		for(INode node : graph.getNodes()) {
 			int degree = node.getDegree();
 			logger.writeLine(node.toString()+(detailed ? " degree: "+degree : ""));
 		}

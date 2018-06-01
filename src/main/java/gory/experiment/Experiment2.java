@@ -11,8 +11,9 @@ import java.util.Random;
 import java.util.Set;
 
 import gory.domain.Graph;
-import gory.domain.Node;
+import gory.domain.INode;
 import gory.domain.Partition;
+import gory.domain.PartitionNode;
 import gory.service.OutputLogger;
 import gory.service.PartitionBuilder;
 
@@ -64,12 +65,12 @@ public class Experiment2 extends BaseExperiment {
     	Random random = new Random();
     	
     	if(numberOfRuns<=1) {
-	    	Node node = new Node(partitions.get(random.nextInt(partitions.size())));
+	    	INode node = new PartitionNode(partitions.get(random.nextInt(partitions.size())));
 	    	Graph graph = new Graph(sumOfDigits+" - "+numberOfDigits+" graph", distance);
 	    	graph.addNode(node);
 	    	
 	    	for(int pick=1; pick<=numberOfRandomPicks; pick++) {
-	    		node = new Node(partitions.get(random.nextInt(partitions.size())));
+	    		node = new PartitionNode(partitions.get(random.nextInt(partitions.size())));
 	        	graph.addNode(node);
 	    	}
 	
@@ -120,12 +121,12 @@ public class Experiment2 extends BaseExperiment {
     		List<Map<Integer, ? extends Number>> cliqueCountDistributions = new ArrayList<>();
     		
     		for(int run=1; run<=numberOfRuns; run++) {
-		    	Node node = new Node(partitions.get(random.nextInt(partitions.size())));
+		    	INode node = new PartitionNode(partitions.get(random.nextInt(partitions.size())));
 		    	Graph graph = new Graph(sumOfDigits+" - "+numberOfDigits+" graph", distance);
 		    	graph.addNode(node);
 		    	
 		    	for(int pick=1; pick<=numberOfRandomPicks; pick++) {
-		    		node = new Node(partitions.get(random.nextInt(partitions.size())));
+		    		node = new PartitionNode(partitions.get(random.nextInt(partitions.size())));
 		        	graph.addNode(node);
 		    	}
 

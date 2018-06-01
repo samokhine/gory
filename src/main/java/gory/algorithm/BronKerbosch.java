@@ -7,28 +7,28 @@ import java.util.List;
 import java.util.Set;
 
 import gory.domain.Graph;
-import gory.domain.Node;
+import gory.domain.INode;
 
 public class BronKerbosch {
 	public Set<Graph> findMaxCliques(Graph graph) {
-		Set<Set<Node>> cliques = new HashSet<>();
+		Set<Set<INode>> cliques = new HashSet<>();
         
-		Set<Node> potentialClique = new HashSet<>();
-        Set<Node> candidates = new HashSet<>();
-        Set<Node> alreadyFound = new HashSet<>();
+		Set<INode> potentialClique = new HashSet<>();
+        Set<INode> candidates = new HashSet<>();
+        Set<INode> alreadyFound = new HashSet<>();
         
         candidates.addAll(graph.getNodes());
         findCliques(cliques, potentialClique,candidates,alreadyFound);
         
         Set<Graph> graphs = new LinkedHashSet<>();
         int cnt = 0;
-        for(Set<Node> clique : cliques) {
+        for(Set<INode> clique : cliques) {
         	if(clique.size()<3) continue;
         	
         	cnt++;
         	Graph g = new Graph("Clique "+cnt, graph.getConnectionDistance());
-        	for(Node node : clique) {
-        		g.addNode(new Node(node));
+        	for(INode node : clique) {
+        		g.addNode(node.clone(node));
         	}
         	graphs.add(g);
         }
@@ -36,13 +36,13 @@ public class BronKerbosch {
         return graphs;
 	}
 	
-    private void findCliques(Set<Set<Node>> cliques, Set<Node> potentialClique, Set<Node> candidates, Set<Node> alreadyFound) {
-    	List<Node> candidatesArray = new ArrayList<>(candidates);
+    private void findCliques(Set<Set<INode>> cliques, Set<INode> potentialClique, Set<INode> candidates, Set<INode> alreadyFound) {
+    	List<INode> candidatesArray = new ArrayList<>(candidates);
         if (!end(candidates, alreadyFound)) {
             // for each candidate_node in candidates do
-            for (Node candidate : candidatesArray) {
-                Set<Node> newCandidates = new HashSet<>();
-                Set<Node> newAlreadyFound = new HashSet<>();
+            for (INode candidate : candidatesArray) {
+                Set<INode> newCandidates = new HashSet<>();
+                Set<INode> newAlreadyFound = new HashSet<>();
 
                 // move candidate node to potential_clique
                 potentialClique.add(candidate);
@@ -50,7 +50,7 @@ public class BronKerbosch {
 
                 // create new_candidates by removing nodes in candidates not
                 // connected to candidate node
-                for (Node newCandidate : candidates) {
+                for (INode newCandidate : candidates) {
                     if (candidate.isConnectedTo(newCandidate)) {
                         newCandidates.add(newCandidate);
                     }
@@ -58,7 +58,7 @@ public class BronKerbosch {
 
                 // create new_already_found by removing nodes in already_found
                 // not connected to candidate node
-                for (Node newFound : alreadyFound) {
+                for (INode newFound : alreadyFound) {
                     if (candidate.isConnectedTo(newFound)) {
                         newAlreadyFound.add(newFound);
                     }
@@ -67,7 +67,7 @@ public class BronKerbosch {
                 // if new_candidates and new_already_found are empty
                 if (newCandidates.isEmpty() && newAlreadyFound.isEmpty()) {
                     // potential_clique is maximal_clique
-                    cliques.add(new HashSet<Node>(potentialClique));
+                    cliques.add(new HashSet<>(potentialClique));
                 }
                 else {
                     findCliques(
@@ -84,13 +84,13 @@ public class BronKerbosch {
         }
     }
 	
-    private boolean end(Set<Node> candidates, Set<Node> alreadyFound) {
+    private boolean end(Set<INode> candidates, Set<INode> alreadyFound) {
         // if a node in alreadyFound is connected to all nodes in candidates
         boolean end = false;
         int edgecounter;
-        for(Node found : alreadyFound) {
+        for(INode found : alreadyFound) {
             edgecounter = 0;
-            for (Node candidate : candidates) {
+            for (INode candidate : candidates) {
                 if(found.isConnectedTo(candidate)) {
                     edgecounter++;
                 }

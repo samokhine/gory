@@ -20,7 +20,7 @@ import gory.algorithm.Dijkstra;
 import lombok.Getter;
 import lombok.Setter;
 
-public class Graph {
+public class Graph extends Node {
 	@Getter @Setter
 	private String name;
 
@@ -28,7 +28,7 @@ public class Graph {
 	private int connectionDistance = 1;
 	
 	@Getter
-	private Set<Node> nodes = new HashSet<>();
+	private Set<INode> nodes = new HashSet<>();
 
 	public Graph(String name) {
 		this.name = name;
@@ -39,9 +39,36 @@ public class Graph {
 		this.connectionDistance = connectionDistance;
 	}
 	
+	public Graph(Graph graph) {
+		this(graph.getName(), graph.getConnectionDistance());
+		
+		for(INode node : graph.getNodes()) {
+			this.addNode(node);
+		}
+	}
+	
 	@Override
 	public String toString() {
-		return nodes.toString();
+		return name;
+		//return nodes.toString();
+	}
+	
+	@Override
+	public INode clone(INode node) {
+		if(node instanceof Graph) {
+			return new Graph((Graph) node);
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public int distanceTo(INode node) {
+		if(node instanceof Graph) {
+			return distanceTo((Graph) node);
+		} else {
+			return -1;
+		}
 	}
 	
 	public int getSize() {
@@ -51,11 +78,11 @@ public class Graph {
 	/*
 	 * n is zero based
 	 */
-	public Node getNode(int n) {
+	public INode getNode(int n) {
 		int i=0;
-		Iterator<Node> iterator = nodes.iterator();
+		Iterator<INode> iterator = nodes.iterator();
 		while(iterator.hasNext()) {
-			Node node = iterator.next();
+			INode node = iterator.next();
 			if(i == n) {
 				return node;
 			}
@@ -64,10 +91,10 @@ public class Graph {
 		return null;
 	}
 	
-	public boolean addNode(Node newNode) {
+	public boolean addNode(INode newNode) {
 		if(nodes.contains(newNode)) return false;
 		
-		for(Node node : nodes) {
+		for(INode node : nodes) {
 			int distance = node.distanceTo(newNode);
 			if(distance >= 0 && distance <= connectionDistance) {
 				node.connect(newNode);
@@ -79,29 +106,29 @@ public class Graph {
 		return true;
 	}
 	
-	public void removeNode(Node nodeToRemove) {
+	public void removeNode(INode nodeToRemove) {
 		nodes.remove(nodeToRemove);
 		
-		for(Node node : nodes) {
+		for(INode node : nodes) {
 			node.getConnectedNodes().remove(nodeToRemove);
 		}
 	}
 	
-	public void replaceNode(Node oldNode, Node newNode) {
+	public void replaceNode(INode oldNode, INode newNode) {
 		removeNode(oldNode);
 		addNode(newNode);
 	}
 	
-	public int getDistance(Graph graph) {
+	public int distanceTo(Graph graph) {
 		int intersection = 0;
 		
-		for(Node node : graph.getNodes()) {
+		for(INode node : graph.getNodes()) {
 			if(getNodes().contains(node)) {
 				intersection++;
 			}
 		}
 
-		return intersection;
+		return intersection <= 0 ? -1 : intersection;
 	}
 	
 	public Set<Graph> getCliques() {
@@ -129,7 +156,7 @@ public class Graph {
 
 	public double getDensityAdjacentMatrix() {
 		double dam = 0;
-		for(Node node : nodes) {
+		for(INode node : nodes) {
 			dam += node.getConnectedNodes().size();
 		}
 		
@@ -140,8 +167,8 @@ public class Graph {
 	
 	public double getClusteringCoefficientUsingTriangles() {
 		double total = 0.0;
-        for (Node v : getNodes()) {
-        	total += v.getClusteringCoefficientUsingTriangles();
+        for (INode node : getNodes()) {
+        	total += node.getClusteringCoefficientUsingTriangles();
 
         }
 
@@ -149,7 +176,7 @@ public class Graph {
 	}
 	
  	public double getClusteringCoefficientUsingMatrix() {
-		List<Node> nodes = new ArrayList<>(getNodes());
+		List<INode> nodes = new ArrayList<>(getNodes());
  		boolean[][] matrix = new boolean[nodes.size()][nodes.size()];
 
 		for(int i=0; i<getSize(); i++) {
@@ -226,7 +253,7 @@ public class Graph {
 
 	public Map<Integer, AtomicInteger> getNodeDegreeCount() {
 		Map<Integer, AtomicInteger> nodeDegreeCount = new TreeMap<>();
-		for(Node node : nodes) {
+		for(INode node : nodes) {
 			int degree = node.getDegree();
 			
 			AtomicInteger degreeCnt = nodeDegreeCount.get(degree);
@@ -255,10 +282,12 @@ public class Graph {
 	
 	public int getCoalitionResource() {
 		int coalitionResource = 0;
-		for(Node node : nodes) {
+		for(INode node : nodes) {
 			int sumOfSummonds = 0;
-			for(int summond : node.getSummands()) {
-				sumOfSummonds += summond;
+			if(node instanceof PartitionNode) {
+				for(int summond : ((PartitionNode) node).getSummands()) {
+					sumOfSummonds += summond;
+				}
 			}
 
 			int degree = node.getDegree();
@@ -270,7 +299,7 @@ public class Graph {
 	
 	public int getSumOfDegrees() {
 		int sumOfDegrees = 0;
-		for(Node node : nodes) {
+		for(INode node : nodes) {
 			int degree = node.getDegree();
 			sumOfDegrees += degree;
 		}
@@ -278,31 +307,25 @@ public class Graph {
 	}
 
 	public void deleteAllCliquesOfSize(int size) {	    		
-		deleteAllCliquesOfSize(size, false);
-	}
-
-	public void deleteAllCliquesOfSize(int size, boolean deleteHead) {	    		
 		Set<Graph> cliques = getCliques();
 	
 		for(Graph clique : cliques) {
 			if(clique.getSize() != size) continue;
 	
-			Set<Node> nodes = clique.getNodes();
-			for(Node node : nodes) {
+			Set<INode> nodes = clique.getNodes();
+			for(INode node : nodes) {
 				removeNode(node);
 			}
 		}
-		
+
+		/*
 		if(deleteHead) {
 			deleteHead();
 		}
+		*/
 	}
 
 	public void deleteNumberOfCliques(int number) {
-		deleteNumberOfCliques(number, false);
-	}
-	
-	public void deleteNumberOfCliques(int number, boolean deleteHead) {
 		List<Graph> cliques = new ArrayList<>(getCliques());
 
 		int iteration = 0;
@@ -311,8 +334,8 @@ public class Graph {
 			int n = random.nextInt(cliques.size());
 			Graph clique = cliques.get(n);
 
-			Set<Node> nodes = clique.getNodes();
-			for(Node node : nodes) {
+			Set<INode> nodes = clique.getNodes();
+			for(INode node : nodes) {
 				removeNode(node);
 			}
 
@@ -321,11 +344,14 @@ public class Graph {
 			iteration++;
 		}
 		
+		/*
 		if(deleteHead) {
 			deleteHead();
 		}
+		*/
 	}
 	
+	/*
 	public void deleteHead() {
 		if(getSize() == 0) return;
 		
@@ -339,4 +365,5 @@ public class Graph {
     	Partition head = new Partition(summands);
     	removeNode(new Node(head));
 	}
+	*/
 }

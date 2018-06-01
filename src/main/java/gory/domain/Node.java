@@ -4,35 +4,37 @@ import java.util.HashSet;
 import java.util.Set;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-public class Node extends Partition {
+@NoArgsConstructor
+public abstract class Node implements INode { 
 	@Getter
-	private Set<Node> connectedNodes = new HashSet<>();
+	private Set<INode> connectedNodes = new HashSet<>();
 	
-	public Node(Partition partition) {
-		super(partition.getSummands());
-	}
-	
-	public void connect(Node node) {
+	@Override
+	public void connect(INode node) {
 		connectedNodes.add(node);
 		node.getConnectedNodes().add(this);
 	}
 	
-	public boolean isConnectedTo(Node node) {
+	@Override
+	public boolean isConnectedTo(INode node) {
 		return connectedNodes.contains(node);
 	}
 	
+	@Override
 	public int getDegree() {
 		return connectedNodes.size();
 	}
 	
+	@Override
 	public double getClusteringCoefficientUsingTriangles() {
         int possible = 0;
         int actual = 0;
-        Set<Node> seen = new HashSet<>();
-        for (Node u : getConnectedNodes()) {
+        Set<INode> seen = new HashSet<>();
+        for (INode u : getConnectedNodes()) {
             seen.add(u);
-        	for (Node w : getConnectedNodes()) {
+        	for (INode w : getConnectedNodes()) {
             	if(seen.contains(w)) continue;
             	
             	possible++;
