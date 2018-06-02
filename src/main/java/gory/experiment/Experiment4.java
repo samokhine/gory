@@ -26,6 +26,7 @@ public class Experiment4 extends BaseExperiment {
 	private boolean deleteAnyClique;
 	private int deleteAnyCliqueOfSize;
 	private int diameterThreshold;
+	private boolean removeHead;
 	private boolean logNodes;
 	private boolean logMatrix;
 	private boolean logClusteringCoefficient;
@@ -62,6 +63,10 @@ public class Experiment4 extends BaseExperiment {
     		}
 
     		graph.addNode(new PartitionNode(partition));
+    	}
+    	
+    	if(removeHead) {
+    		graph.removeNode(headNode);
     	}
     	
     	List<Graph> cliques = null;
@@ -162,6 +167,8 @@ public class Experiment4 extends BaseExperiment {
     	if(displayGraphOfCliques) {
     		displayGraph(graphOfCliques, "graphOfCliques");
     	}
+    	
+    	logger.close();
 	}
 	
 	private void readParameters() {
@@ -179,6 +186,7 @@ public class Experiment4 extends BaseExperiment {
 			deleteAnyClique = readProperty(properties, "deleteAnyClique", false);
 			deleteAnyCliqueOfSize = readProperty(properties, "deleteAnyCliqueOfSize", 0);
 			diameterThreshold = readProperty(properties, "diameterThreshold", 0);
+			removeHead = readProperty(properties, "removeHead", false);
 			logNodes = readProperty(properties, "logNodes", false);
 			logMatrix = readProperty(properties, "logMatrix", false);
 			logClusteringCoefficient = readProperty(properties, "logClusteringCoefficient", false);
