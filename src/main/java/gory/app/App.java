@@ -10,6 +10,7 @@ import gory.experiment.Experiment1;
 import gory.experiment.Experiment2;
 import gory.experiment.Experiment3;
 import gory.experiment.Experiment4;
+import gory.service.OutputLogger;
 
 public class App {
     public static void main(String[] args) throws IOException {
@@ -28,7 +29,9 @@ public class App {
     		return;
     	}
 
-    	experiment.run();
+    	OutputLogger logger = new OutputLogger("output.txt");
+    	experiment.run(logger);
+    	logger.close();
     }
     
 	private static int readExperimentId() {

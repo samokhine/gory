@@ -47,8 +47,7 @@ public class Experiment1 extends BaseExperiment {
 	private Set<Partition> insert = new HashSet<>(); 
 	private Set<Partition> delete = new HashSet<>(); 
 	
-	public void run() throws IOException {
-    	OutputLogger logger = new OutputLogger("output.txt");
+	public void run(OutputLogger logger) throws IOException {
     	logger.writeLine("Running experiment 1");
     	logger.writeLine("");
     	
@@ -188,8 +187,6 @@ public class Experiment1 extends BaseExperiment {
     	if(displayGraphOfCliques) {
     		displayGraph(buildGraphOfCliques(cliques, "Graph of cliques"), "graphOfCliques");
     	}
-
-    	logger.close();
 	}
 	
 	private void readParameters() {

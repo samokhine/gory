@@ -39,8 +39,7 @@ public class Experiment4 extends BaseExperiment {
 	private boolean displayGraph;
 	private boolean displayGraphOfCliques;
 	
-	public void run() throws IOException {
-    	OutputLogger logger = new OutputLogger("output.txt");
+	public void run(OutputLogger logger) throws IOException {
     	logger.writeLine("Running experiment 4");
     	logger.writeLine("");
     	
@@ -167,8 +166,6 @@ public class Experiment4 extends BaseExperiment {
     	if(displayGraphOfCliques) {
     		displayGraph(graphOfCliques, "graphOfCliques");
     	}
-    	
-    	logger.close();
 	}
 	
 	private void readParameters() {

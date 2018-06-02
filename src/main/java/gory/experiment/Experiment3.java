@@ -39,8 +39,7 @@ public class Experiment3 extends BaseExperiment {
 	private int deletAllCliquesOfSize;
 	private int numberOfCliquesToDelete;
 	
-	public void run() throws IOException {
-    	OutputLogger logger = new OutputLogger("output.txt");
+	public void run(OutputLogger logger) throws IOException {
     	logger.writeLine("Running experiment 3");
     	logger.writeLine("");
     	
@@ -191,8 +190,6 @@ public class Experiment3 extends BaseExperiment {
 	    		logger.writeLine("");
 	    	}
     	}
-    	
-    	logger.close();
 	}
 	
 	private Graph buildGraph(PartitionNode head, List<Partition> partitions, int numToDelete, Random random) {

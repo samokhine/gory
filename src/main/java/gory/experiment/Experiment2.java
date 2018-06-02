@@ -35,8 +35,7 @@ public class Experiment2 extends BaseExperiment {
 	private boolean logDiameter;
 	private boolean logDensityAdjacentMatrix;
 
-	public void run() throws IOException {
-    	OutputLogger logger = new OutputLogger("output.txt");
+	public void run(OutputLogger logger) throws IOException {
     	logger.writeLine("Running experiment 2");
     	logger.writeLine("");
     	
@@ -171,8 +170,6 @@ public class Experiment2 extends BaseExperiment {
 	    		logger.writeLine("");
 	    	}
     	}
-    	
-    	logger.close();
 	}
 	
 	private void readParameters() {
