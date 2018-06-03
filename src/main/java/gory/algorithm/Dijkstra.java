@@ -17,6 +17,10 @@ import gory.domain.INode;
 
 public class Dijkstra {
 	public int getDiameter(Graph graph) {
+		if(graph.getSize()<=0) {
+			return Integer.MAX_VALUE;
+		}
+		
 		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		AtomicInteger diameter = new AtomicInteger();
 		for(INode node : graph.getNodes()) {

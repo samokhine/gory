@@ -36,6 +36,7 @@ public class Experiment4 extends BaseExperiment {
 	private boolean logCoalitionResource;
 	private boolean logDiameter;
 	private boolean logDensityAdjacentMatrix;
+	private boolean logEachStep;
 	private boolean displayGraph;
 	private boolean displayGraphOfCliques;
 	
@@ -118,8 +119,24 @@ public class Experiment4 extends BaseExperiment {
     		} else {
     			break;
     		}
+
+    		if(logEachStep) {
+    			doLoggingAfterStep(graph, graphOfCliques, cliques, logger, numSteps);
+    		}
 		}
 		
+		doLoggingAfterStep(graph, graphOfCliques, cliques, logger, numSteps);
+
+    	if(displayGraph) {
+    		displayGraph(graph, "graph");
+    	}
+	
+    	if(displayGraphOfCliques) {
+    		displayGraph(graphOfCliques, "graphOfCliques");
+    	}
+	}
+
+	private void doLoggingAfterStep(Graph graph, Graph graphOfCliques, List<Graph> cliques, OutputLogger logger, int numSteps) {
 		logger.writeLine("Number of steps: "+numSteps);
 		logger.writeLine("");
 		
@@ -158,14 +175,6 @@ public class Experiment4 extends BaseExperiment {
     	if(logDensityAdjacentMatrix) {
     		logDensityAdjacentMatrix(graph, logger);
     	}
-
-    	if(displayGraph) {
-    		displayGraph(graph, "graph");
-    	}
-	
-    	if(displayGraphOfCliques) {
-    		displayGraph(graphOfCliques, "graphOfCliques");
-    	}
 	}
 	
 	private void readParameters() {
@@ -193,6 +202,7 @@ public class Experiment4 extends BaseExperiment {
 			logCoalitionResource = readProperty(properties, "logCoalitionResource", false);
 			logDiameter = readProperty(properties, "logDiameter", false);
 			logDensityAdjacentMatrix = readProperty(properties, "logDensityAdjacentMatrix", false);
+			logEachStep = readProperty(properties, "logEachStep", false);
 			
 			displayGraph = readProperty(properties, "displayGraph", false);
 			displayGraphOfCliques = readProperty(properties, "displayGraphOfCliques", false);
