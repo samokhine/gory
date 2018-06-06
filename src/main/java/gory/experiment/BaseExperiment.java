@@ -276,51 +276,6 @@ public abstract class BaseExperiment implements Experiment {
 		}
 		logger.writeLine("");
 	}
-
-	/*
-	public void displayGraphOfCliques(Set<Graph> cliques) {
-		org.graphstream.graph.Graph gsGraph = new SingleGraph("");
-
-		// add nodes
-		for(Graph clique : cliques) {
-			String nodeId = clique.getName();
-			org.graphstream.graph.Node gsNode = gsGraph.addNode(nodeId);
-			gsNode.addAttribute("ui.label", nodeId);
-		}
-
-		// add edges
-		for(Graph clique1 : cliques) {
-			for(Graph clique2 : cliques) {
-				int distance = clique1.distanceTo(clique2);
-				if(distance <= 0) continue;
-
-				if(gsGraph.getEdge(clique2.getName()+" - "+clique1.getName()) != null) {
-					continue;
-				}
-				
-				gsGraph.addEdge(clique1.getName()+" - "+clique2.getName(), clique1.getName(), clique2.getName());
-			}
-		}
-		
-		gsGraph.addAttribute("ui.stylesheet", "node {" +
-	    	    "	fill-color: green;" +
-	            "	text-color: red;" +
-	            "	text-size: 15;" +
-	            "}");
-		gsGraph.addAttribute("ui.quality");
-		gsGraph.addAttribute("ui.antialias");
-		
-		gsGraph.display();
-		
-		try {
-			Thread.sleep(1_000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		
-		gsGraph.addAttribute("ui.screenshot", "graphOfCliques.png");
-	}
-	*/
 	
 	public void displayGraph(Graph graph, String fileName) {
 		org.graphstream.graph.Graph gsGraph = new SingleGraph("");
@@ -352,7 +307,13 @@ public abstract class BaseExperiment implements Experiment {
 		gsGraph.addAttribute("ui.antialias");
 		
 		gsGraph.display();
-		
+
+		try {
+			Thread.sleep(1_000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
 		gsGraph.addAttribute("ui.screenshot", fileName+".png");
 	}
 
