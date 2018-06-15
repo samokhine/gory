@@ -49,7 +49,7 @@ public class Experiment4 extends BaseExperiment {
 		
     	for(int runNum=1; runNum<=numberOfRuns; runNum++) {
     		if(numberOfRuns>1) {
-	    		logger.writeLine("Run number: "+numberOfRuns);
+	    		logger.writeLine("Run number: "+runNum);
 	        	logger.writeLine("");
     		}
 
