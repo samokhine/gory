@@ -23,6 +23,7 @@ public class Experiment4 extends BaseExperiment {
 	private int distance; // d
 	private int numberOfDigits; // m
 	
+	private int numberOfRuns;
 	private boolean deleteAnyClique;
 	private int deleteAnyCliqueOfSize;
 	private int diameterThreshold;
@@ -46,93 +47,100 @@ public class Experiment4 extends BaseExperiment {
     	
     	readParameters();
 		
-    	Graph graph = new Graph(numberOfDigits*numberOfDigits+" - "+numberOfDigits+" graph", distance);
-    	
-		List<Integer> summands = new ArrayList<>();
-    	for(int i=1; i<=2*numberOfDigits-1; i=i+2) {
-    		summands.add(i);
-    	}
-    	PartitionNode headNode = new PartitionNode(new Partition(summands));
-    	graph.addNode(headNode);
-    	
-    	List<Partition> partitions = PartitionBuilder.build(numberOfDigits*numberOfDigits, numberOfDigits);
-    	for(Partition partition : partitions) {
-    		int d = headNode.distanceTo(new PartitionNode(partition));
-    		if(d <= 0 || d > distance) {
-    			continue;
+    	for(int runNum=1; runNum<=numberOfRuns; runNum++) {
+    		if(numberOfRuns>1) {
+	    		logger.writeLine("Run number: "+numberOfRuns);
+	        	logger.writeLine("");
     		}
 
-    		graph.addNode(new PartitionNode(partition));
-    	}
-    	
-    	if(removeHead) {
-    		graph.removeNode(headNode);
-    	}
-    	
-    	List<Graph> cliques = null;
-    	Graph graphOfCliques;
-    	int numSteps = 0;
-		while(true) {
-			Set<Graph> cliquesSet = graph.getCliques();
-			cliques = new ArrayList<>(cliquesSet);
-			
-			graphOfCliques = buildGraphOfCliques(cliquesSet, "Graph of cliques");
-
-			int diameter = graphOfCliques.getDiameter();
-			if(diameter >= diameterThreshold) {
-				break;
-			}
-
-    		numSteps ++;
-
-    		if(deleteAnyClique) {
-    			if(cliques.isEmpty()) break;
-
-    			int randomIndex = ThreadLocalRandom.current().nextInt(0, cliques.size());
-				Graph randomClique = cliques.get(randomIndex);
-				for(INode node : randomClique.getNodes()) {
-					graph.removeNode(node);
-				}
-    		} else if(deleteAnyCliqueOfSize>0) {
-    			Map<Integer, List<Graph>> cliquesBySize = new TreeMap<>(); // sorted by key which is size
-    			
-    			for(Graph clique : cliques) {
-    				int size = clique.getSize();
-    				List<Graph> cliquesOfSize = cliquesBySize.get(size);
-    				if(cliquesOfSize == null) {
-    					cliquesOfSize = new ArrayList<>();
-    					cliquesBySize.put(size, cliquesOfSize);
-    				}
-    				cliquesOfSize.add(clique);
-    			}
-
-    			if(cliquesBySize.get(deleteAnyCliqueOfSize) == null) {
-    				break;
-    			} else {
-	    			Integer numCliquesOfSize = cliquesBySize.get(deleteAnyCliqueOfSize).size();
-    				int randomIndex = ThreadLocalRandom.current().nextInt(0, numCliquesOfSize);
-    				Graph randomClique = cliquesBySize.get(deleteAnyCliqueOfSize).get(randomIndex);
-    				for(INode node : randomClique.getNodes()) {
-    					graph.removeNode(node);
-    				}
-    			}
-    		} else {
-    			break;
-    		}
-
-    		if(logEachStep) {
-    			doLoggingAfterStep(graph, graphOfCliques, cliques, logger, numSteps);
-    		}
-		}
-		
-		doLoggingAfterStep(graph, graphOfCliques, cliques, logger, numSteps);
-
-    	if(displayGraph) {
-    		displayGraph(graph, "graph");
-    	}
+    		Graph graph = new Graph(numberOfDigits*numberOfDigits+" - "+numberOfDigits+" graph", distance);
+	    	
+			List<Integer> summands = new ArrayList<>();
+	    	for(int i=1; i<=2*numberOfDigits-1; i=i+2) {
+	    		summands.add(i);
+	    	}
+	    	PartitionNode headNode = new PartitionNode(new Partition(summands));
+	    	graph.addNode(headNode);
+	    	
+	    	List<Partition> partitions = PartitionBuilder.build(numberOfDigits*numberOfDigits, numberOfDigits);
+	    	for(Partition partition : partitions) {
+	    		int d = headNode.distanceTo(new PartitionNode(partition));
+	    		if(d <= 0 || d > distance) {
+	    			continue;
+	    		}
 	
-    	if(displayGraphOfCliques) {
-    		displayGraph(graphOfCliques, "graphOfCliques");
+	    		graph.addNode(new PartitionNode(partition));
+	    	}
+	    	
+	    	if(removeHead) {
+	    		graph.removeNode(headNode);
+	    	}
+	    	
+	    	List<Graph> cliques = null;
+	    	Graph graphOfCliques;
+	    	int numSteps = 0;
+			while(true) {
+				Set<Graph> cliquesSet = graph.getCliques();
+				cliques = new ArrayList<>(cliquesSet);
+				
+				graphOfCliques = buildGraphOfCliques(cliquesSet, "Graph of cliques");
+	
+				int diameter = graphOfCliques.getDiameter();
+				if(diameter >= diameterThreshold) {
+					break;
+				}
+	
+	    		numSteps ++;
+	
+	    		if(deleteAnyClique) {
+	    			if(cliques.isEmpty()) break;
+	
+	    			int randomIndex = ThreadLocalRandom.current().nextInt(0, cliques.size());
+					Graph randomClique = cliques.get(randomIndex);
+					for(INode node : randomClique.getNodes()) {
+						graph.removeNode(node);
+					}
+	    		} else if(deleteAnyCliqueOfSize>0) {
+	    			Map<Integer, List<Graph>> cliquesBySize = new TreeMap<>(); // sorted by key which is size
+	    			
+	    			for(Graph clique : cliques) {
+	    				int size = clique.getSize();
+	    				List<Graph> cliquesOfSize = cliquesBySize.get(size);
+	    				if(cliquesOfSize == null) {
+	    					cliquesOfSize = new ArrayList<>();
+	    					cliquesBySize.put(size, cliquesOfSize);
+	    				}
+	    				cliquesOfSize.add(clique);
+	    			}
+	
+	    			if(cliquesBySize.get(deleteAnyCliqueOfSize) == null) {
+	    				break;
+	    			} else {
+		    			Integer numCliquesOfSize = cliquesBySize.get(deleteAnyCliqueOfSize).size();
+	    				int randomIndex = ThreadLocalRandom.current().nextInt(0, numCliquesOfSize);
+	    				Graph randomClique = cliquesBySize.get(deleteAnyCliqueOfSize).get(randomIndex);
+	    				for(INode node : randomClique.getNodes()) {
+	    					graph.removeNode(node);
+	    				}
+	    			}
+	    		} else {
+	    			break;
+	    		}
+	
+	    		if(logEachStep) {
+	    			doLoggingAfterStep(graph, graphOfCliques, cliques, logger, numSteps);
+	    		}
+			}
+			
+			doLoggingAfterStep(graph, graphOfCliques, cliques, logger, numSteps);
+	
+	    	if(displayGraph && numberOfRuns == 1) {
+	    		displayGraph(graph, "graph");
+	    	}
+		
+	    	if(displayGraphOfCliques && numberOfRuns == 1) {
+	    		displayGraph(graphOfCliques, "graphOfCliques");
+	    	}
     	}
 	}
 
@@ -189,6 +197,7 @@ public class Experiment4 extends BaseExperiment {
 			numberOfDigits = readProperty(properties, "m", 4);
 			distance = readProperty(properties, "d", 1);
 
+			numberOfRuns = readProperty(properties, "numberOfRuns", 1);
 			deleteAnyClique = readProperty(properties, "deleteAnyClique", false);
 			deleteAnyCliqueOfSize = readProperty(properties, "deleteAnyCliqueOfSize", 0);
 			diameterThreshold = readProperty(properties, "diameterThreshold", 0);
