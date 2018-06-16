@@ -134,12 +134,12 @@ public class Experiment4 extends BaseExperiment {
 			
 			doLoggingAfterStep(graph, logger, numSteps);
 	
-	    	if(displayGraph && numberOfRuns == 1) {
-	    		displayGraph(graph, "graph");
+	    	if(displayGraph) {
+	    		displayGraph(graph, "graph"+(numberOfRuns == 1 ? "" : "-"+runNum));
 	    	}
 		
-	    	if(displayGraphOfCliques && numberOfRuns == 1) {
-	    		displayGraph(graphOfCliques, "graphOfCliques");
+	    	if(displayGraphOfCliques) {
+	    		displayGraph(graphOfCliques, "graphOfCliques"+(numberOfRuns == 1 ? "" : "-"+runNum));
 	    	}
     	}
 	}
