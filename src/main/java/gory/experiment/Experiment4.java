@@ -128,11 +128,11 @@ public class Experiment4 extends BaseExperiment {
 	    		}
 	
 	    		if(logEachStep) {
-	    			doLoggingAfterStep(graph, graphOfCliques, cliques, logger, numSteps);
+	    			doLoggingAfterStep(graph, logger, numSteps);
 	    		}
 			}
 			
-			doLoggingAfterStep(graph, graphOfCliques, cliques, logger, numSteps);
+			doLoggingAfterStep(graph, logger, numSteps);
 	
 	    	if(displayGraph && numberOfRuns == 1) {
 	    		displayGraph(graph, "graph");
@@ -144,9 +144,19 @@ public class Experiment4 extends BaseExperiment {
     	}
 	}
 
-	private void doLoggingAfterStep(Graph graph, Graph graphOfCliques, List<Graph> cliques, OutputLogger logger, int numSteps) {
+	private void doLoggingAfterStep(Graph graph, OutputLogger logger, int numSteps) {
 		logger.writeLine("Number of steps: "+numSteps);
 		logger.writeLine("");
+
+		List<Graph> cliques = null;
+		Graph graphOfCliques = null;
+		if(logCliques || logDistributionOfCliques || logDiameter) {
+			Set<Graph> cliquesSet = graph.getCliques();
+			cliques = new ArrayList<>(cliquesSet);
+			if(logDiameter) {
+				graphOfCliques = buildGraphOfCliques(cliquesSet, "Graph of cliques");
+			}
+		}
 		
     	if(logNodes) {
     		logNodes(graph, logger);
