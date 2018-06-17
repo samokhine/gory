@@ -387,7 +387,7 @@ public abstract class BaseExperiment implements Experiment {
 	}
 
 	protected void logDiameter(Graph graph, OutputLogger logger) {
-		logger.writeLine("Diameter:");
+		logger.writeLine("Diameter of "+graph.getName()+":");
 		logger.writeLine(""+graph.getDiameter());
 		logger.writeLine("");
 	}

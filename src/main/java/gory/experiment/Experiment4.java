@@ -36,6 +36,7 @@ public class Experiment4 extends BaseExperiment {
 	private boolean logDistributionOfCliques;
 	private boolean logCoalitionResource;
 	private boolean logDiameter;
+	private boolean logGraphOfCliquesDiameter;
 	private boolean logDensityAdjacentMatrix;
 	private boolean logEachStep;
 	private boolean displayGraph;
@@ -53,7 +54,7 @@ public class Experiment4 extends BaseExperiment {
 	        	logger.writeLine("");
     		}
 
-    		Graph graph = new Graph(numberOfDigits*numberOfDigits+" - "+numberOfDigits+" graph", distance);
+    		Graph graph = new Graph("Graph", distance);
 	    	
 			List<Integer> summands = new ArrayList<>();
 	    	for(int i=1; i<=2*numberOfDigits-1; i=i+2) {
@@ -132,7 +133,9 @@ public class Experiment4 extends BaseExperiment {
 	    		}
 			}
 			
-			doLoggingAfterStep(graph, logger, runNum, stepNum, true);
+    		if(!logEachStep) {
+    			doLoggingAfterStep(graph, logger, runNum, stepNum, true);
+    		}
     	}
 	}
 
@@ -142,10 +145,10 @@ public class Experiment4 extends BaseExperiment {
 
 		List<Graph> cliques = null;
 		Graph graphOfCliques = null;
-		if(logCliques || logDistributionOfCliques || displayGraphOfCliques || logDiameter) {
+		if(logCliques || logDistributionOfCliques || displayGraphOfCliques || logGraphOfCliquesDiameter) {
 			Set<Graph> cliquesSet = graph.getCliques();
 			cliques = new ArrayList<>(cliquesSet);
-			if(displayGraphOfCliques || logDiameter) {
+			if(displayGraphOfCliques || logGraphOfCliquesDiameter) {
 				graphOfCliques = buildGraphOfCliques(cliquesSet, "Graph of cliques");
 			}
 		}
@@ -179,6 +182,10 @@ public class Experiment4 extends BaseExperiment {
     	}
 
     	if(logDiameter) {
+    		logDiameter(graph, logger);
+    	}
+
+    	if(logGraphOfCliquesDiameter) {
     		logDiameter(graphOfCliques, logger);
     	}
     	
@@ -222,6 +229,7 @@ public class Experiment4 extends BaseExperiment {
 			logDistributionOfCliques = readProperty(properties, "logDistributionOfCliques", false); 
 			logCoalitionResource = readProperty(properties, "logCoalitionResource", false);
 			logDiameter = readProperty(properties, "logDiameter", false);
+			logGraphOfCliquesDiameter = readProperty(properties, "logGraphOfCliquesDiameter", false);
 			logDensityAdjacentMatrix = readProperty(properties, "logDensityAdjacentMatrix", false);
 			logEachStep = readProperty(properties, "logEachStep", false);
 			
