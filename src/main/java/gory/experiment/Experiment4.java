@@ -78,7 +78,7 @@ public class Experiment4 extends BaseExperiment {
 	    	
 	    	List<Graph> cliques = null;
 	    	Graph graphOfCliques;
-	    	int numSteps = 0;
+	    	int stepNum = 0;
 			while(true) {
 				Set<Graph> cliquesSet = graph.getCliques();
 				cliques = new ArrayList<>(cliquesSet);
@@ -90,7 +90,7 @@ public class Experiment4 extends BaseExperiment {
 					break;
 				}
 	
-	    		numSteps ++;
+	    		stepNum ++;
 	
 	    		if(deleteAnyClique) {
 	    			if(cliques.isEmpty()) break;
@@ -128,32 +128,24 @@ public class Experiment4 extends BaseExperiment {
 	    		}
 	
 	    		if(logEachStep) {
-	    			doLoggingAfterStep(graph, logger, numSteps);
+	    			doLoggingAfterStep(graph, logger, runNum, stepNum, false);
 	    		}
 			}
 			
-			doLoggingAfterStep(graph, logger, numSteps);
-	
-	    	if(displayGraph) {
-	    		displayGraph(graph, "graph"+(numberOfRuns == 1 ? "" : "-"+runNum));
-	    	}
-		
-	    	if(displayGraphOfCliques) {
-	    		displayGraph(graphOfCliques, "graphOfCliques"+(numberOfRuns == 1 ? "" : "-"+runNum));
-	    	}
+			doLoggingAfterStep(graph, logger, runNum, stepNum, true);
     	}
 	}
 
-	private void doLoggingAfterStep(Graph graph, OutputLogger logger, int numSteps) {
-		logger.writeLine("Number of steps: "+numSteps);
+	private void doLoggingAfterStep(Graph graph, OutputLogger logger, int runNum, int stepNum, boolean isLastStep) {
+		logger.writeLine("Step number: "+stepNum);
 		logger.writeLine("");
 
 		List<Graph> cliques = null;
 		Graph graphOfCliques = null;
-		if(logCliques || logDistributionOfCliques || logDiameter) {
+		if(logCliques || logDistributionOfCliques || displayGraphOfCliques || logDiameter) {
 			Set<Graph> cliquesSet = graph.getCliques();
 			cliques = new ArrayList<>(cliquesSet);
-			if(logDiameter) {
+			if(displayGraphOfCliques || logDiameter) {
 				graphOfCliques = buildGraphOfCliques(cliquesSet, "Graph of cliques");
 			}
 		}
@@ -192,6 +184,16 @@ public class Experiment4 extends BaseExperiment {
     	
     	if(logDensityAdjacentMatrix) {
     		logDensityAdjacentMatrix(graph, logger);
+    	}
+
+    	if(isLastStep) {
+	    	if(displayGraph) {
+	    		displayGraph(graph, "graph"+(numberOfRuns == 1 ? "" : "-"+runNum));
+	    	}
+		
+	    	if(displayGraphOfCliques) {
+	    		displayGraph(graphOfCliques, "graphOfCliques"+(numberOfRuns == 1 ? "" : "-"+runNum));
+	    	}
     	}
 	}
 	
