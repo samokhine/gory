@@ -14,6 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import gory.domain.Graph;
 import gory.domain.INode;
+import gory.domain.Node;
 import gory.domain.Partition;
 import gory.domain.PartitionNode;
 import gory.service.OutputLogger;
@@ -25,6 +26,7 @@ public class Experiment4 extends BaseExperiment {
 	
 	private int numberOfRuns;
 	private boolean deleteAnyClique;
+	private boolean deleteAnyNode;
 	private int deleteAnyCliqueOfSize;
 	private int diameterThreshold;
 	private boolean removeHead;
@@ -86,14 +88,26 @@ public class Experiment4 extends BaseExperiment {
 				
 				graphOfCliques = buildGraphOfCliques(cliquesSet, "Graph of cliques");
 	
-				int diameter = graphOfCliques.getDiameter();
+				int diameter = Integer.MAX_VALUE;
+				if(deleteAnyNode) {
+					diameter = graph.getDiameter();
+				} else if(deleteAnyClique || deleteAnyCliqueOfSize>0) {
+					diameter = graphOfCliques.getDiameter();
+				}
+				
 				if(diameter >= diameterThreshold) {
 					break;
 				}
 	
 	    		stepNum ++;
 	
-	    		if(deleteAnyClique) {
+	    		if(deleteAnyNode) {
+	    			if(graph.getSize() <= 0) break;
+	    			
+	    			int randomIndex = ThreadLocalRandom.current().nextInt(0, graph.getSize());
+	    			Node randomNode = (Node) graph.getNode(randomIndex);
+					graph.removeNode(randomNode);
+	    		} else if(deleteAnyClique) {
 	    			if(cliques.isEmpty()) break;
 	
 	    			int randomIndex = ThreadLocalRandom.current().nextInt(0, cliques.size());
@@ -217,6 +231,7 @@ public class Experiment4 extends BaseExperiment {
 			distance = readProperty(properties, "d", 1);
 
 			numberOfRuns = readProperty(properties, "numberOfRuns", 1);
+			deleteAnyNode = readProperty(properties, "deleteAnyNode", false);
 			deleteAnyClique = readProperty(properties, "deleteAnyClique", false);
 			deleteAnyCliqueOfSize = readProperty(properties, "deleteAnyCliqueOfSize", 0);
 			diameterThreshold = readProperty(properties, "diameterThreshold", 0);
