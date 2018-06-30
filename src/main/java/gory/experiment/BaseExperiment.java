@@ -216,10 +216,9 @@ public abstract class BaseExperiment implements Experiment {
 			int size = sizes.get(i);
 			Set<Graph> cliquesOfSize = cliquesBySize.get(size);
 
-			logCliquesMatricesHelper(cliquesOfSize, cliquesOfSize, columnWidth, logger);
-			
-			if(i<sizes.size()-1) {
-				Set<Graph> cliquesOfNextSize = cliquesBySize.get(sizes.get(i+1));
+			for(int j=i; j<sizes.size(); j++) {
+				int nextSize = sizes.get(j);
+				Set<Graph> cliquesOfNextSize = cliquesBySize.get(nextSize);
 
 				logCliquesMatricesHelper(cliquesOfNextSize, cliquesOfSize, columnWidth, logger);
 			}
