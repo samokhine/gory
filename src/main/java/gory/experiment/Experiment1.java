@@ -39,6 +39,7 @@ public class Experiment1 extends BaseExperiment {
 	private boolean logCoalitionResource;
 	private boolean logDiameter;
 	private boolean logDensityAdjacentMatrix;
+	private boolean logDensityAdjacentMatrixForGraphOfCliques;
 	private boolean logNodesByCliques;
 	private boolean displayGraph;
 	private boolean displayGraphOfCliques;
@@ -117,7 +118,7 @@ public class Experiment1 extends BaseExperiment {
     	}
     	
     	Set<Graph> cliques = null;
-    	if(logCliques || logDistributionOfCliques || logNodesByCliques || !deleteCliques.isEmpty() || logCliquesMatrices || displayGraphOfCliques) {
+    	if(logCliques || logDistributionOfCliques || logNodesByCliques || !deleteCliques.isEmpty() || logCliquesMatrices || displayGraphOfCliques || logDensityAdjacentMatrixForGraphOfCliques) {
     		cliques = graph.getCliques();
     	}
     	
@@ -183,6 +184,11 @@ public class Experiment1 extends BaseExperiment {
     		logDensityAdjacentMatrix(graph, logger);
     	}
     	
+    	if(logDensityAdjacentMatrixForGraphOfCliques) {
+			Graph graphOfCliques = buildGraphOfCliques(cliques, "Graph of cliques");
+    		logDensityAdjacentMatrix(graphOfCliques, logger);
+    	}
+    	
     	if(displayGraph) {
     		displayGraph(graph, "graph");
     	}
@@ -221,6 +227,7 @@ public class Experiment1 extends BaseExperiment {
 			logCoalitionResource = readProperty(properties, "logCoalitionResource", false);
 			logDiameter = readProperty(properties, "logDiameter", false);
 			logDensityAdjacentMatrix = readProperty(properties, "logDensityAdjacentMatrix", false);
+			logDensityAdjacentMatrixForGraphOfCliques = readProperty(properties, "logDensityAdjacentMatrixForGraphOfCliques", false);
 			logNodesByCliques = readProperty(properties, "logNodesByCliques", false);
 			displayGraph = readProperty(properties, "displayGraph", false);
 			displayGraphOfCliques = readProperty(properties, "displayGraphOfCliques", false);

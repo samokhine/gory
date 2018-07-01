@@ -392,7 +392,7 @@ public abstract class BaseExperiment implements Experiment {
 	}
 	
 	public void logDensityAdjacentMatrix(Graph graph, OutputLogger logger) {
-		logger.writeLine("DAM:");
+		logger.writeLine("DAM for "+graph.getName());
 		logger.writeLine(""+df4.format(graph.getDensityAdjacentMatrix()));
 		logger.writeLine("");
 	}
