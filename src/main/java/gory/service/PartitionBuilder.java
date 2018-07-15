@@ -1,27 +1,45 @@
 package gory.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import gory.domain.Partition;
-import lombok.AllArgsConstructor;
 
-@AllArgsConstructor
 public class PartitionBuilder {
 	static public List<Partition> build(int n, int m) {
-		List<Partition> partitions = new ArrayList<>();
+		List<Partition> partitions = Collections.synchronizedList(new ArrayList<>());
 
+		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		
 		int min = (int) Math.ceil(1.0*n/m);
 		for(int i=n; i>=min; i--) {
-			List<Integer> summands = new ArrayList<>();
-			for(int j=1; j<=m; j++) {
-				summands.add(j == 1 ? i : 0);
-			}
-			Partition partition = new Partition(summands);
-
-			addNext(n, m, partitions, partition, i, 1);
+			final int iFinal = i;
+			executor.submit(new Callable<Void>() {
+				public Void call() {
+					List<Integer> summands = new ArrayList<>();
+					for(int j=1; j<=m; j++) {
+						summands.add(j == 1 ? iFinal : 0);
+					}
+					Partition partition = new Partition(summands);
+		
+					addNext(n, m, partitions, partition, iFinal, 1);
+					return null;
+				}
+			});
 		}
 		
+		executor.shutdown();
+		try {
+			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+
 		return partitions;
 	}
 	

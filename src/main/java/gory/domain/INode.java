@@ -10,4 +10,7 @@ public interface INode {
 	public boolean isConnectedTo(INode node);
 	public int getDegree();
 	public double getClusteringCoefficientUsingTriangles();
+	
+	public Integer getId();
+	public void setId(Integer id);
 }

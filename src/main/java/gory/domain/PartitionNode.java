@@ -4,11 +4,15 @@ import java.util.List;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 
 @EqualsAndHashCode(callSuper=false,of={"partition"})
 public class PartitionNode extends Node {
 	@Getter
 	private Partition partition;
+
+	@Getter @Setter
+	private Integer id;
 
 	@Override
 	public String toString() {

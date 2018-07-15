@@ -15,7 +15,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import gory.algorithm.BronKerbosch;
+//import gory.algorithm.BronKerbosch;
+import gory.algorithm.BronKerbosch2;
 import gory.algorithm.Dijkstra;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,6 +27,9 @@ public class Graph extends Node {
 
 	@Getter
 	private int connectionDistance = 1;
+
+	@Getter @Setter
+	private Integer id;
 	
 	@Getter
 	private Set<INode> nodes = new HashSet<>();
@@ -132,7 +136,7 @@ public class Graph extends Node {
 	}
 	
 	public Set<Graph> getCliques() {
-		BronKerbosch algorithm = new BronKerbosch();
+		BronKerbosch2 algorithm = new BronKerbosch2();
 		
 		Set<Graph> cliques = algorithm.findMaxCliques(this);
 	
@@ -317,12 +321,6 @@ public class Graph extends Node {
 				removeNode(node);
 			}
 		}
-
-		/*
-		if(deleteHead) {
-			deleteHead();
-		}
-		*/
 	}
 
 	public void deleteNumberOfCliques(int number) {
