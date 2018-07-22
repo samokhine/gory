@@ -1,5 +1,6 @@
 package gory.experiment;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +13,7 @@ import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
-import org.graphstream.graph.implementations.SingleGraph;
+import org.graphstream.stream.file.FileSinkDOT;
 
 import gory.domain.Graph;
 import gory.domain.INode;
@@ -277,33 +278,7 @@ public abstract class BaseExperiment implements Experiment {
 	}
 	
 	public void displayGraph(Graph graph, String fileName) {
-		org.graphstream.graph.Graph gsGraph = new SingleGraph("");
-
-		// add nodes
-		for(INode node : graph.getNodes()) {
-			String nodeId = node.toString();
-			org.graphstream.graph.Node gsNode = gsGraph.addNode(nodeId);
-			gsNode.addAttribute("ui.label", nodeId);
-		}
-
-		// add edges
-		for(INode node : graph.getNodes()) {
-			for(INode connectedNode : node.getConnectedNodes()) {
-				if(gsGraph.getEdge(connectedNode.toString()+" - "+node.toString()) != null) {
-					continue;
-				}
-				
-				gsGraph.addEdge(node.toString()+" - "+connectedNode.toString(), node.toString(), connectedNode.toString());
-			}
-		}
-		
-		gsGraph.addAttribute("ui.stylesheet", "node {" +
-	    	    "	fill-color: green;" +
-	            "	text-color: red;" +
-	            "	text-size: 15;" +
-	            "}");
-		gsGraph.addAttribute("ui.quality");
-		gsGraph.addAttribute("ui.antialias");
+		org.graphstream.graph.Graph gsGraph = graph.asGsGraph();
 		
 		gsGraph.display();
 
@@ -316,6 +291,16 @@ public abstract class BaseExperiment implements Experiment {
 		gsGraph.addAttribute("ui.screenshot", fileName+".png");
 	}
 
+	public void saveInDotFormat(Graph graph, String fileName) {
+		org.graphstream.graph.Graph gsGraph = graph.asGsGraph();
+
+		FileSinkDOT fs = new FileSinkDOT();
+		try {
+			fs.writeAll(gsGraph, fileName+".dot");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public void logDistributionOfCliques(Graph graph, OutputLogger logger) {
 		logDistributionOfCliques(graph.getCliques(), logger);

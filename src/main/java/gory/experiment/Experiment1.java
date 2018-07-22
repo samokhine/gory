@@ -43,6 +43,8 @@ public class Experiment1 extends BaseExperiment {
 	private boolean logNodesByCliques;
 	private boolean displayGraph;
 	private boolean displayGraphOfCliques;
+	private boolean saveGraphInDotFormat;
+	private boolean saveGraphOfCliquesInDotFormat;
 	private Partition head;
 	private Map<Partition, Partition> replace = new HashMap<>();
 	private Set<Partition> insert = new HashSet<>(); 
@@ -192,9 +194,21 @@ public class Experiment1 extends BaseExperiment {
     	if(displayGraph) {
     		displayGraph(graph, "graph");
     	}
+    	
+    	if(saveGraphInDotFormat) {
+    		saveInDotFormat(graph, "graph");
+    	}
 
-    	if(displayGraphOfCliques) {
-    		displayGraph(buildGraphOfCliques(cliques, "Graph of cliques"), "graphOfCliques");
+    	if(displayGraphOfCliques || saveGraphOfCliquesInDotFormat) {
+    		Graph graphOfCliques = buildGraphOfCliques(cliques, "Graph of cliques");
+    		
+    		if(displayGraphOfCliques) {
+    			displayGraph(graphOfCliques, "graphOfCliques");
+    		}
+    		
+    		if(saveGraphOfCliquesInDotFormat) {
+    	   		saveInDotFormat(graphOfCliques, "graphOfCliques");
+    		}
     	}
 	}
 	
@@ -231,6 +245,8 @@ public class Experiment1 extends BaseExperiment {
 			logNodesByCliques = readProperty(properties, "logNodesByCliques", false);
 			displayGraph = readProperty(properties, "displayGraph", false);
 			displayGraphOfCliques = readProperty(properties, "displayGraphOfCliques", false);
+			saveGraphInDotFormat = readProperty(properties, "saveGraphInDotFormat", false);
+			saveGraphOfCliquesInDotFormat = readProperty(properties, "saveGraphOfCliquesInDotFormat", false);
 			
 			String replaceStr = properties.getProperty("replace");
 			if(replaceStr == null) replaceStr = "";

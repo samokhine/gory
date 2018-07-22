@@ -43,6 +43,8 @@ public class Experiment4 extends BaseExperiment {
 	private boolean logEachStep;
 	private boolean displayGraph;
 	private boolean displayGraphOfCliques;
+	private boolean saveGraphInDotFormat;
+	private boolean saveGraphOfCliquesInDotFormat;
 	
 	public void run(OutputLogger logger) throws IOException {
     	logger.writeLine("Running experiment 4");
@@ -208,12 +210,26 @@ public class Experiment4 extends BaseExperiment {
     	}
 
     	if(isLastStep) {
+    		String fileName = "graph"+(numberOfRuns == 1 ? "" : "-"+runNum);
+    		
 	    	if(displayGraph) {
-	    		displayGraph(graph, "graph"+(numberOfRuns == 1 ? "" : "-"+runNum));
+	    		displayGraph(graph, fileName);
 	    	}
 		
-	    	if(displayGraphOfCliques) {
-	    		displayGraph(graphOfCliques, "graphOfCliques"+(numberOfRuns == 1 ? "" : "-"+runNum));
+	    	if(saveGraphInDotFormat) {
+	    		saveInDotFormat(graph, "graph");
+	    	}
+	    	
+	    	if(displayGraphOfCliques || saveGraphOfCliquesInDotFormat) {
+	    		fileName = "graphOfCliques"+(numberOfRuns == 1 ? "" : "-"+runNum);
+	    		
+	    		if(displayGraphOfCliques) {
+	    			displayGraph(graphOfCliques, fileName);
+	    		}
+	    		
+	    		if(saveGraphOfCliquesInDotFormat) {
+	    			saveInDotFormat(graphOfCliques, fileName);
+	    		}
 	    	}
     	}
 	}

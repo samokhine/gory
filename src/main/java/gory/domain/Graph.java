@@ -15,6 +15,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.graphstream.graph.implementations.SingleGraph;
+
 //import gory.algorithm.BronKerbosch;
 import gory.algorithm.BronKerbosch2;
 import gory.algorithm.Dijkstra;
@@ -341,27 +343,37 @@ public class Graph extends Node {
 			
 			iteration++;
 		}
-		
-		/*
-		if(deleteHead) {
-			deleteHead();
+	}
+
+	public org.graphstream.graph.Graph asGsGraph() {
+		org.graphstream.graph.Graph gsGraph = new SingleGraph("");
+
+		// add nodes
+		for(INode node : getNodes()) {
+			String nodeId = node.toString();
+			org.graphstream.graph.Node gsNode = gsGraph.addNode(nodeId);
+			gsNode.addAttribute("ui.label", nodeId);
 		}
-		*/
-	}
-	
-	/*
-	public void deleteHead() {
-		if(getSize() == 0) return;
+
+		// add edges
+		for(INode node : getNodes()) {
+			for(INode connectedNode : node.getConnectedNodes()) {
+				if(gsGraph.getEdge(connectedNode.toString()+" - "+node.toString()) != null) {
+					continue;
+				}
+				
+				gsGraph.addEdge(node.toString()+" - "+connectedNode.toString(), node.toString(), connectedNode.toString());
+			}
+		}
 		
-		int numberOfDigits = getNodes().iterator().next().getNumberOfDigits();
-		
-		List<Integer> summands = new ArrayList<>();
-    	for(int i=1; i<=2*numberOfDigits-1; i=i+2) {
-    		summands.add(i);
-    	}
-    	
-    	Partition head = new Partition(summands);
-    	removeNode(new Node(head));
+		gsGraph.addAttribute("ui.stylesheet", "node {" +
+	    	    "	fill-color: green;" +
+	            "	text-color: red;" +
+	            "	text-size: 15;" +
+	            "}");
+		gsGraph.addAttribute("ui.quality");
+		gsGraph.addAttribute("ui.antialias");
+
+		return gsGraph;
 	}
-	*/
 }
