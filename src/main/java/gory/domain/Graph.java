@@ -126,18 +126,16 @@ public class Graph extends Node {
 	}
 	
 	public int distanceTo(Graph graph) {
-		boolean foundCommonNode = false;
+		int intersection = 0;
+		
 		for(INode node : graph.getNodes()) {
 			if(getNodes().contains(node)) {
-				foundCommonNode = true;
-				break;
+				intersection++;
 			}
 		}
 
-		if(foundCommonNode) {
-			return 0;
-		} else {
-			boolean foundConnectedNodes = false;
+		boolean foundConnectedNodes = false;
+		if(intersection == 0) {
 			for(INode node1 : graph.getNodes()) {
 				for(INode node2 : getNodes()) {
 					if(node1.isConnectedTo(node2)) {
@@ -147,9 +145,9 @@ public class Graph extends Node {
 				}	
 				if(foundConnectedNodes) break;
 			}			
-		
-			return foundConnectedNodes ? 1 : -1;
 		}
+		
+		return intersection <= 0 && !foundConnectedNodes ? -1 : intersection;
 	}
 	
 	public Set<Graph> getCliques() {
