@@ -134,7 +134,20 @@ public class Graph extends Node {
 			}
 		}
 
-		return intersection <= 0 ? -1 : intersection;
+		boolean foundConnectedNodes = false;
+		if(intersection == 0) {
+			for(INode node1 : graph.getNodes()) {
+				for(INode node2 : getNodes()) {
+					if(node1.isConnectedTo(node2)) {
+						foundConnectedNodes = true;
+						break;
+					}
+				}	
+				if(foundConnectedNodes) break;
+			}			
+		}
+		
+		return intersection <= 0 && !foundConnectedNodes ? -1 : intersection;
 	}
 	
 	public Set<Graph> getCliques() {
