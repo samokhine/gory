@@ -227,15 +227,7 @@ public abstract class BaseExperiment implements Experiment {
 	}
 	
 	protected Graph buildGraphOfCliques(Set<Graph> cliques, String name) {
-		int connectionDistance = 0;
-
-		for(Graph clique : cliques) {
-			int size= clique.getSize();
-			if(size > connectionDistance) {
-				connectionDistance = size;
-			}
-		}
-		
+		int connectionDistance = 1;
 		Graph graph = new Graph(name, connectionDistance);
 		
 		for(Graph clique : cliques) {
