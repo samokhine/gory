@@ -280,7 +280,7 @@ public abstract class BaseExperiment implements Experiment {
 			e.printStackTrace();
 		}
 
-		gsGraph.addAttribute("ui.screenshot", fileName+".png");
+		gsGraph.addAttribute("ui.screenshot", fileName+".tiff");
 	}
 
 	public void saveInDotFormat(Graph graph, String fileName) {

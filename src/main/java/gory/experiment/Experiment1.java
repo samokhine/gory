@@ -47,6 +47,7 @@ public class Experiment1 extends BaseExperiment {
 	private boolean saveGraphOfCliquesInDotFormat;
 	private Partition head;
 	private Map<Partition, Partition> replace = new HashMap<>();
+	private Set<Partition> create = new HashSet<>(); 
 	private Set<Partition> insert = new HashSet<>(); 
 	private Set<Partition> delete = new HashSet<>(); 
 	
@@ -56,69 +57,80 @@ public class Experiment1 extends BaseExperiment {
     	
     	readParameters();
 		
-    	Graph graph = new Graph(numberOfDigits*numberOfDigits+" - "+numberOfDigits+" graph", distance);
-    	if(insert.isEmpty()) {
-    		PartitionNode headNode;
-    		if(head == null) {
-				List<Integer> summands = new ArrayList<>();
-		    	for(int i=1; i<=2*numberOfDigits-1; i=i+2) {
-		    		summands.add(i);
+    	Graph graph = null;
+    	if(!create.isEmpty()) {
+    		numberOfDigits = create.iterator().next().getNumberOfDigits();
+    		graph = new Graph(numberOfDigits*numberOfDigits+" - "+numberOfDigits+" graph", distance);
+    		
+	    	for(Partition partition : create) {
+	    		graph.addNode(new PartitionNode(partition));
+	    	}
+    	} else { 
+    		graph = new Graph(numberOfDigits*numberOfDigits+" - "+numberOfDigits+" graph", distance);
+    		
+    		if(insert.isEmpty()) {
+				PartitionNode headNode;
+				if(head == null) {
+					List<Integer> summands = new ArrayList<>();
+			    	for(int i=1; i<=2*numberOfDigits-1; i=i+2) {
+			    		summands.add(i);
+			    	}
+			    	
+			    	headNode = new PartitionNode(new Partition(summands));
+				} else {
+			    	headNode = new PartitionNode(head);
+				}
+				
+		    	graph.addNode(headNode);
+		    	
+		    	List<Partition> partitions = PartitionBuilder.build(numberOfDigits*numberOfDigits, numberOfDigits);
+		    	for(Partition partition : partitions) {
+		    		if(familyMxmPlusOne) {
+			    		if(partition.getAt(numberOfDigits) == 0) {
+			    			partition.setAt(numberOfDigits, 1);
+			    		}
+		    		}
+		    		
+		    		int d = headNode.distanceTo(new PartitionNode(partition));
+		    		if(d <= 0 || d > distance) {
+		    			continue;
+		    		}
+		    		
+		    		if(onlyDirectDescendants && partition.getAt(1) != headNode.getPartition().getAt(1)) {
+		    			continue;
+		    		}
+		    		if(onlyLeft && partition.getAt(1) - 1 != headNode.getPartition().getAt(1)) {
+		    			continue;
+		    		}
+		    		if(onlyRight && partition.getAt(1) + 1 != headNode.getPartition().getAt(1)) {
+		    			continue;
+		    		}
+		    		
+		    		graph.addNode(new PartitionNode(partition));
 		    	}
 		    	
-		    	headNode = new PartitionNode(new Partition(summands));
-    		} else {
-		    	headNode = new PartitionNode(head);
-    		}
-    		
-	    	graph.addNode(headNode);
-	    	
-	    	List<Partition> partitions = PartitionBuilder.build(numberOfDigits*numberOfDigits, numberOfDigits);
-	    	for(Partition partition : partitions) {
-	    		if(familyMxmPlusOne) {
-		    		if(partition.getAt(numberOfDigits) == 0) {
-		    			partition.setAt(numberOfDigits, 1);
-		    		}
-	    		}
-	    		
-	    		int d = headNode.distanceTo(new PartitionNode(partition));
-	    		if(d <= 0 || d > distance) {
-	    			continue;
-	    		}
-	    		
-	    		if(onlyDirectDescendants && partition.getAt(1) != headNode.getPartition().getAt(1)) {
-	    			continue;
-	    		}
-	    		if(onlyLeft && partition.getAt(1) - 1 != headNode.getPartition().getAt(1)) {
-	    			continue;
-	    		}
-	    		if(onlyRight && partition.getAt(1) + 1 != headNode.getPartition().getAt(1)) {
-	    			continue;
-	    		}
-	    		
-	    		graph.addNode(new PartitionNode(partition));
-	    	}
-	    	
-	    	for(Partition oldPartition : replace.keySet()) {
-	    		Partition newPartition = replace.get(oldPartition);
-	    		graph.replaceNode(new PartitionNode(oldPartition), new PartitionNode(newPartition));
-	    	}
-
-	    	if(removeHead) {
-	    		graph.removeNode(headNode);
-	    	} else {
-	        	if(logClusteringCoefficientForHead) {
-	    	    	logger.writeLine("Clustering coefficient for head of the family:");
-	    	    	logger.writeLine(""+headNode.getClusteringCoefficientUsingTriangles());
-	    	    	logger.writeLine("");
-	        	}
-	    	}
-	    	
-    	} else {
-	    	for(Partition partition : insert) {
-	    		graph.addNode(new PartitionNode(partition));
-	    	}
+		    	for(Partition oldPartition : replace.keySet()) {
+		    		Partition newPartition = replace.get(oldPartition);
+		    		graph.replaceNode(new PartitionNode(oldPartition), new PartitionNode(newPartition));
+		    	}
+		
+		    	if(removeHead) {
+		    		graph.removeNode(headNode);
+		    	} else {
+		        	if(logClusteringCoefficientForHead) {
+		    	    	logger.writeLine("Clustering coefficient for head of the family:");
+		    	    	logger.writeLine(""+headNode.getClusteringCoefficientUsingTriangles());
+		    	    	logger.writeLine("");
+		        	}
+		    	}
+		    	
+			} else {
+		    	for(Partition partition : insert) {
+		    		graph.addNode(new PartitionNode(partition));
+		    	}
+			}
     	}
-    	
+    		
     	Set<Graph> cliques = null;
     	if(logCliques || logDistributionOfCliques || logNodesByCliques || !deleteCliques.isEmpty() || logCliquesMatrices || displayGraphOfCliques || logDensityAdjacentMatrixForGraphOfCliques) {
     		cliques = graph.getCliques();
@@ -264,6 +276,7 @@ public class Experiment1 extends BaseExperiment {
 			}
 
 			head = parsePartition(properties.getProperty("head"));
+			create = parseListOfPartitions(properties.getProperty("create"));
 			insert = parseListOfPartitions(properties.getProperty("insert"));
 			delete = parseListOfPartitions(properties.getProperty("delete"));
 			
