@@ -399,4 +399,15 @@ public abstract class BaseExperiment implements Experiment {
 		logger.writeLine("");
 	}
 
+	public void logCharacteristicPathLength(Graph graph, OutputLogger logger) {
+		logger.writeLine("Characteristic path length:");
+		logger.writeLine(""+df4.format(graph.getCharacteristicPathLength()));
+		logger.writeLine("");
+	}
+
+	public void logAverageEfficiency(Graph graph, OutputLogger logger) {
+		logger.writeLine("Average efficiency:");
+		logger.writeLine(""+df4.format(graph.getAverageEfficiency()));
+		logger.writeLine("");
+	}
 }

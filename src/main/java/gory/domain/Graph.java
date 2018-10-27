@@ -175,13 +175,66 @@ public class Graph extends Node {
 		return algorithm.getDiameter(this);
 	}
 
+	public double getCharacteristicPathLength() {
+		int size = getSize();
+		if(size <= 1) return 0;
+		
+		Dijkstra algorithm = new Dijkstra();
+		
+		int sumOfDistances = 0;
+		for(INode nodeStart : getNodes()) {
+			Map<INode, Integer> shortestDistances = algorithm.getShortestDistances(this, nodeStart);
+			
+			for(INode nodeEnd : shortestDistances.keySet()) {
+				if(nodeEnd.equals(nodeStart)) continue;
+			
+				int shortestDistance = shortestDistances.get(nodeEnd);
+				if(shortestDistance == Integer.MAX_VALUE) {
+					shortestDistance = 0;
+				}
+
+				sumOfDistances += shortestDistance;
+			}
+		}
+
+		return 1.0 * sumOfDistances/(size * (size - 1));
+	}
+
+	public double getAverageEfficiency() {
+		int size = getSize();
+		if(size <= 1) return 0;
+		
+		Dijkstra algorithm = new Dijkstra();
+		
+		double sumOfDistances = 0;
+		for(INode nodeStart : getNodes()) {
+			Map<INode, Integer> shortestDistances = algorithm.getShortestDistances(this, nodeStart);
+			
+			for(INode nodeEnd : shortestDistances.keySet()) {
+				if(nodeEnd.equals(nodeStart)) continue;
+			
+				int shortestDistance = shortestDistances.get(nodeEnd);
+				if(shortestDistance == Integer.MAX_VALUE) {
+					continue;
+				}
+
+				sumOfDistances += 1.0/shortestDistance;
+			}
+		}
+
+		return 1.0 * sumOfDistances/(size * (size - 1));
+	}
+
 	public double getDensityAdjacentMatrix() {
+		int size = getSize();
+		if(size <= 1) return 0;
+
 		double dam = 0;
 		for(INode node : nodes) {
 			dam += node.getConnectedNodes().size();
 		}
 		
-		dam /= (getSize() * (getSize() - 1));
+		dam /= (size * (size - 1));
 		
 		return dam;
 	}

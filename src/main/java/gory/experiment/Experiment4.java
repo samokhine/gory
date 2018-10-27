@@ -40,6 +40,8 @@ public class Experiment4 extends BaseExperiment {
 	private boolean logDiameter;
 	private boolean logGraphOfCliquesDiameter;
 	private boolean logDensityAdjacentMatrix;
+	private boolean logCharacteristicPathLength;
+	private boolean logAverageEfficiency;
 	private boolean logEachStep;
 	private boolean displayGraph;
 	private boolean displayGraphOfCliques;
@@ -209,6 +211,14 @@ public class Experiment4 extends BaseExperiment {
     		logDensityAdjacentMatrix(graph, logger);
     	}
 
+    	if(logCharacteristicPathLength) {
+    		logCharacteristicPathLength(graph, logger);
+    	}
+
+    	if(logAverageEfficiency) {
+    		logAverageEfficiency(graph, logger);
+    	}
+
     	if(isLastStep) {
     		String fileName = "graph"+(numberOfRuns == 1 ? "" : "-"+runNum);
     		
@@ -262,6 +272,8 @@ public class Experiment4 extends BaseExperiment {
 			logDiameter = readProperty(properties, "logDiameter", false);
 			logGraphOfCliquesDiameter = readProperty(properties, "logGraphOfCliquesDiameter", false);
 			logDensityAdjacentMatrix = readProperty(properties, "logDensityAdjacentMatrix", false);
+			logCharacteristicPathLength = readProperty(properties, "logCharacteristicPathLength", false);
+			logAverageEfficiency = readProperty(properties, "logAverageEfficiency", false);
 			logEachStep = readProperty(properties, "logEachStep", false);
 			
 			displayGraph = readProperty(properties, "displayGraph", false);

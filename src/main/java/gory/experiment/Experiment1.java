@@ -41,6 +41,8 @@ public class Experiment1 extends BaseExperiment {
 	private boolean logDensityAdjacentMatrix;
 	private boolean logDensityAdjacentMatrixForGraphOfCliques;
 	private boolean logNodesByCliques;
+	private boolean logCharacteristicPathLength;
+	private boolean logAverageEfficiency;
 	private boolean displayGraph;
 	private boolean displayGraphOfCliques;
 	private boolean saveGraphInDotFormat;
@@ -203,6 +205,14 @@ public class Experiment1 extends BaseExperiment {
     		logDensityAdjacentMatrix(graphOfCliques, logger);
     	}
     	
+    	if(logCharacteristicPathLength) {
+    		logCharacteristicPathLength(graph, logger);
+    	}
+
+    	if(logAverageEfficiency) {
+    		logAverageEfficiency(graph, logger);
+    	}
+
     	if(displayGraph) {
     		displayGraph(graph, "graph");
     	}
@@ -255,6 +265,8 @@ public class Experiment1 extends BaseExperiment {
 			logDensityAdjacentMatrix = readProperty(properties, "logDensityAdjacentMatrix", false);
 			logDensityAdjacentMatrixForGraphOfCliques = readProperty(properties, "logDensityAdjacentMatrixForGraphOfCliques", false);
 			logNodesByCliques = readProperty(properties, "logNodesByCliques", false);
+			logCharacteristicPathLength = readProperty(properties, "logCharacteristicPathLength", false);
+			logAverageEfficiency = readProperty(properties, "logAverageEfficiency", false);
 			displayGraph = readProperty(properties, "displayGraph", false);
 			displayGraphOfCliques = readProperty(properties, "displayGraphOfCliques", false);
 			saveGraphInDotFormat = readProperty(properties, "saveGraphInDotFormat", false);
