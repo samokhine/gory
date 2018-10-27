@@ -29,6 +29,7 @@ public class Experiment4 extends BaseExperiment {
 	private boolean deleteAnyNode;
 	private int deleteAnyCliqueOfSize;
 	private int diameterThreshold;
+	private Set<Partition> create = new HashSet<>(); 
 	private boolean removeHead;
 	private boolean logNodes;
 	private boolean logMatrix;
@@ -62,26 +63,34 @@ public class Experiment4 extends BaseExperiment {
 
     		Graph graph = new Graph("Graph", distance);
 	    	
-			List<Integer> summands = new ArrayList<>();
-	    	for(int i=1; i<=2*numberOfDigits-1; i=i+2) {
-	    		summands.add(i);
-	    	}
-	    	PartitionNode headNode = new PartitionNode(new Partition(summands));
-	    	graph.addNode(headNode);
-	    	
-	    	List<Partition> partitions = PartitionBuilder.build(numberOfDigits*numberOfDigits, numberOfDigits);
-	    	for(Partition partition : partitions) {
-	    		int d = headNode.distanceTo(new PartitionNode(partition));
-	    		if(d <= 0 || d > distance) {
-	    			continue;
-	    		}
-	
-	    		graph.addNode(new PartitionNode(partition));
-	    	}
-	    	
-	    	if(removeHead) {
-	    		graph.removeNode(headNode);
-	    	}
+    		if(!create.isEmpty()) {
+        		numberOfDigits = create.iterator().next().getNumberOfDigits();
+        		
+    	    	for(Partition partition : create) {
+    	    		graph.addNode(new PartitionNode(partition));
+    	    	}
+    		} else {
+				List<Integer> summands = new ArrayList<>();
+		    	for(int i=1; i<=2*numberOfDigits-1; i=i+2) {
+		    		summands.add(i);
+		    	}
+		    	PartitionNode headNode = new PartitionNode(new Partition(summands));
+		    	graph.addNode(headNode);
+		    	
+		    	List<Partition> partitions = PartitionBuilder.build(numberOfDigits*numberOfDigits, numberOfDigits);
+		    	for(Partition partition : partitions) {
+		    		int d = headNode.distanceTo(new PartitionNode(partition));
+		    		if(d <= 0 || d > distance) {
+		    			continue;
+		    		}
+		
+		    		graph.addNode(new PartitionNode(partition));
+		    	}
+		    	
+		    	if(removeHead) {
+		    		graph.removeNode(headNode);
+		    	}
+    		}
 	    	
 	    	List<Graph> cliques = null;
 	    	Graph graphOfCliques;
@@ -255,6 +264,8 @@ public class Experiment4 extends BaseExperiment {
 
 			numberOfDigits = readProperty(properties, "m", 4);
 			distance = readProperty(properties, "d", 1);
+
+			create = parseListOfPartitions(properties.getProperty("create"));
 
 			numberOfRuns = readProperty(properties, "numberOfRuns", 1);
 			deleteAnyNode = readProperty(properties, "deleteAnyNode", false);
