@@ -156,17 +156,17 @@ public class Experiment4 extends BaseExperiment {
 	    		}
 	
 	    		if(logEachStep) {
-	    			doLoggingAfterStep(graph, logger, runNum, stepNum, false);
+	    			doLoggingAfterStep(graph, logger, runNum, stepNum);
 	    		}
 			}
 			
     		if(!logEachStep) {
-    			doLoggingAfterStep(graph, logger, runNum, stepNum, true);
+    			doLoggingAfterStep(graph, logger, runNum, stepNum);
     		}
     	}
 	}
 
-	private void doLoggingAfterStep(Graph graph, OutputLogger logger, int runNum, int stepNum, boolean isLastStep) {
+	private void doLoggingAfterStep(Graph graph, OutputLogger logger, int runNum, int stepNum) {
 		logger.writeLine("Step number: "+stepNum);
 		logger.writeLine("");
 
@@ -228,28 +228,26 @@ public class Experiment4 extends BaseExperiment {
     		logAverageEfficiency(graph, logger);
     	}
 
-    	if(isLastStep) {
-    		String fileName = "graph"+(numberOfRuns == 1 ? "" : "-"+runNum);
-    		
-	    	if(displayGraph) {
-	    		displayGraph(graph, fileName);
-	    	}
+		String fileName = "graph"+(numberOfRuns == 1 ? "" : "-"+runNum)+"-"+stepNum;
 		
-	    	if(saveGraphInDotFormat) {
-	    		saveInDotFormat(graph, "graph");
-	    	}
-	    	
-	    	if(displayGraphOfCliques || saveGraphOfCliquesInDotFormat) {
-	    		fileName = "graphOfCliques"+(numberOfRuns == 1 ? "" : "-"+runNum);
-	    		
-	    		if(displayGraphOfCliques) {
-	    			displayGraph(graphOfCliques, fileName);
-	    		}
-	    		
-	    		if(saveGraphOfCliquesInDotFormat) {
-	    			saveInDotFormat(graphOfCliques, fileName);
-	    		}
-	    	}
+    	if(displayGraph) {
+    		displayGraph(graph, fileName);
+    	}
+	
+    	if(saveGraphInDotFormat) {
+    		saveInDotFormat(graph, "graph");
+    	}
+    	
+    	if(displayGraphOfCliques || saveGraphOfCliquesInDotFormat) {
+    		fileName = "graphOfCliques"+(numberOfRuns == 1 ? "" : "-"+runNum)+"-"+stepNum;
+    		
+    		if(displayGraphOfCliques) {
+    			displayGraph(graphOfCliques, fileName);
+    		}
+    		
+    		if(saveGraphOfCliquesInDotFormat) {
+    			saveInDotFormat(graphOfCliques, fileName);
+    		}
     	}
 	}
 	
