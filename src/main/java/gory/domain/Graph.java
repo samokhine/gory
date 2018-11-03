@@ -135,7 +135,7 @@ public class Graph extends Node {
 		}
 
 		if(foundCommonNode) {
-			return 0;
+			return 1;
 		} else {
 			boolean foundConnectedNodes = false;
 			for(INode node1 : graph.getNodes()) {
