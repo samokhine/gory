@@ -109,6 +109,7 @@ public class Experiment4 extends BaseExperiment {
 				}
 				
 				if(diameter >= diameterThreshold) {
+					logger.writeLine("Diameter is "+diameter+". Exiting.");
 					break;
 				}
 	
