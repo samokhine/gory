@@ -41,6 +41,7 @@ public class Experiment4 extends BaseExperiment {
 	private boolean logDiameter;
 	private boolean logGraphOfCliquesDiameter;
 	private boolean logDensityAdjacentMatrix;
+	private boolean logDensityAdjacentMatrixForGraphOfCliques;
 	private boolean logCharacteristicPathLength;
 	private boolean logAverageEfficiency;
 	private boolean logEachStep;
@@ -173,10 +174,10 @@ public class Experiment4 extends BaseExperiment {
 
 		List<Graph> cliques = null;
 		Graph graphOfCliques = null;
-		if(logCliques || logDistributionOfCliques || displayGraphOfCliques || logGraphOfCliquesDiameter) {
+		if(logCliques || logDistributionOfCliques || displayGraphOfCliques || logGraphOfCliquesDiameter || logDensityAdjacentMatrixForGraphOfCliques) {
 			Set<Graph> cliquesSet = graph.getCliques();
 			cliques = new ArrayList<>(cliquesSet);
-			if(displayGraphOfCliques || logGraphOfCliquesDiameter) {
+			if(displayGraphOfCliques || logGraphOfCliquesDiameter || logDensityAdjacentMatrixForGraphOfCliques) {
 				graphOfCliques = buildGraphOfCliques(cliquesSet, "Graph of cliques");
 			}
 		}
@@ -219,6 +220,10 @@ public class Experiment4 extends BaseExperiment {
     	
     	if(logDensityAdjacentMatrix) {
     		logDensityAdjacentMatrix(graph, logger);
+    	}
+
+    	if(logDensityAdjacentMatrixForGraphOfCliques) {
+    		logDensityAdjacentMatrix(graphOfCliques, logger);
     	}
 
     	if(logCharacteristicPathLength) {
@@ -282,6 +287,7 @@ public class Experiment4 extends BaseExperiment {
 			logDiameter = readProperty(properties, "logDiameter", false);
 			logGraphOfCliquesDiameter = readProperty(properties, "logGraphOfCliquesDiameter", false);
 			logDensityAdjacentMatrix = readProperty(properties, "logDensityAdjacentMatrix", false);
+			logDensityAdjacentMatrixForGraphOfCliques = readProperty(properties, "logDensityAdjacentMatrixForGraphOfCliques", false);
 			logCharacteristicPathLength = readProperty(properties, "logCharacteristicPathLength", false);
 			logAverageEfficiency = readProperty(properties, "logAverageEfficiency", false);
 			logEachStep = readProperty(properties, "logEachStep", false);
