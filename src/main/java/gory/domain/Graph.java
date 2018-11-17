@@ -140,7 +140,8 @@ public class Graph extends Node {
 			boolean foundConnectedNodes = false;
 			for(INode node1 : graph.getNodes()) {
 				for(INode node2 : getNodes()) {
-					if(node1.isConnectedTo(node2)) {
+					int distance = node1.distanceTo(node2);
+					if(distance >= 0 && distance <= connectionDistance) {
 						foundConnectedNodes = true;
 						break;
 					}
