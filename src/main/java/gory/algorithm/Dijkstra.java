@@ -76,7 +76,7 @@ public class Dijkstra {
 	        unsettledNodes.remove(currentNode);
 	        for(INode adjacentNode : currentNode.getConnectedNodes()) {
 	            if(!settledNodes.contains(adjacentNode)) {
-	                calculateMinimumDistance(adjacentNode, currentNode, distances, shortestPaths);
+	                calculateMinimumDistance(graph, adjacentNode, currentNode, distances, shortestPaths);
 	                unsettledNodes.add(adjacentNode);
 	            }
 	        }
@@ -99,8 +99,8 @@ public class Dijkstra {
 	    return lowestDistanceNode;
 	}
 	
-	private void calculateMinimumDistance(INode evaluationNode, INode sourceNode, Map<INode, Integer> distances, Map<INode, List<INode>> shortestPaths) {
-        int edgeWeight = sourceNode.distanceTo(evaluationNode) > 0 ? 1 : 0;
+	private void calculateMinimumDistance(Graph graph, INode evaluationNode, INode sourceNode, Map<INode, Integer> distances, Map<INode, List<INode>> shortestPaths) {
+        int edgeWeight = sourceNode.distanceTo(evaluationNode) >= graph.getConnectionDistance() ? 1 : 0;
 	    int sourceDistance = distances.get(sourceNode);
 	    int distance = sourceDistance + edgeWeight;
 	    if (distance < distances.get(evaluationNode).intValue()) {
