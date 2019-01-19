@@ -15,6 +15,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import Jama.Matrix;
+
 import org.graphstream.graph.implementations.SingleGraph;
 
 //import gory.algorithm.BronKerbosch;
@@ -248,6 +250,29 @@ public class Graph extends Node {
         }
 
         return total / getSize();
+	}
+	
+	public double getEnergy() {
+		List<INode> nodes = new ArrayList<>(getNodes());
+ 		double[][] matrix = new double[nodes.size()][nodes.size()];
+
+		for(int i=0; i<getSize(); i++) {
+			for(int j=0; j<getSize(); j++) {
+				matrix[i][j] = nodes.get(i).isConnectedTo(nodes.get(j)) ? 1 : 0;
+			}
+		}
+
+		
+		Matrix m = new Matrix(matrix);
+		
+		double[] eigs = m.eig().getRealEigenvalues();
+		
+		double energy = 0;
+		for(double eig : eigs) {
+			energy += Math.abs(eig);
+		}
+		
+		return energy;
 	}
 	
  	public double getClusteringCoefficientUsingMatrix() {

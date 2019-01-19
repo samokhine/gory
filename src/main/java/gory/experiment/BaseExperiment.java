@@ -410,4 +410,10 @@ public abstract class BaseExperiment implements Experiment {
 		logger.writeLine(""+df4.format(graph.getAverageEfficiency()));
 		logger.writeLine("");
 	}
+
+	public void logEnergy(Graph graph, OutputLogger logger) {
+		logger.writeLine("Energy:");
+		logger.writeLine(""+df4.format(graph.getEnergy()));
+		logger.writeLine("");
+	}
 }
