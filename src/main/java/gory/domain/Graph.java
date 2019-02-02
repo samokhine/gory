@@ -3,6 +3,7 @@ package gory.domain;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -252,16 +253,27 @@ public class Graph extends Node {
         return total / getSize();
 	}
 	
-	public double getEnergy() {
-		List<INode> nodes = new ArrayList<>(getNodes());
- 		double[][] matrix = new double[nodes.size()][nodes.size()];
+	public double getCheegerConstant() {
+ 		double[][] a = getAdjacencyMatrix();
+		Matrix am = new Matrix(a);
 
-		for(int i=0; i<getSize(); i++) {
-			for(int j=0; j<getSize(); j++) {
-				matrix[i][j] = nodes.get(i).isConnectedTo(nodes.get(j)) ? 1 : 0;
-			}
+ 		double[][] d = getDegreeMatrix();
+		Matrix dm = new Matrix(d);
+
+		Matrix lm = dm.minus(am);
+		
+		double[] eigs = lm.eig().getRealEigenvalues();
+		
+		if(eigs.length<2) {
+			return 0;
+		} else {
+			Arrays.sort(eigs);
+			return eigs[1];
 		}
-
+	}
+	
+	public double getEnergy() {
+ 		double[][] matrix = getAdjacencyMatrix();
 		
 		Matrix m = new Matrix(matrix);
 		
@@ -275,6 +287,36 @@ public class Graph extends Node {
 		return energy;
 	}
 	
+	public double[][] getAdjacencyMatrix() {
+		List<INode> nodes = new ArrayList<>(getNodes());
+ 		double[][] matrix = new double[nodes.size()][nodes.size()];
+
+		for(int i=0; i<getSize(); i++) {
+			for(int j=0; j<getSize(); j++) {
+				matrix[i][j] = nodes.get(i).isConnectedTo(nodes.get(j)) ? 1 : 0;
+			}
+		}
+		
+		return matrix;
+	}
+
+	public double[][] getDegreeMatrix() {
+		List<INode> nodes = new ArrayList<>(getNodes());
+ 		double[][] matrix = new double[nodes.size()][nodes.size()];
+
+		for(int i=0; i<getSize(); i++) {
+			for(int j=0; j<getSize(); j++) {
+				if(i == j) {
+					matrix[i][j] = nodes.get(i).getDegree();
+				} else {
+					matrix[i][j] = 0;
+				}
+			}
+		}
+		
+		return matrix;
+	}
+
  	public double getClusteringCoefficientUsingMatrix() {
 		List<INode> nodes = new ArrayList<>(getNodes());
  		boolean[][] matrix = new boolean[nodes.size()][nodes.size()];

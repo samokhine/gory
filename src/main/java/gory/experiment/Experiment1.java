@@ -44,6 +44,7 @@ public class Experiment1 extends BaseExperiment {
 	private boolean logCharacteristicPathLength;
 	private boolean logAverageEfficiency;
 	private boolean logEnergy;
+	private boolean logCheegerConstant;
 	private boolean displayGraph;
 	private boolean displayGraphOfCliques;
 	private boolean saveGraphInDotFormat;
@@ -218,6 +219,10 @@ public class Experiment1 extends BaseExperiment {
     		logEnergy(graph, logger);
     	}
 
+    	if(logCheegerConstant) {
+    		logCheegerConstant(graph, logger);
+    	}
+
     	if(displayGraph) {
     		displayGraph(graph, "graph");
     	}
@@ -273,7 +278,7 @@ public class Experiment1 extends BaseExperiment {
 			logCharacteristicPathLength = readProperty(properties, "logCharacteristicPathLength", false);
 			logAverageEfficiency = readProperty(properties, "logAverageEfficiency", false);
 			logEnergy = readProperty(properties, "logEnergy", false);
-			displayGraph = readProperty(properties, "displayGraph", false);
+			logCheegerConstant = readProperty(properties, "logCheegerConstant", false);
 			displayGraphOfCliques = readProperty(properties, "displayGraphOfCliques", false);
 			saveGraphInDotFormat = readProperty(properties, "saveGraphInDotFormat", false);
 			saveGraphOfCliquesInDotFormat = readProperty(properties, "saveGraphOfCliquesInDotFormat", false);

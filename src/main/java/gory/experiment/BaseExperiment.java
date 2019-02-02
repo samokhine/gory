@@ -416,4 +416,10 @@ public abstract class BaseExperiment implements Experiment {
 		logger.writeLine(""+df4.format(graph.getEnergy()));
 		logger.writeLine("");
 	}
+
+	public void logCheegerConstant(Graph graph, OutputLogger logger) {
+		logger.writeLine("Cheeger:");
+		logger.writeLine(""+df4.format(graph.getCheegerConstant()));
+		logger.writeLine("");
+	}
 }

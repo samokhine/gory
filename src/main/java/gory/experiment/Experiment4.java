@@ -45,6 +45,7 @@ public class Experiment4 extends BaseExperiment {
 	private boolean logCharacteristicPathLength;
 	private boolean logAverageEfficiency;
 	private boolean logEnergy;
+	private boolean logCheegerConstant;
 	private boolean logEachStep;
 	private boolean displayGraph;
 	private boolean displayGraphOfCliques;
@@ -239,6 +240,10 @@ public class Experiment4 extends BaseExperiment {
     		logEnergy(graph, logger);
     	}
 
+    	if(logCheegerConstant) {
+    		logCheegerConstant(graph, logger);
+    	}
+
 		String fileName = "graph"+(numberOfRuns == 1 ? "" : "-"+runNum)+"-"+stepNum;
 		
     	if(displayGraph) {
@@ -296,6 +301,7 @@ public class Experiment4 extends BaseExperiment {
 			logCharacteristicPathLength = readProperty(properties, "logCharacteristicPathLength", false);
 			logAverageEfficiency = readProperty(properties, "logAverageEfficiency", false);
 			logEnergy = readProperty(properties, "logEnergy", false);
+			logCheegerConstant = readProperty(properties, "logCheegerConstant", false);
 			logEachStep = readProperty(properties, "logEachStep", false);
 			
 			displayGraph = readProperty(properties, "displayGraph", false);

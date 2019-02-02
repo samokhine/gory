@@ -25,12 +25,16 @@ public class App {
 	    	experiment = new Experiment3();
     	} else if(experimentId == 4) {
 	    	experiment = new Experiment4();
-    	} else {
-    		return;
     	}
 
     	OutputLogger logger = new OutputLogger("output.txt");
-    	experiment.run(logger);
+
+    	if(experiment != null) {
+    		experiment.run(logger);
+    	} else {
+    		logger.writeLine("No experiments to run");
+    	}
+    	
     	logger.close();
     }
     
@@ -57,6 +61,6 @@ public class App {
 			}
 		}
 		
-		return experimentId == null ? 1 : Integer.valueOf(experimentId);
+		return experimentId == null ? 0 : Integer.valueOf(experimentId);
 	}
 }
