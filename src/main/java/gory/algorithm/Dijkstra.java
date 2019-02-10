@@ -100,7 +100,7 @@ public class Dijkstra {
 	}
 	
 	private void calculateMinimumDistance(Graph graph, INode evaluationNode, INode sourceNode, Map<INode, Integer> distances, Map<INode, List<INode>> shortestPaths) {
-        int edgeWeight = sourceNode.distanceTo(evaluationNode) >= graph.getConnectionDistance() ? 1 : 0;
+        int edgeWeight = sourceNode.isConnectedTo(evaluationNode) ? 1 : 0;
 	    int sourceDistance = distances.get(sourceNode);
 	    int distance = sourceDistance + edgeWeight;
 	    if (distance < distances.get(evaluationNode).intValue()) {

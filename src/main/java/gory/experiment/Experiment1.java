@@ -279,6 +279,7 @@ public class Experiment1 extends BaseExperiment {
 			logAverageEfficiency = readProperty(properties, "logAverageEfficiency", false);
 			logEnergy = readProperty(properties, "logEnergy", false);
 			logCheegerConstant = readProperty(properties, "logCheegerConstant", false);
+			displayGraph = readProperty(properties, "displayGraph", false);
 			displayGraphOfCliques = readProperty(properties, "displayGraphOfCliques", false);
 			saveGraphInDotFormat = readProperty(properties, "saveGraphInDotFormat", false);
 			saveGraphOfCliquesInDotFormat = readProperty(properties, "saveGraphOfCliquesInDotFormat", false);

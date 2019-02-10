@@ -59,7 +59,6 @@ public class Graph extends Node {
 	@Override
 	public String toString() {
 		return name;
-		//return nodes.toString();
 	}
 	
 	@Override
