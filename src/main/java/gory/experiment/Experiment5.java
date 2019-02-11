@@ -99,7 +99,7 @@ public class Experiment5 extends BaseExperiment {
     			// lets connect new nodes to the existing ones
         		int numRetry = 0, maxNumRetry = 2 * cliqueSize;
     			int numLinks = 0;
-    			while(numLinks<cliqueSize && !oldNodesToConnect.isEmpty()) {
+    			while(numLinks<cliqueSize && !oldNodesToConnect.isEmpty() && !newNodesToConnect.isEmpty()) {
         			int i = rand.nextInt(newNodesToConnect.size());
     				INode newNode = newNodesToConnect.get(i);
     				
