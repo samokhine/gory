@@ -33,6 +33,13 @@ public class Experiment5 extends BaseExperiment {
 	private boolean logAverageEfficiency;
 	private boolean logEnergy;
 	private boolean logCheegerConstant;
+	private boolean logCliques;
+	private boolean logCliquesMatrices;
+	private boolean logDistributionOfCliques;
+	private boolean logDensityAdjacentMatrixForGraphOfCliques;
+	private boolean logNodesByCliques;
+	private boolean displayGraphOfCliques;
+	private boolean saveGraphOfCliquesInDotFormat;
 	private boolean displayGraph;
 	private boolean saveGraphInDotFormat;
 	
@@ -60,7 +67,8 @@ public class Experiment5 extends BaseExperiment {
     	Random rand = new Random();
     	
     	List<INode> oldNodesToConnect = new ArrayList<>();
-		Graph graph = new Graph("graph", -1);
+    	int conectionDistance = -1;
+		Graph graph = new Graph("graph", conectionDistance);
     	for(int step=0; step<=numSteps; step++) {
 	    	logger.writeLine("Running step #" + step);
 	    	logger.writeLine("");
@@ -91,7 +99,7 @@ public class Experiment5 extends BaseExperiment {
     					INode oldNode = oldNodes.next();
     					
     					double p = rand.nextInt(100)/100.0;
-    					if(p>=0 && p<probabilityToConnect && newNode.getDegree()<maxDegree) {
+    					if(p>=0 && p<probabilityToConnect && oldNode.getDegree()<maxDegree && newNode.getDegree()<maxDegree) {
         					newNode.connect(oldNode);
 
         					if(newNode.getDegree()>=maxDegree) {
@@ -104,7 +112,8 @@ public class Experiment5 extends BaseExperiment {
     					} else if(p>=probabilityToConnect && p<probabilityToConnect+probabilityToMerge && (newNode.getDegree()+oldNode.getDegree())<=maxDegree) {
     						newNodesMerged.add(newNode);
     						oldNode.getConnectedNodes().addAll(newNode.getConnectedNodes());
-        					if(oldNode.getDegree()>=maxDegree) {
+
+    						if(oldNode.getDegree()>=maxDegree) {
         						oldNodes.remove();
         					}
     						graph.removeNode(newNode);
@@ -119,6 +128,12 @@ public class Experiment5 extends BaseExperiment {
     			
     			oldNodesToConnect.add(newNode);
     		}
+    		
+        	Set<Graph> cliques = null;
+        	if(logCliques || logDistributionOfCliques || logCliquesMatrices || logDensityAdjacentMatrixForGraphOfCliques 
+        			|| logNodesByCliques || displayGraphOfCliques || saveGraphOfCliquesInDotFormat) {
+        		cliques = graph.getCliques();
+        	}
     		
         	if(logMatrix) {
         		logMatrix(graph, logger);
@@ -160,6 +175,38 @@ public class Experiment5 extends BaseExperiment {
         		logCheegerConstant(graph, logger);
         	}
 
+    		if(logCliques) {
+    			logCliques(graph, cliques, logger);
+    		}
+    	
+    		if(logDistributionOfCliques) {
+    			logDistributionOfCliques(cliques, logger);
+    		}
+    		
+    		if(logNodesByCliques) {
+    			logNodesByCliques(graph, cliques, logger);
+    		}
+        	
+    		if(logCliquesMatrices) {
+    			logCliquesMatrices(cliques, logger);
+    		}
+
+        	if(logDensityAdjacentMatrixForGraphOfCliques || displayGraphOfCliques || saveGraphOfCliquesInDotFormat) {
+        		Graph graphOfCliques = buildGraphOfCliques(cliques, "Graph of cliques");
+
+            	if(logDensityAdjacentMatrixForGraphOfCliques) {
+            		logDensityAdjacentMatrix(graphOfCliques, logger);
+            	}
+
+        		if(displayGraphOfCliques) {
+        			displayGraph(graphOfCliques, "graphOfCliques");
+        		}
+        		
+        		if(saveGraphOfCliquesInDotFormat) {
+        	   		saveInDotFormat(graphOfCliques, "graphOfCliques");
+        		}
+        	}
+        	
         	if(displayGraph) {
         		displayGraph(graph, "graph-"+step);
         	}
@@ -198,6 +245,16 @@ public class Experiment5 extends BaseExperiment {
 			logAverageEfficiency = readProperty(properties, "logAverageEfficiency", false);
 			logEnergy = readProperty(properties, "logEnergy", false);
 			logCheegerConstant = readProperty(properties, "logCheegerConstant", false);
+			
+			logCliques = readProperty(properties, "logCliques", false);
+			logDistributionOfCliques = readProperty(properties, "logDistributionOfCliques", false); 
+			logCliquesMatrices = readProperty(properties, "logCliquesMatrices", false);
+			logDensityAdjacentMatrixForGraphOfCliques = readProperty(properties, "logDensityAdjacentMatrixForGraphOfCliques", false);
+			logNodesByCliques = readProperty(properties, "logNodesByCliques", false);
+
+			displayGraphOfCliques = readProperty(properties, "displayGraphOfCliques", false);
+			saveGraphOfCliquesInDotFormat = readProperty(properties, "saveGraphOfCliquesInDotFormat", false);
+
 			displayGraph = readProperty(properties, "displayGraph", false);
 			saveGraphInDotFormat = readProperty(properties, "saveGraphInDotFormat", false);
 		} catch (IOException ex) {

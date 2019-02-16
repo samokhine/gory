@@ -1,13 +1,21 @@
 package gory.domain;
 
-import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 
-@AllArgsConstructor
+@EqualsAndHashCode(of={"name"}, callSuper=false)
 public class SimpleNode extends Node {
 	@Getter
 	private String name;
 
+	@Getter @Setter
+	private Integer id;
+	
+	public SimpleNode(String name) {
+		this.name = name;
+	}
+	
 	@Override
 	public String toString() {
 		return name;
@@ -15,20 +23,13 @@ public class SimpleNode extends Node {
 
 	@Override
 	public INode clone(INode node) {
-		return new SimpleNode(name);
+		INode clone = new SimpleNode(name);
+		clone.getConnectedNodes().addAll(node.getConnectedNodes());
+		return clone;
 	}
 
 	@Override
 	public int distanceTo(INode node) {
 		return node.isConnectedTo(this) ? 1 : 0;
-	}
-
-	@Override
-	public Integer getId() {
-		return null;
-	}
-
-	@Override
-	public void setId(Integer id) {
 	}
 }

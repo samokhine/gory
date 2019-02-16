@@ -233,9 +233,13 @@ public abstract class BaseExperiment implements Experiment {
 			}
 		}
 	}
-	
+
 	protected Graph buildGraphOfCliques(Set<Graph> cliques, String name) {
-		int connectionDistance = 1;
+		return buildGraphOfCliques(cliques, name, 1);
+	}
+
+	
+	protected Graph buildGraphOfCliques(Set<Graph> cliques, String name, int connectionDistance) {
 		Graph graph = new Graph(name, connectionDistance);
 		
 		for(Graph clique : cliques) {
