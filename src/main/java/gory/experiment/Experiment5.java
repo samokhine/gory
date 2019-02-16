@@ -4,9 +4,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
+import java.util.Set;
 
 import gory.domain.Graph;
 import gory.domain.INode;
@@ -16,7 +19,8 @@ import gory.service.OutputLogger;
 public class Experiment5 extends BaseExperiment {
 	private int cliqueSize;
 	private int numSteps;
-	private int numberOfNodesToConnectOnEachStep;
+	//private int numberOfNodesToConnectOnEachStep;
+	private double probabilityToConnect, probabilityToMerge;
 	private int maxDegree;
 
 	private boolean logMatrix;
@@ -45,11 +49,6 @@ public class Experiment5 extends BaseExperiment {
 
     	if(cliqueSize <= 1) {
         	logger.writeLine("cliqueSize has to be > 1");
-        	return;
-    	}
-    	
-    	if(numberOfNodesToConnectOnEachStep<=0 || numberOfNodesToConnectOnEachStep>cliqueSize) {
-        	logger.writeLine("numberOfNodesToConnectOnEachStep has to be > 0 and <= cliqueSize");
         	return;
     	}
     	
@@ -84,49 +83,41 @@ public class Experiment5 extends BaseExperiment {
         		}
     		}
     		
+			Set<INode> newNodesMerged = new HashSet<>();
     		if(step>0) {
-    			// lets select new nodes to connect
-    			List<INode> newNodesToConnect = new ArrayList<>();
-        		while(newNodesToConnect.size()<numberOfNodesToConnectOnEachStep) {
-        			int i = rand.nextInt(newNodes.size());
-        			
-        			newNodesToConnect.add(newNodes.get(i));
-        			newNodes.remove(i);
-        			
-        			if(newNodes.isEmpty()) break; // should not happen
-        		}
-    			
-    			// lets connect new nodes to the existing ones
-        		int numRetry = 0, maxNumRetry = 2 * cliqueSize;
-    			int numLinks = 0;
-    			while(numLinks<cliqueSize && !oldNodesToConnect.isEmpty() && !newNodesToConnect.isEmpty()) {
-        			int i = rand.nextInt(newNodesToConnect.size());
-    				INode newNode = newNodesToConnect.get(i);
-    				
-        			int j = rand.nextInt(oldNodesToConnect.size());
-    				INode oldNode = oldNodesToConnect.get(j);
-    				
-    				if(newNode.isConnectedTo(oldNode)) {
-    					if(++numRetry >= maxNumRetry) {
-    						break;
-    					}
-    				} else {
-    					newNode.connect(oldNode);
-    					numLinks++;
+    			for(INode newNode : newNodes) {
+    				Iterator<INode> oldNodes = oldNodesToConnect.iterator();
+    				while(oldNodes.hasNext()) {
+    					INode oldNode = oldNodes.next();
     					
-    					if(newNode.getDegree()>=maxDegree) {
-    						newNodesToConnect.remove(i);
-    					}
+    					double p = rand.nextInt(100)/100.0;
+    					if(p>=0 && p<probabilityToConnect && newNode.getDegree()<maxDegree) {
+        					newNode.connect(oldNode);
 
-    					if(oldNode.getDegree()>=maxDegree) {
-    						oldNodesToConnect.remove(j);
+        					if(newNode.getDegree()>=maxDegree) {
+        						break;
+        					}
+
+        					if(oldNode.getDegree()>=maxDegree) {
+        						oldNodes.remove();
+        					}
+    					} else if(p>=probabilityToConnect && p<probabilityToConnect+probabilityToMerge && (newNode.getDegree()+oldNode.getDegree())<=maxDegree) {
+    						newNodesMerged.add(newNode);
+    						oldNode.getConnectedNodes().addAll(newNode.getConnectedNodes());
+        					if(oldNode.getDegree()>=maxDegree) {
+        						oldNodes.remove();
+        					}
+    						graph.removeNode(newNode);
+    						break;
     					}
     				}
     			}
     		}
     		
-    		for(int i=0; i<newNodes.size(); i++) {
-    			oldNodesToConnect.add(newNodes.get(i));
+    		for(INode newNode : newNodes) {
+    			if(newNodesMerged.contains(newNode) || newNode.getDegree()>=maxDegree) continue;
+    			
+    			oldNodesToConnect.add(newNode);
     		}
     		
         	if(logMatrix) {
@@ -191,7 +182,10 @@ public class Experiment5 extends BaseExperiment {
 
 			cliqueSize = readProperty(properties, "cliqueSize", 3);
 			numSteps = readProperty(properties, "numSteps", 5);
-			numberOfNodesToConnectOnEachStep = readProperty(properties, "numberOfNodesToConnectOnEachStep", 2);
+			//numberOfNodesToConnectOnEachStep = readProperty(properties, "numberOfNodesToConnectOnEachStep", 2);
+			probabilityToConnect = readProperty(properties, "probabilityToConnect", 0.0);
+			probabilityToMerge = readProperty(properties, "probabilityToMerge", 0.0);
+
 			maxDegree = readProperty(properties, "maxDegree", 2);
 
 			logMatrix = readProperty(properties, "logMatrix", false);

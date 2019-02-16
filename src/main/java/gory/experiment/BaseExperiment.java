@@ -100,7 +100,15 @@ public abstract class BaseExperiment implements Experiment {
 			return defaultValue;
 		}
 	}
-	
+
+	protected double readProperty(Properties properties, String propertyName, double defaultValue) {
+		try {
+			return Double.valueOf(properties.getProperty(propertyName));
+		} catch(Exception e) {
+			return defaultValue;
+		}
+	}
+
 	protected Set<Partition> parseListOfPartitions(String str) {
 		Set<Partition> partitions = new HashSet<>();
 		
