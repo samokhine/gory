@@ -26,6 +26,7 @@ public class Experiment1 extends BaseExperiment {
 	private boolean onlyDirectDescendants;
 	private boolean onlyLeft, onlyRight;
 	private boolean familyMxmPlusOne;
+	private boolean extendedFamily;
 	private Set<String> deleteCliques = new HashSet<>();
 	
 	private boolean logNodes;
@@ -88,6 +89,10 @@ public class Experiment1 extends BaseExperiment {
 		    	graph.addNode(headNode);
 		    	
 		    	List<Partition> partitions = PartitionBuilder.build(numberOfDigits*numberOfDigits, numberOfDigits);
+		    	if(extendedFamily) {
+		    		partitions.addAll(PartitionBuilder.build(numberOfDigits*numberOfDigits-1, numberOfDigits));
+		    		partitions.addAll(PartitionBuilder.build(numberOfDigits*numberOfDigits+1, numberOfDigits));
+		    	}
 		    	for(Partition partition : partitions) {
 		    		if(familyMxmPlusOne) {
 			    		if(partition.getAt(numberOfDigits) == 0) {
@@ -261,6 +266,7 @@ public class Experiment1 extends BaseExperiment {
 			onlyLeft = readProperty(properties, "onlyLeft", false);
 			onlyRight = readProperty(properties, "onlyRight", false);
 			familyMxmPlusOne = readProperty(properties, "familyMxmPlusOne", false);
+			extendedFamily = readProperty(properties, "extendedFamily", false);
 
 			logNodes = readProperty(properties, "logNodes", false);
 			logMatrix = readProperty(properties, "logMatrix", false);
