@@ -27,6 +27,7 @@ public class Experiment1 extends BaseExperiment {
 	private boolean onlyLeft, onlyRight;
 	private boolean familyMxmPlusOne;
 	private boolean extendedFamily;
+	private int extendedFamilyDelta;
 	private Set<String> deleteCliques = new HashSet<>();
 	
 	private boolean logNodes;
@@ -89,9 +90,9 @@ public class Experiment1 extends BaseExperiment {
 		    	graph.addNode(headNode);
 		    	
 		    	List<Partition> partitions = PartitionBuilder.build(numberOfDigits*numberOfDigits, numberOfDigits);
-		    	if(extendedFamily) {
-		    		partitions.addAll(PartitionBuilder.build(numberOfDigits*numberOfDigits-1, numberOfDigits));
-		    		partitions.addAll(PartitionBuilder.build(numberOfDigits*numberOfDigits+1, numberOfDigits));
+		    	if(extendedFamily && extendedFamilyDelta>0) {
+		    		partitions.addAll(PartitionBuilder.build(numberOfDigits*numberOfDigits-extendedFamilyDelta, numberOfDigits));
+		    		partitions.addAll(PartitionBuilder.build(numberOfDigits*numberOfDigits+extendedFamilyDelta, numberOfDigits));
 		    	}
 		    	for(Partition partition : partitions) {
 		    		if(familyMxmPlusOne) {
@@ -267,6 +268,7 @@ public class Experiment1 extends BaseExperiment {
 			onlyRight = readProperty(properties, "onlyRight", false);
 			familyMxmPlusOne = readProperty(properties, "familyMxmPlusOne", false);
 			extendedFamily = readProperty(properties, "extendedFamily", false);
+			extendedFamilyDelta = readProperty(properties, "extendedFamily", 1);
 
 			logNodes = readProperty(properties, "logNodes", false);
 			logMatrix = readProperty(properties, "logMatrix", false);
