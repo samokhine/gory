@@ -268,7 +268,7 @@ public class Experiment1 extends BaseExperiment {
 			onlyRight = readProperty(properties, "onlyRight", false);
 			familyMxmPlusOne = readProperty(properties, "familyMxmPlusOne", false);
 			extendedFamily = readProperty(properties, "extendedFamily", false);
-			extendedFamilyDelta = readProperty(properties, "extendedFamily", 1);
+			extendedFamilyDelta = readProperty(properties, "extendedFamilyDelta", 1);
 
 			logNodes = readProperty(properties, "logNodes", false);
 			logMatrix = readProperty(properties, "logMatrix", false);
