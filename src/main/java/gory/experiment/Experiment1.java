@@ -47,6 +47,7 @@ public class Experiment1 extends BaseExperiment {
 	private boolean logAverageEfficiency;
 	private boolean logEnergy;
 	private boolean logCheegerConstant;
+	private boolean logGlobalOverlapping;
 	private boolean displayGraph;
 	private boolean displayGraphOfCliques;
 	private boolean saveGraphInDotFormat;
@@ -142,7 +143,8 @@ public class Experiment1 extends BaseExperiment {
     	}
     		
     	Set<Graph> cliques = null;
-    	if(logCliques || logDistributionOfCliques || logNodesByCliques || !deleteCliques.isEmpty() || logCliquesMatrices || displayGraphOfCliques || logDensityAdjacentMatrixForGraphOfCliques) {
+    	if(logCliques || logDistributionOfCliques || logNodesByCliques || !deleteCliques.isEmpty() || logCliquesMatrices || logGlobalOverlapping
+    			|| displayGraphOfCliques || logDensityAdjacentMatrixForGraphOfCliques) {
     		cliques = graph.getCliques();
     	}
     	
@@ -229,6 +231,10 @@ public class Experiment1 extends BaseExperiment {
     		logCheegerConstant(graph, logger);
     	}
 
+    	if(logGlobalOverlapping) {
+    		logGlobalOverlapping(graph, cliques, logger);
+    	}
+
     	if(displayGraph) {
     		displayGraph(graph, "graph");
     	}
@@ -287,6 +293,8 @@ public class Experiment1 extends BaseExperiment {
 			logAverageEfficiency = readProperty(properties, "logAverageEfficiency", false);
 			logEnergy = readProperty(properties, "logEnergy", false);
 			logCheegerConstant = readProperty(properties, "logCheegerConstant", false);
+			logGlobalOverlapping = readProperty(properties, "logGlobalOverlapping", false);
+			
 			displayGraph = readProperty(properties, "displayGraph", false);
 			displayGraphOfCliques = readProperty(properties, "displayGraphOfCliques", false);
 			saveGraphInDotFormat = readProperty(properties, "saveGraphInDotFormat", false);

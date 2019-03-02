@@ -516,4 +516,20 @@ public class Graph extends Node {
 
 		return gsGraph;
 	}
+	
+	public double getGlobalOverlapping(Set<Graph> cliques) {
+		int globalOverlapping = 0;
+		for(INode node : nodes) {
+			int localOverlapping = 0;
+			for(Graph clique : cliques) {
+				if(clique.nodes.contains(node)) {
+					localOverlapping ++;
+				}
+			}
+			
+			globalOverlapping += localOverlapping;
+		}
+		
+		return 1.0 * globalOverlapping/getSize();
+	}
 }

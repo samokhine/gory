@@ -434,4 +434,10 @@ public abstract class BaseExperiment implements Experiment {
 		logger.writeLine(""+df4.format(graph.getCheegerConstant()));
 		logger.writeLine("");
 	}
+	
+	public void logGlobalOverlapping(Graph graph, Set<Graph> cliques, OutputLogger logger) {
+		logger.writeLine("Global Overlapping:");
+		logger.writeLine(""+df4.format(graph.getGlobalOverlapping(cliques)));
+		logger.writeLine("");
+	}
 }
