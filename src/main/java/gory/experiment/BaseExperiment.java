@@ -18,6 +18,7 @@ import org.graphstream.stream.file.FileSinkDOT;
 import gory.domain.Graph;
 import gory.domain.INode;
 import gory.domain.Partition;
+import gory.domain.PartitionNode;
 import gory.service.OutputLogger;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -399,8 +400,22 @@ public abstract class BaseExperiment implements Experiment {
 	public void logNodes(Graph graph, OutputLogger logger, boolean detailed) {
 		if(detailed) logger.writeLine("Nodes:");
 		for(INode node : graph.getNodes()) {
-			int degree = node.getDegree();
-			logger.writeLine(node.toString()+(detailed ? " degree: "+degree : ""));
+			String line = node.toString();
+			if(detailed) {
+				int degree = node.getDegree();
+				line += " degree: "+degree;
+				
+				if(node instanceof PartitionNode) {
+					int evenness = 0;
+					for(int summand :  ((PartitionNode) node).getSummands()) {
+						if(summand%2 == 0) {
+							evenness++;
+						}
+					}
+					line += " evenness: "+evenness;
+				}
+			}
+			logger.writeLine(line);
 		}
 		logger.writeLine("");
 	}
