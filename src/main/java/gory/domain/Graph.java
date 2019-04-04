@@ -39,6 +39,9 @@ public class Graph extends Node {
 	@Getter
 	private Set<INode> nodes = new HashSet<>();
 
+	@Getter
+	private Set<Integer> prohibitedOddness = new HashSet<>();
+	
 	public Graph(String name) {
 		this.name = name;
 	}
@@ -104,12 +107,23 @@ public class Graph extends Node {
 		
 		for(INode node : nodes) {
 			int distance = node.distanceTo(newNode);
-			if(distance >= 0 && distance <= connectionDistance) {
+			if(distance >= 0 && distance <= connectionDistance && testOddness(node, newNode)) {
 				node.connect(newNode);
 			}
 		}
 		
 		nodes.add(newNode);
+		
+		return true;
+	}
+	
+	protected boolean testOddness(INode node1, INode node2) {
+		if(prohibitedOddness.isEmpty()) return true;
+		if(!(node1 instanceof PartitionNode)) return true;
+		if(!(node2 instanceof PartitionNode)) return true;
+		
+		if(prohibitedOddness.contains(((PartitionNode) node1).getPartition().getOddness())) return false;
+		if(prohibitedOddness.contains(((PartitionNode) node2).getPartition().getOddness())) return false;
 		
 		return true;
 	}

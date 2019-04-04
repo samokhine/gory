@@ -91,4 +91,24 @@ public class Partition {
 	public Partition clone() {
 		return new Partition(getSummands());
 	}
+	
+	public int getEvenness() {
+		int evenness = 0;
+		for(int summand :  getSummands()) {
+			if(summand%2 == 0) {
+				evenness++;
+			}
+		}
+		return evenness;
+	}
+
+	public int getOddness() {
+		int oddness = 0;
+		for(int summand :  getSummands()) {
+			if(summand%2 == 1) {
+				oddness++;
+			}
+		}
+		return oddness;
+	}
 }

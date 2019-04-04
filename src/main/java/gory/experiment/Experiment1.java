@@ -57,6 +57,7 @@ public class Experiment1 extends BaseExperiment {
 	private Set<Partition> create = new HashSet<>(); 
 	private Set<Partition> insert = new HashSet<>(); 
 	private Set<Partition> delete = new HashSet<>(); 
+	private Set<Integer> prohibitedOddness = new HashSet<>();
 	
 	public void run(OutputLogger logger) throws IOException {
     	logger.writeLine("Running experiment 1");
@@ -68,13 +69,15 @@ public class Experiment1 extends BaseExperiment {
     	if(!create.isEmpty()) {
     		numberOfDigits = create.iterator().next().getNumberOfDigits();
     		graph = new Graph(numberOfDigits*numberOfDigits+" - "+numberOfDigits+" graph", distance);
+    		graph.getProhibitedOddness().addAll(prohibitedOddness);
     		
 	    	for(Partition partition : create) {
 	    		graph.addNode(new PartitionNode(partition));
 	    	}
     	} else { 
     		graph = new Graph(numberOfDigits*numberOfDigits+" - "+numberOfDigits+" graph", distance);
-    		
+       		graph.getProhibitedOddness().addAll(prohibitedOddness);
+       	    		
     		if(insert.isEmpty()) {
 				PartitionNode headNode;
 				if(head == null) {
@@ -327,6 +330,17 @@ public class Experiment1 extends BaseExperiment {
 					if(cliqueName.isEmpty()) continue;
 					
 					deleteCliques.add(cliqueName);
+				}
+			}
+			
+			String po = properties.getProperty("prohibitedOddness");
+			if(po != null) {
+				for(String part : po.split(",")) {
+					try {
+						prohibitedOddness.add(Integer.valueOf(part.trim()));
+					} catch(Exception e) {
+						// do nothing
+					}
 				}
 			}
 		} catch (IOException ex) {

@@ -122,6 +122,7 @@ public abstract class BaseExperiment implements Experiment {
 			if(insertElement.lastIndexOf(']') != insertElement.length() - 1) insertElement = insertElement + "]";
 
 			partitions.add(new Partition(insertElement));
+			//System.out.println(insertElement+" "+partitions.size());
 		}
 		
 		return partitions;
@@ -406,13 +407,7 @@ public abstract class BaseExperiment implements Experiment {
 				line += " degree: "+degree;
 				
 				if(node instanceof PartitionNode) {
-					int evenness = 0;
-					for(int summand :  ((PartitionNode) node).getSummands()) {
-						if(summand%2 == 0) {
-							evenness++;
-						}
-					}
-					line += " evenness: "+evenness;
+					line += " evenness: "+((PartitionNode) node).getPartition().getEvenness();
 				}
 			}
 			logger.writeLine(line);
