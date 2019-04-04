@@ -387,7 +387,13 @@ public abstract class BaseExperiment implements Experiment {
 		logger.writeLine(""+df4.format(graph.getDensityAdjacentMatrix()));
 		logger.writeLine("");
 	}
-	
+
+	public void logDensityAdjacentMatrixOnlyConnected(Graph graph, OutputLogger logger) {
+		logger.writeLine("DAM (only connected) for "+graph.getName());
+		logger.writeLine(""+df4.format(graph.getDensityAdjacentMatrix(true)));
+		logger.writeLine("");
+	}
+
 	public void logCoalitionResource(Graph graph, OutputLogger logger) {
 		logger.writeLine("Coalition resource:");
 		logger.writeLine(""+graph.getCoalitionResource());
@@ -407,7 +413,7 @@ public abstract class BaseExperiment implements Experiment {
 				line += " degree: "+degree;
 				
 				if(node instanceof PartitionNode) {
-					line += " evenness: "+((PartitionNode) node).getPartition().getEvenness();
+					line += " oddness: "+((PartitionNode) node).getPartition().getOddness();
 				}
 			}
 			logger.writeLine(line);

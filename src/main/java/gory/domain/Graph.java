@@ -248,13 +248,19 @@ public class Graph extends Node {
 	}
 
 	public double getDensityAdjacentMatrix() {
-		int size = getSize();
-		if(size <= 1) return 0;
+		return getDensityAdjacentMatrix(false);
+	}
 
+	public double getDensityAdjacentMatrix(boolean onlyConnected) {
+		int size = 0;
 		double dam = 0;
 		for(INode node : nodes) {
+			if(onlyConnected && node.getConnectedNodes().isEmpty()) continue;
+			
+			size++;
 			dam += node.getConnectedNodes().size();
 		}
+		if(size <= 1) return 0;
 		
 		dam /= (size * (size - 1));
 		

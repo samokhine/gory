@@ -41,6 +41,7 @@ public class Experiment1 extends BaseExperiment {
 	private boolean logCoalitionResource;
 	private boolean logDiameter;
 	private boolean logDensityAdjacentMatrix;
+	private boolean logDensityAdjacentMatrixOnlyConnected;
 	private boolean logDensityAdjacentMatrixForGraphOfCliques;
 	private boolean logNodesByCliques;
 	private boolean logCharacteristicPathLength;
@@ -212,7 +213,11 @@ public class Experiment1 extends BaseExperiment {
     	if(logDensityAdjacentMatrix) {
     		logDensityAdjacentMatrix(graph, logger);
     	}
-    	
+
+    	if(logDensityAdjacentMatrixOnlyConnected) {
+    		logDensityAdjacentMatrixOnlyConnected(graph, logger);
+    	}
+
     	if(logDensityAdjacentMatrixForGraphOfCliques) {
 			Graph graphOfCliques = buildGraphOfCliques(cliques, "Graph of cliques");
     		logDensityAdjacentMatrix(graphOfCliques, logger);
@@ -290,6 +295,7 @@ public class Experiment1 extends BaseExperiment {
 			logCoalitionResource = readProperty(properties, "logCoalitionResource", false);
 			logDiameter = readProperty(properties, "logDiameter", false);
 			logDensityAdjacentMatrix = readProperty(properties, "logDensityAdjacentMatrix", false);
+			logDensityAdjacentMatrixOnlyConnected = readProperty(properties, "logDensityAdjacentMatrixOnlyConnected", false);
 			logDensityAdjacentMatrixForGraphOfCliques = readProperty(properties, "logDensityAdjacentMatrixForGraphOfCliques", false);
 			logNodesByCliques = readProperty(properties, "logNodesByCliques", false);
 			logCharacteristicPathLength = readProperty(properties, "logCharacteristicPathLength", false);
