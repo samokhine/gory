@@ -198,13 +198,15 @@ public class Graph extends Node {
 	}
 
 	public double getCharacteristicPathLength() {
-		int size = getSize();
-		if(size <= 1) return 0;
-		
 		Dijkstra algorithm = new Dijkstra();
 		
+		int size = 0;
 		int sumOfDistances = 0;
 		for(INode nodeStart : getNodes()) {
+			if(nodeStart.getConnectedNodes().isEmpty()) continue;
+			
+			size ++;
+			
 			Map<INode, Integer> shortestDistances = algorithm.getShortestDistances(this, nodeStart);
 			
 			for(INode nodeEnd : shortestDistances.keySet()) {
@@ -218,6 +220,7 @@ public class Graph extends Node {
 				sumOfDistances += shortestDistance;
 			}
 		}
+		if(size <= 1) return 0;
 
 		return 1.0 * sumOfDistances/(size * (size - 1));
 	}
