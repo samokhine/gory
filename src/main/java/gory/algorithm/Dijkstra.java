@@ -24,6 +24,8 @@ public class Dijkstra {
 		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		AtomicInteger diameter = new AtomicInteger();
 		for(INode node : graph.getNodes()) {
+			if(node.getConnectedNodes().isEmpty()) continue;
+			
 			executor.submit(new Callable<Void>() {
 				public Void call() {
 					int distance = getLongestShortestDistance(graph, node);
