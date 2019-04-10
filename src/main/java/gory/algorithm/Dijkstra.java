@@ -64,6 +64,8 @@ public class Dijkstra {
 		Map<INode, List<INode>> shortestPaths = new HashMap<>();
 		Map<INode, Integer> distances = new HashMap<>();
 		for(INode node : graph.getNodes()) {
+			if(node.getConnectedNodes().isEmpty()) continue;
+			
 			distances.put(node, node.equals(start) ? 0 : Integer.MAX_VALUE);
 			shortestPaths.put(node, new LinkedList<>());
 		}
