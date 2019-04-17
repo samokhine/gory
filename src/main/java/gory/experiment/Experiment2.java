@@ -175,7 +175,7 @@ public class Experiment2 extends BaseExperiment {
 	private void readParameters() {
 		InputStream input = null;
 		try {
-			input = new FileInputStream("input.properties");
+			input = new FileInputStream("experiment2.properties");
 
 			// load a properties file
 			Properties properties = new Properties();

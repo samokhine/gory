@@ -221,7 +221,7 @@ public class Experiment5 extends BaseExperiment {
 	private void readParameters() {
 		InputStream input = null;
 		try {
-			input = new FileInputStream("input.properties");
+			input = new FileInputStream("experiment5.properties");
 
 			// load a properties file
 			Properties properties = new Properties();
@@ -229,11 +229,10 @@ public class Experiment5 extends BaseExperiment {
 
 			cliqueSize = readProperty(properties, "cliqueSize", 3);
 			numSteps = readProperty(properties, "numSteps", 5);
-			//numberOfNodesToConnectOnEachStep = readProperty(properties, "numberOfNodesToConnectOnEachStep", 2);
 			probabilityToConnect = readProperty(properties, "probabilityToConnect", 0.0);
 			probabilityToMerge = readProperty(properties, "probabilityToMerge", 0.0);
 
-			maxDegree = readProperty(properties, "maxDegree", 2);
+			maxDegree = readProperty(properties, "maxDegree", 3);
 
 			logMatrix = readProperty(properties, "logMatrix", false);
 			logClusteringCoefficient = readProperty(properties, "logClusteringCoefficient", false);

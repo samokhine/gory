@@ -220,7 +220,7 @@ public class Experiment3 extends BaseExperiment {
 	private void readParameters() {
 		InputStream input = null;
 		try {
-			input = new FileInputStream("input.properties");
+			input = new FileInputStream("experiment3.properties");
 
 			// load a properties file
 			Properties properties = new Properties();
