@@ -2,10 +2,12 @@ package gory.experiment;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -26,6 +28,8 @@ import lombok.Getter;
 public abstract class BaseExperiment implements Experiment {
 	protected static final DecimalFormat df2 = new DecimalFormat("0.00");
 	protected static final DecimalFormat df4 = new DecimalFormat("0.0000");
+
+	private static final NumberFormat NUMBER_FORMAT = NumberFormat.getInstance(Locale.US);
 
 	@AllArgsConstructor
 	@Getter
@@ -116,6 +120,30 @@ public abstract class BaseExperiment implements Experiment {
 		} catch(Exception e) {
 			return defaultValue;
 		}
+	}
+
+	protected List<Double> readArrayOfDoublesProperty(OutputLogger logger, Properties properties, String propertyName, String separator, List<Double> defaultValue) {
+		List<Double> values = new ArrayList<>();
+		try {
+			String doubleSeparator = separator + separator;
+			String str = readProperty(properties, propertyName, "").trim();
+			while(str.indexOf(doubleSeparator)>=0) {
+				StringUtils.replace(str, doubleSeparator, separator);
+			}
+			
+			for(String value : str.split(" ")) {
+				try {
+					value = StringUtils.replace(value, ",", ".");
+					values.add(NUMBER_FORMAT.parse(value).doubleValue());
+				} catch(Exception e) {
+					logger.writeLine("Cannot convert "+value+" to double for "+propertyName);
+				}
+			}
+		} catch(Exception e) {
+			return defaultValue;
+		}
+		
+		return values;
 	}
 
 	protected Set<Partition> parseListOfPartitions(String str) {

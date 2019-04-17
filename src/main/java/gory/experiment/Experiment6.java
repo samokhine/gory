@@ -14,6 +14,8 @@ import gory.domain.SimpleNode;
 import gory.service.OutputLogger;
 
 public class Experiment6 extends BaseExperiment {
+	private static final String PROPERTIES_FILE = "experiment6.properties";
+	
 	private boolean displayGraph;
 	private List<String> countries = new ArrayList<>();
 	private List<Double> thresholds = new ArrayList<>();
@@ -22,7 +24,7 @@ public class Experiment6 extends BaseExperiment {
     	logger.writeLine("Running experiment 6");
     	logger.writeLine("");
     	
-    	readParameters(logger);
+    	Properties properties = readParameters(logger);
     	
     	if(countries.isEmpty()) {
     		logger.writeLine("Did not find any countries in the input file");
@@ -39,40 +41,14 @@ public class Experiment6 extends BaseExperiment {
     	for(String country : countries) {
     		if(error) break;
     		
-    		InputStream input = null;
-    		try {
-    			input = new FileInputStream("experiment6.properties");
-
-    			Properties properties = new Properties();
-    			properties.load(input);
-    			
-    			List<Double> values = new ArrayList<>();
-    			for(String value : readProperty(properties, country.trim(), "").split(",")) {
-    				try {
-    					values.add(Double.valueOf(value));
-    				} catch(Exception e) {
-    					logger.writeLine("Cannot convert value "+value+" to double for country "+country);
-    					error = true;
-    				}
-    			}
-    			
-    			if(values.size() == thresholds.size()) {
-        			valuesByCountry.add(values);
-    			} else {
-					logger.writeLine("Found "+values.size()+" values for country "+country+" but expected "+thresholds.size());
-    			}
-    			
-    		} catch (IOException ex) {
-    			ex.printStackTrace();
-    		} finally {
-    			if (input != null) {
-    				try {
-    					input.close();
-    				} catch (IOException e) {
-    					e.printStackTrace();
-    				}
-    			}
-    		}
+			List<Double> values = new ArrayList<>();
+			values.addAll(readArrayOfDoublesProperty(logger, properties, country, " ", new ArrayList<>()));
+			if(values.size() == thresholds.size()) {
+    			valuesByCountry.add(values);
+			} else {
+				error = true;
+				logger.writeLine("Found "+values.size()+" values for country "+country+" but expected "+thresholds.size());
+			}
     	}
     	if(error) return;
     	
@@ -102,33 +78,24 @@ public class Experiment6 extends BaseExperiment {
         	}
     	}
 
-    	
     	if(displayGraph) {
     		displayGraph(graph, "graph");
     	}
 	}
 	
-	private void readParameters(OutputLogger logger) {
+	private Properties readParameters(OutputLogger logger) {
+		Properties properties = new Properties();
 		InputStream input = null;
 		try {
-			input = new FileInputStream("experiment6.properties");
+			input = new FileInputStream(PROPERTIES_FILE);
 
 			// load a properties file
-			Properties properties = new Properties();
 			properties.load(input);
 			
 			countries.addAll(Arrays.asList(readProperty(properties, "countries", "").split(",")));
-			
-			for(String threshold : readProperty(properties, "thresholds", "").split(",")) {
-				try {
-					thresholds.add(Double.valueOf(threshold));
-				} catch(Exception e) {
-					logger.writeLine("Cannot convert threshold "+threshold+" to double");
-				}
-			}
+			thresholds.addAll(readArrayOfDoublesProperty(logger, properties, "thresholds", " ", new ArrayList<>()));
 			
 			displayGraph = readProperty(properties, "displayGraph", false);
-			
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {
@@ -140,5 +107,7 @@ public class Experiment6 extends BaseExperiment {
 				}
 			}
 		}
+		
+		return properties;
 	}
 }
