@@ -12,6 +12,7 @@ import gory.experiment.Experiment3;
 import gory.experiment.Experiment4;
 import gory.experiment.Experiment5;
 import gory.experiment.Experiment6;
+import gory.experiment.Experiment7;
 import gory.service.OutputLogger;
 
 public class App {
@@ -31,6 +32,8 @@ public class App {
 	    	experiment = new Experiment5();
     	} else if(experimentId == 6) {
 	    	experiment = new Experiment6();
+    	} else if(experimentId == 7) {
+	    	experiment = new Experiment7();
     	}
 
     	OutputLogger logger = new OutputLogger("output.txt");

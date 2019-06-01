@@ -1,6 +1,7 @@
 package gory.domain;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -110,5 +111,15 @@ public class Partition {
 			}
 		}
 		return oddness;
+	}
+	
+	public Partition normilize() {
+		arr = Arrays.stream(arr)
+		        .boxed()
+		        .sorted(Comparator.reverseOrder())
+		        .mapToInt(Integer::intValue)
+		        .toArray();
+		
+		return this;
 	}
 }
