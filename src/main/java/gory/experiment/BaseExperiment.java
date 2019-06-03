@@ -318,6 +318,10 @@ public abstract class BaseExperiment implements Experiment {
 		}
 		logger.writeLine("");
 	}
+
+	public void displayGraph(Graph graph) {
+		displayGraph(graph, graph.getName());
+	}
 	
 	public void displayGraph(Graph graph, String fileName) {
 		org.graphstream.graph.Graph gsGraph = graph.asGsGraph();
