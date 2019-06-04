@@ -27,7 +27,6 @@ public class Experiment7 extends BaseExperiment {
 	private boolean logClusteringCoefficient;
 	private boolean logDiameter;
 	private boolean logDensityAdjacentMatrix;
-	private boolean logDensityAdjacentMatrixOnlyConnected;
 	private boolean logCharacteristicPathLength;
 	private boolean logStatsOfDegrees;
 	
@@ -49,8 +48,8 @@ public class Experiment7 extends BaseExperiment {
     	List<Double> clusteringCoefficients = new ArrayList<>();
     	List<Integer> diameters = new ArrayList<>();
     	List<Double> densities = new ArrayList<>();
-    	List<Double> densitiesOnlyConnected = new ArrayList<>();
     	List<Double> characteristicPathLengths = new ArrayList<>();
+    	int graphsAccepted = 0;
     	for(int i=0; i<numberOfRuns; i++) {
 	    	List<Partition> selectedPartitions = new ArrayList<>();
 	    	int cnt = 0;
@@ -67,32 +66,31 @@ public class Experiment7 extends BaseExperiment {
 	    		graph.addNode(new PartitionNode(partition));
 	    	}
 	    	
-	    	/*
-	    	boolean hasDisconnectedNodes = false;
-	    	for(INode node : graph.getNodes()) {
-	    		if(node.getConnectedNodes().isEmpty()) {
-	    			hasDisconnectedNodes = true;
-	    			break;
-	    		}
+	    	int diameter = graph.getDiameter();
+	    	if(diameter == Integer.MAX_VALUE) {
+	    		continue;
 	    	}
-	    	if(hasDisconnectedNodes) continue;
-	    	*/
+	    	graphsAccepted ++;
 	    	
 	    	if(logClusteringCoefficient) {
 	    		clusteringCoefficients.add(graph.getClusteringCoefficientUsingMatrix());
 	    	}
 	    	if(logDiameter) {
-	    		diameters.add(graph.getDiameter());
+	    		diameters.add(diameter);
 	    	}
 	    	if(logDensityAdjacentMatrix) {
 	    		densities.add(graph.getDensityAdjacentMatrix());
 	    	}
-	    	if(logDensityAdjacentMatrixOnlyConnected) {
-	    		densitiesOnlyConnected.add(graph.getDensityAdjacentMatrix(true));
-	    	}
 	    	if(logCharacteristicPathLength) {
 	    		characteristicPathLengths.add(graph.getCharacteristicPathLength());
 	    	}
+    	}
+    	
+    	if(graphsAccepted == 0) {
+    		logger.writeLine("Cannot generate a single connected graph. Aborting.");
+    		return;
+    	} else {
+    		logger.writeLine("Found "+graphsAccepted+" connected graph.");
     	}
 
     	if(logClusteringCoefficient) {
@@ -110,12 +108,6 @@ public class Experiment7 extends BaseExperiment {
     	if(logDensityAdjacentMatrix) {
     		logger.writeLine("DAM for random graph:");
     		logger.writeLine(""+df4.format(densities.stream().mapToDouble(d -> d).average().getAsDouble()));
-    		logger.writeLine("");
-    	}
-
-    	if(logDensityAdjacentMatrixOnlyConnected) {
-    		logger.writeLine("DAM (only connected) for random graph:");
-    		logger.writeLine(""+df4.format(densitiesOnlyConnected.stream().mapToDouble(d -> d).average().getAsDouble()));
     		logger.writeLine("");
     	}
 
@@ -145,10 +137,6 @@ public class Experiment7 extends BaseExperiment {
     	
     	if(logDensityAdjacentMatrix) {
     		logDensityAdjacentMatrix(graph, logger);
-    	}
-
-    	if(logDensityAdjacentMatrixOnlyConnected) {
-    		logDensityAdjacentMatrixOnlyConnected(graph, logger);
     	}
 
     	if(logCharacteristicPathLength) {
@@ -182,7 +170,6 @@ public class Experiment7 extends BaseExperiment {
 			logClusteringCoefficient = readProperty(properties, "logClusteringCoefficient", false);
 			logDiameter = readProperty(properties, "logDiameter", false);
 			logDensityAdjacentMatrix = readProperty(properties, "logDensityAdjacentMatrix", false);
-			logDensityAdjacentMatrixOnlyConnected = readProperty(properties, "logDensityAdjacentMatrixOnlyConnected", false);
 			logCharacteristicPathLength = readProperty(properties, "logCharacteristicPathLength", false);
 			logStatsOfDegrees = readProperty(properties, "logStatsOfDegrees", false);
 			

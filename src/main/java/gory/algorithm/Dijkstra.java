@@ -20,6 +20,10 @@ public class Dijkstra {
 		if(graph.getSize()<=0) {
 			return Integer.MAX_VALUE;
 		}
+
+		for(INode node : graph.getNodes()) {
+			if(node.getConnectedNodes().isEmpty()) return Integer.MAX_VALUE;
+		}
 		
 		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		AtomicInteger diameter = new AtomicInteger();
