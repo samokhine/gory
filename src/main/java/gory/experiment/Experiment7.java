@@ -29,6 +29,7 @@ public class Experiment7 extends BaseExperiment {
 	private boolean logDensityAdjacentMatrix;
 	private boolean logDensityAdjacentMatrixOnlyConnected;
 	private boolean logCharacteristicPathLength;
+	private boolean logStatsOfDegrees;
 	
 	private boolean displayGraph;
 
@@ -65,6 +66,17 @@ public class Experiment7 extends BaseExperiment {
 	    	for(Partition partition : selectedPartitions) {
 	    		graph.addNode(new PartitionNode(partition));
 	    	}
+	    	
+	    	/*
+	    	boolean hasDisconnectedNodes = false;
+	    	for(INode node : graph.getNodes()) {
+	    		if(node.getConnectedNodes().isEmpty()) {
+	    			hasDisconnectedNodes = true;
+	    			break;
+	    		}
+	    	}
+	    	if(hasDisconnectedNodes) continue;
+	    	*/
 	    	
 	    	if(logClusteringCoefficient) {
 	    		clusteringCoefficients.add(graph.getClusteringCoefficientUsingMatrix());
@@ -143,6 +155,10 @@ public class Experiment7 extends BaseExperiment {
     		logCharacteristicPathLength(graph, logger);
     	}
 
+    	if(logStatsOfDegrees) {
+    		logStatsOfDegrees(graph, logger);
+    	}
+    	
     	if(displayGraph) {
     		displayGraph(graph);
     	}
@@ -168,6 +184,7 @@ public class Experiment7 extends BaseExperiment {
 			logDensityAdjacentMatrix = readProperty(properties, "logDensityAdjacentMatrix", false);
 			logDensityAdjacentMatrixOnlyConnected = readProperty(properties, "logDensityAdjacentMatrixOnlyConnected", false);
 			logCharacteristicPathLength = readProperty(properties, "logCharacteristicPathLength", false);
+			logStatsOfDegrees = readProperty(properties, "logStatsOfDegrees", false);
 			
 			displayGraph = readProperty(properties, "displayGraph", false);
 		} catch (IOException ex) {

@@ -397,7 +397,7 @@ public abstract class BaseExperiment implements Experiment {
 		Map<Integer, AtomicInteger> nodeDegreeCount = graph.getNodeDegreeCount();
 		Map<Integer, Double> nodeDegreeDistribution = graph.getNodeDegreeDistribution(nodeDegreeCount);
 
-		logger.writeLine("Distribution of nodes:");
+		logger.writeLine("Distribution of nodes for "+graph.getName());
 		for(int degree : nodeDegreeDistribution.keySet()) {
 			logger.writeLine(degree+" "+nodeDegreeCount.get(degree).get()+" "+df4.format(nodeDegreeDistribution.get(degree)));
 		}
@@ -417,7 +417,7 @@ public abstract class BaseExperiment implements Experiment {
 	}
 
 	protected void logDiameter(Graph graph, OutputLogger logger) {
-		logger.writeLine("Diameter of "+graph.getName()+":");
+		logger.writeLine("Diameter of "+graph.getName());
 		logger.writeLine(""+graph.getDiameter());
 		logger.writeLine("");
 	}
@@ -435,7 +435,7 @@ public abstract class BaseExperiment implements Experiment {
 	}
 
 	public void logCoalitionResource(Graph graph, OutputLogger logger) {
-		logger.writeLine("Coalition resource:");
+		logger.writeLine("Coalition resource for "+graph.getName());
 		logger.writeLine(""+graph.getCoalitionResource());
 		logger.writeLine("");
 	}
@@ -445,7 +445,7 @@ public abstract class BaseExperiment implements Experiment {
 	}
 
 	public void logNodes(Graph graph, OutputLogger logger, boolean detailed) {
-		if(detailed) logger.writeLine("Nodes:");
+		if(detailed) logger.writeLine("Nodes for "+graph.getName());
 		for(INode node : graph.getNodes()) {
 			String line = node.toString();
 			if(detailed) {
@@ -462,37 +462,37 @@ public abstract class BaseExperiment implements Experiment {
 	}
 
 	public void logClusteringCoefficient(Graph graph, OutputLogger logger) {
-		logger.writeLine("Clustering coefficient:");
+		logger.writeLine("Clustering coefficient for "+graph.getName());
 		logger.writeLine(""+graph.getClusteringCoefficientUsingMatrix());
 		logger.writeLine("");
 	}
 
 	public void logCharacteristicPathLength(Graph graph, OutputLogger logger) {
-		logger.writeLine("Characteristic path length:");
+		logger.writeLine("Characteristic path length for "+graph.getName());
 		logger.writeLine(""+df4.format(graph.getCharacteristicPathLength()));
 		logger.writeLine("");
 	}
 
 	public void logAverageEfficiency(Graph graph, OutputLogger logger) {
-		logger.writeLine("Average efficiency:");
+		logger.writeLine("Average efficiency for "+graph.getName());
 		logger.writeLine(""+df4.format(graph.getAverageEfficiency()));
 		logger.writeLine("");
 	}
 
 	public void logEnergy(Graph graph, OutputLogger logger) {
-		logger.writeLine("Energy:");
+		logger.writeLine("Energy for "+graph.getName());
 		logger.writeLine(""+df4.format(graph.getEnergy()));
 		logger.writeLine("");
 	}
 
 	public void logCheegerConstant(Graph graph, OutputLogger logger) {
-		logger.writeLine("Cheeger:");
+		logger.writeLine("Cheeger for "+graph.getName());
 		logger.writeLine(""+df4.format(graph.getCheegerConstant()));
 		logger.writeLine("");
 	}
 	
 	public void logGlobalOverlapping(Graph graph, Set<Graph> cliques, OutputLogger logger) {
-		logger.writeLine("Global Overlapping:");
+		logger.writeLine("Global Overlapping for "+graph.getName());
 		logger.writeLine(""+df4.format(graph.getGlobalOverlapping(cliques)));
 		logger.writeLine("");
 	}
