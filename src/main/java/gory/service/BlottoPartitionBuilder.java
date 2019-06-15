@@ -43,6 +43,7 @@ public class BlottoPartitionBuilder {
 		while(partitions.size() < numPartitions && attempts < maxAttempts) {
 			attempts++;
 			Partition partition = generateRandom();
+			if(partition.getSumOfDigits() != sum) continue;
 			
 			if(!checkRepetitions(partition, maxNumRepetitions)) continue;
 
