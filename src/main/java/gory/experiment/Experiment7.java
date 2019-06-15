@@ -7,22 +7,33 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 
 import gory.domain.Graph;
 import gory.domain.Partition;
 import gory.domain.PartitionNode;
+import gory.service.BlottoPartitionBuilder;
 import gory.service.OutputLogger;
 import gory.service.PartitionBuilder;
 
 public class Experiment7 extends BaseExperiment {
 	private static final String PROPERTIES_FILE = "experiment7.properties";
 	
+	/*
 	private List<Partition> playerApartitions = new ArrayList<>();
 	private List<Partition> playerBpartitions = new ArrayList<>();
 
 	private int numPartitionsToPick;
-	private int distance;
 	private int numberOfRuns;
+	*/
+	private int distance;
+	
+	int numPartitionsToBuild;
+	long maxAttempts;
+	int maxNumRepetitions;
+	int minResource;
+	int maxResource;
 
 	private boolean logClusteringCoefficient;
 	private boolean logDiameter;
@@ -36,8 +47,19 @@ public class Experiment7 extends BaseExperiment {
 	public void run(OutputLogger logger) throws IOException {
     	logger.writeLine("Running experiment 7");
     	logger.writeLine("");
-    	
+
     	readParameters(logger);
+
+    	AtomicLong attemptsMade = new AtomicLong();
+    	
+    	Set<Partition> partitions = BlottoPartitionBuilder.build(numPartitionsToBuild, maxAttempts, maxNumRepetitions, minResource, maxResource, attemptsMade);
+    	
+    	logger.writeLine(partitions.size()+" partitions found. "+attemptsMade.get()+" attempts made.");
+    	for(Partition partition : partitions) {
+        	logger.writeLine(partition.toString());
+    	}
+    	
+    	/*
     	
     	processGraph("Player A", playerApartitions, logger);
     	processGraph("Player B", playerBpartitions, logger);
@@ -116,10 +138,11 @@ public class Experiment7 extends BaseExperiment {
     		logger.writeLine(""+df4.format(characteristicPathLengths.stream().mapToDouble(d -> d).average().getAsDouble()));
     		logger.writeLine("");
     	}
+    	*/
 	}
 
 	private void processGraph(String graphName, List<Partition> partitions, OutputLogger logger) {
-    	partitions.stream().forEach(partition -> partition.normilize());
+    	partitions.stream().forEach(partition -> partition.normalize());
 
 		Graph graph = new Graph(graphName, distance);
 		
@@ -160,12 +183,20 @@ public class Experiment7 extends BaseExperiment {
 
 			properties.load(input);
 			
+	    	numPartitionsToBuild = readProperty(properties, "numPartitionsToBuild", 10);
+	    	maxAttempts = readProperty(properties, "maxAttempts", 100_000_000_000L);
+	    	maxNumRepetitions = readProperty(properties, "maxNumRepetitions", 2);
+	    	minResource = readProperty(properties, "minResource", 69);
+	    	maxResource = readProperty(properties, "maxResource", 75);
+			
+			/*
 			playerApartitions = new ArrayList<>(parseListOfPartitions(properties.getProperty("playerApartitions")));
 			playerBpartitions = new ArrayList<>(parseListOfPartitions(properties.getProperty("playerBpartitions")));
 
 			numPartitionsToPick = readProperty(properties, "numPartitionsToPick", 10);
 			numberOfRuns = readProperty(properties, "numberOfRuns", 20);
 			distance = readProperty(properties, "distance", 1);
+			*/
 
 			logClusteringCoefficient = readProperty(properties, "logClusteringCoefficient", false);
 			logDiameter = readProperty(properties, "logDiameter", false);

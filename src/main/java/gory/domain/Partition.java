@@ -28,14 +28,20 @@ public class Partition {
 			arr[i++] = Integer.valueOf(summond.trim());
 		}
 	}
-	
+
 	public Partition(List<Integer> summands) {
-		summands.sort(new Comparator<Integer>() {
-			@Override
-			public int compare(Integer o1, Integer o2) {
-				return -1*o1.compareTo(o2);
-			}
-		});
+		this(summands, true);
+	}
+
+	public Partition(List<Integer> summands, boolean sort) {
+		if(sort) {
+			summands.sort(new Comparator<Integer>() {
+				@Override
+				public int compare(Integer o1, Integer o2) {
+					return -1*o1.compareTo(o2);
+				}
+			});
+		}
 		
 		sumOfDigits = 0;
 		for(int summand : summands) {
@@ -113,7 +119,7 @@ public class Partition {
 		return oddness;
 	}
 	
-	public Partition normilize() {
+	public Partition normalize() {
 		arr = Arrays.stream(arr)
 		        .boxed()
 		        .sorted(Comparator.reverseOrder())

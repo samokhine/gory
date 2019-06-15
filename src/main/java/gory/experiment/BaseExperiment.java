@@ -114,6 +114,14 @@ public abstract class BaseExperiment implements Experiment {
 		}
 	}
 
+	protected long readProperty(Properties properties, String propertyName, long defaultValue) {
+		try {
+			return Long.valueOf(properties.getProperty(propertyName));
+		} catch(Exception e) {
+			return defaultValue;
+		}
+	}
+
 	protected double readProperty(Properties properties, String propertyName, double defaultValue) {
 		try {
 			return Double.valueOf(properties.getProperty(propertyName));
