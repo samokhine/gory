@@ -3,17 +3,16 @@ package gory.experiment;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
 
 import gory.domain.Graph;
 import gory.domain.Partition;
 import gory.domain.PartitionNode;
-import gory.service.BlottoPartitionBuilder;
+import gory.service.BlottoPartitionFilter;
 import gory.service.OutputLogger;
 import gory.service.PartitionBuilder;
 
@@ -30,7 +29,6 @@ public class Experiment7 extends BaseExperiment {
 	private int distance;
 	
 	int numPartitionsToBuild;
-	long maxAttempts;
 	int maxNumRepetitions;
 	int minResource;
 	int maxResource;
@@ -50,11 +48,17 @@ public class Experiment7 extends BaseExperiment {
 
     	readParameters(logger);
 
-    	AtomicLong attemptsMade = new AtomicLong();
+    	BlottoPartitionFilter blottoPartitionFilter = new BlottoPartitionFilter(maxNumRepetitions, minResource, maxResource);
     	
-    	Set<Partition> partitions = BlottoPartitionBuilder.build(numPartitionsToBuild, maxAttempts, maxNumRepetitions, minResource, maxResource, attemptsMade);
+    	List<Partition> allPartitions = PartitionBuilder.build(100, 10, blottoPartitionFilter);
     	
-    	logger.writeLine(partitions.size()+" partitions found. "+attemptsMade.get()+" attempts made.");
+    	Random random = new Random();
+    	Set<Partition> partitions = new HashSet<>();
+    	while(partitions.size()<numPartitionsToBuild) {
+    		int index = random.nextInt(allPartitions.size());
+    		partitions.add(allPartitions.remove(index));
+    	}
+    	
     	for(Partition partition : partitions) {
         	logger.writeLine(partition.toString());
     	}
@@ -184,7 +188,6 @@ public class Experiment7 extends BaseExperiment {
 			properties.load(input);
 			
 	    	numPartitionsToBuild = readProperty(properties, "numPartitionsToBuild", 10);
-	    	maxAttempts = readProperty(properties, "maxAttempts", 100_000_000_000L);
 	    	maxNumRepetitions = readProperty(properties, "maxNumRepetitions", 2);
 	    	minResource = readProperty(properties, "minResource", 69);
 	    	maxResource = readProperty(properties, "maxResource", 75);

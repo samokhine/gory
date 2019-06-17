@@ -12,6 +12,10 @@ import gory.domain.Partition;
 
 public class PartitionBuilder {
 	static public List<Partition> build(int n, int m) {
+		return build(n, m, null);
+	}
+
+	static public List<Partition> build(int n, int m, IPartitionFilter filter) {
 		List<Partition> partitions = Collections.synchronizedList(new ArrayList<>());
 
 		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
@@ -27,7 +31,7 @@ public class PartitionBuilder {
 					}
 					Partition partition = new Partition(summands);
 		
-					addNext(n, m, partitions, partition, iFinal, 1);
+					addNext(n, m, partitions, partition, iFinal, 1, filter);
 					return null;
 				}
 			});
@@ -43,15 +47,17 @@ public class PartitionBuilder {
 		return partitions;
 	}
 	
-	static private void addNext(int n, int m, List<Partition> partitions, Partition current, int sum, int position) {
+	static private void addNext(int n, int m, List<Partition> partitions, Partition current, int sum, int position, IPartitionFilter filter) {
 		if(sum == n) {
-			partitions.add(current);
+			if(filter == null || filter.filter(current)) {
+				partitions.add(current);
+			}
 		} else if(position<m) {
 			int max = Math.min(current.getAt(position), n-sum);
 			for(int i=1; i<=max; i++) {
 				Partition partition = current.clone();
 				partition.setAt(position+1, i);
-				addNext(n, m, partitions, partition, sum+i, position+1);
+				addNext(n, m, partitions, partition, sum+i, position+1, filter);
 			}
 		}
 	}
