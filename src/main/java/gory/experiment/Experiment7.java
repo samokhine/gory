@@ -21,6 +21,7 @@ public class Experiment7 extends BaseExperiment {
 	private int numPartitionsToSelect;
 	private int distance;
 	
+	private boolean logNodes;
 	private boolean logClusteringCoefficient;
 	private boolean logDiameter;
 	private boolean logDensityAdjacentMatrix;
@@ -55,6 +56,10 @@ public class Experiment7 extends BaseExperiment {
     		graph.addNode(new PartitionNode(partition));
     	}
     	
+    	if(logNodes) {
+    		logNodes(graph, logger);
+    	}
+
     	if(logClusteringCoefficient) {
     		logClusteringCoefficient(graph, logger);
     	}
@@ -93,6 +98,7 @@ public class Experiment7 extends BaseExperiment {
 			distance = readProperty(properties, "distance", 1);
 			numPartitionsToSelect = readProperty(properties, "numPartitionsToSelect", 10);
 			
+			logNodes = readProperty(properties, "logNodes", false);
 			logClusteringCoefficient = readProperty(properties, "logClusteringCoefficient", false);
 			logDiameter = readProperty(properties, "logDiameter", false);
 			logDensityAdjacentMatrix = readProperty(properties, "logDensityAdjacentMatrix", false);
