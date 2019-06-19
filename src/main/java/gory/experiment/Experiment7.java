@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Random;
 
 import gory.domain.Graph;
 import gory.domain.Partition;
@@ -15,9 +16,9 @@ import gory.service.OutputLogger;
 public class Experiment7 extends BaseExperiment {
 	private static final String PROPERTIES_FILE = "experiment7.properties";
 	
-	private List<Partition> playerApartitions = new ArrayList<>();
-	private List<Partition> playerBpartitions = new ArrayList<>();
+	private List<Partition> partitions = new ArrayList<>();
 
+	private int numPartitionsToSelect;
 	private int distance;
 	
 	private boolean logClusteringCoefficient;
@@ -35,8 +36,14 @@ public class Experiment7 extends BaseExperiment {
 
     	readParameters(logger);
 
-    	processGraph("Player A", playerApartitions, logger);
-    	processGraph("Player B", playerBpartitions, logger);
+    	Random random = new Random();
+    	List<Partition> selectedPartitions = new ArrayList<>();
+    	while(selectedPartitions.size()<numPartitionsToSelect) {
+    		int index = random.nextInt(partitions.size());
+    		selectedPartitions.add(partitions.remove(index));
+    	}
+    	
+    	processGraph("Graph", selectedPartitions, logger);
 	}
 
 	private void processGraph(String graphName, List<Partition> partitions, OutputLogger logger) {
@@ -81,10 +88,10 @@ public class Experiment7 extends BaseExperiment {
 
 			properties.load(input);
 			
-			playerApartitions = new ArrayList<>(parseListOfPartitions(properties.getProperty("playerApartitions")));
-			playerBpartitions = new ArrayList<>(parseListOfPartitions(properties.getProperty("playerBpartitions")));
+			partitions = new ArrayList<>(parseListOfPartitions(properties.getProperty("partitions")));
 
 			distance = readProperty(properties, "distance", 1);
+			numPartitionsToSelect = readProperty(properties, "numPartitionsToSelect", 10);
 			
 			logClusteringCoefficient = readProperty(properties, "logClusteringCoefficient", false);
 			logDiameter = readProperty(properties, "logDiameter", false);
