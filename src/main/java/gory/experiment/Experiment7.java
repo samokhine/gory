@@ -16,7 +16,8 @@ import gory.service.OutputLogger;
 public class Experiment7 extends BaseExperiment {
 	private static final String PROPERTIES_FILE = "experiment7.properties";
 	
-	private List<Partition> partitions = new ArrayList<>();
+	private List<Partition> aPartitions = new ArrayList<>();
+	private List<Partition> allBPartitions = new ArrayList<>();
 
 	private int numPartitionsToSelect;
 	private int distance;
@@ -38,13 +39,14 @@ public class Experiment7 extends BaseExperiment {
     	readParameters(logger);
 
     	Random random = new Random();
-    	List<Partition> selectedPartitions = new ArrayList<>();
-    	while(selectedPartitions.size()<numPartitionsToSelect) {
-    		int index = random.nextInt(partitions.size());
-    		selectedPartitions.add(partitions.remove(index));
+    	List<Partition> selectedBPartitions = new ArrayList<>();
+    	while(selectedBPartitions.size()<numPartitionsToSelect) {
+    		int index = random.nextInt(allBPartitions.size());
+    		selectedBPartitions.add(allBPartitions.remove(index));
     	}
     	
-    	processGraph("Graph", selectedPartitions, logger);
+    	processGraph("Graph A", aPartitions, logger);
+    	processGraph("Graph B", selectedBPartitions, logger);
 	}
 
 	private void processGraph(String graphName, List<Partition> partitions, OutputLogger logger) {
@@ -93,7 +95,8 @@ public class Experiment7 extends BaseExperiment {
 
 			properties.load(input);
 			
-			partitions = new ArrayList<>(parseListOfPartitions(properties.getProperty("partitions")));
+			aPartitions = new ArrayList<>(parseListOfPartitions(properties.getProperty("aPartitions")));
+			allBPartitions = new ArrayList<>(parseListOfPartitions(properties.getProperty("bPartitions")));
 
 			distance = readProperty(properties, "distance", 1);
 			numPartitionsToSelect = readProperty(properties, "numPartitionsToSelect", 10);
