@@ -504,4 +504,10 @@ public abstract class BaseExperiment implements Experiment {
 		logger.writeLine(""+df4.format(graph.getGlobalOverlapping(cliques)));
 		logger.writeLine("");
 	}
+	
+	public void logHammingDistance(Graph graph1, Graph graph2, OutputLogger logger) {
+		logger.writeLine("Hamming distance between "+graph1.getName()+" and "+graph2.getName());
+		logger.writeLine(""+df4.format(graph1.getHammingDistance(graph2)));
+		logger.writeLine("");
+	}
 }

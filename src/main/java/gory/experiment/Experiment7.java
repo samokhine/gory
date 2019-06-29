@@ -28,6 +28,7 @@ public class Experiment7 extends BaseExperiment {
 	private boolean logDensityAdjacentMatrix;
 	private boolean logCharacteristicPathLength;
 	private boolean logStatsOfDegrees;
+	private boolean logHammingDistance;
 	
 	private boolean displayGraph;
 
@@ -45,11 +46,15 @@ public class Experiment7 extends BaseExperiment {
     		selectedBPartitions.add(allBPartitions.remove(index));
     	}
     	
-    	processGraph("Graph A", aPartitions, logger);
-    	processGraph("Graph B", selectedBPartitions, logger);
+    	Graph graphA = processGraph("Graph A", aPartitions, logger);
+    	Graph graphB = processGraph("Graph B", selectedBPartitions, logger);
+    	
+    	if(logHammingDistance) {
+    		logHammingDistance(graphA, graphB, logger);
+    	}
 	}
 
-	private void processGraph(String graphName, List<Partition> partitions, OutputLogger logger) {
+	private Graph processGraph(String graphName, List<Partition> partitions, OutputLogger logger) {
     	partitions.stream().forEach(partition -> partition.normalize());
 
 		Graph graph = new Graph(graphName, distance);
@@ -85,6 +90,8 @@ public class Experiment7 extends BaseExperiment {
     	if(displayGraph) {
     		displayGraph(graph);
     	}
+    	
+    	return graph;
 	}
 	
 	private Properties readParameters(OutputLogger logger) {
@@ -107,6 +114,7 @@ public class Experiment7 extends BaseExperiment {
 			logDensityAdjacentMatrix = readProperty(properties, "logDensityAdjacentMatrix", false);
 			logCharacteristicPathLength = readProperty(properties, "logCharacteristicPathLength", false);
 			logStatsOfDegrees = readProperty(properties, "logStatsOfDegrees", false);
+			logHammingDistance = readProperty(properties, "logHammingDistance", false);
 			
 			displayGraph = readProperty(properties, "displayGraph", false);
 		} catch (IOException ex) {

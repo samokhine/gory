@@ -555,4 +555,23 @@ public class Graph extends Node {
 		
 		return 1.0 * globalOverlapping/getSize();
 	}
+	
+	public double getHammingDistance(Graph graph) {
+		if(this.getSize() != graph.getSize()) return -1;
+		
+		double[][] matrixThis = getAdjacencyMatrix();
+		double[][] matrixThat = graph.getAdjacencyMatrix();
+		
+		int size = getSize();
+		int cnt = 0;
+		for(int i=0; i<size; i++) {
+			for(int j=0; j<size; j++) {
+				if(matrixThis[i][j] != matrixThat[i][j]) {
+					cnt++;
+				}
+			}
+		}
+		
+		return 1.0*cnt/size/size; 
+	}
 }
