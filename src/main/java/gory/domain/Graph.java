@@ -557,7 +557,7 @@ public class Graph extends Node {
 	}
 	
 	public double getHammingDistance(Graph graph) {
-		if(this.getSize() != graph.getSize()) return -1;
+		if(getSize() != graph.getSize() || getSize() <= 1) return -1;
 		
 		double[][] matrixThis = getAdjacencyMatrix();
 		double[][] matrixThat = graph.getAdjacencyMatrix();
@@ -565,13 +565,13 @@ public class Graph extends Node {
 		int size = getSize();
 		int cnt = 0;
 		for(int i=0; i<size; i++) {
-			for(int j=0; j<size; j++) {
+			for(int j=0; j<i; j++) {
 				if(matrixThis[i][j] != matrixThat[i][j]) {
 					cnt++;
 				}
 			}
 		}
 		
-		return 1.0*cnt/size/size; 
+		return 1.0*cnt/(size*(size-1)/2); 
 	}
 }
