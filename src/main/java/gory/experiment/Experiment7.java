@@ -29,6 +29,7 @@ public class Experiment7 extends BaseExperiment {
 	private boolean logCharacteristicPathLength;
 	private boolean logStatsOfDegrees;
 	private boolean logHammingDistance;
+	private boolean logEnergy;
 	
 	private boolean displayGraph;
 
@@ -87,6 +88,10 @@ public class Experiment7 extends BaseExperiment {
     		logStatsOfDegrees(graph, logger);
     	}
     	
+    	if(logEnergy) {
+    		logEnergy(graph, logger);
+    	}
+    	
     	if(displayGraph) {
     		displayGraph(graph);
     	}
@@ -115,6 +120,7 @@ public class Experiment7 extends BaseExperiment {
 			logCharacteristicPathLength = readProperty(properties, "logCharacteristicPathLength", false);
 			logStatsOfDegrees = readProperty(properties, "logStatsOfDegrees", false);
 			logHammingDistance = readProperty(properties, "logHammingDistance", false);
+			logEnergy = readProperty(properties, "logEnergy", false);
 			
 			displayGraph = readProperty(properties, "displayGraph", false);
 		} catch (IOException ex) {
