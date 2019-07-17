@@ -542,6 +542,7 @@ public class Graph extends Node {
 	
 	public double getGlobalOverlapping(Set<Graph> cliques) {
 		int globalOverlapping = 0;
+		int nodesInCliques = 0;
 		for(INode node : nodes) {
 			int localOverlapping = 0;
 			for(Graph clique : cliques) {
@@ -549,11 +550,14 @@ public class Graph extends Node {
 					localOverlapping ++;
 				}
 			}
+			if(localOverlapping>0) {
+				nodesInCliques++;
+			}
 			
 			globalOverlapping += localOverlapping;
 		}
 		
-		return 1.0 * globalOverlapping/getSize();
+		return 1.0 * globalOverlapping/nodesInCliques;
 	}
 	
 	public double getHammingDistance(Graph graph) {
