@@ -463,6 +463,10 @@ public abstract class BaseExperiment implements Experiment {
 				if(node instanceof PartitionNode) {
 					line += " oddness: "+((PartitionNode) node).getPartition().getOddness();
 				}
+
+				if(node instanceof PartitionNode) {
+					line += " rank: "+((PartitionNode) node).getPartition().getRank();
+				}
 			}
 			logger.writeLine(line);
 		}
@@ -508,6 +512,12 @@ public abstract class BaseExperiment implements Experiment {
 	public void logHammingDistance(Graph graph1, Graph graph2, OutputLogger logger) {
 		logger.writeLine("Hamming distance between "+graph1.getName()+" and "+graph2.getName());
 		logger.writeLine(""+df4.format(graph1.getHammingDistance(graph2)));
+		logger.writeLine("");
+	}
+
+	public void logAverageRank(Graph graph, OutputLogger logger) {
+		logger.writeLine("Average rank for "+graph.getName());
+		logger.writeLine(""+df4.format(graph.getAverageRank()));
 		logger.writeLine("");
 	}
 }

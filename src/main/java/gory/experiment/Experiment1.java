@@ -49,6 +49,7 @@ public class Experiment1 extends BaseExperiment {
 	private boolean logEnergy;
 	private boolean logCheegerConstant;
 	private boolean logGlobalOverlapping;
+	private boolean logAverageRank;
 	private boolean displayGraph;
 	private boolean displayGraphOfCliques;
 	private boolean saveGraphInDotFormat;
@@ -243,6 +244,10 @@ public class Experiment1 extends BaseExperiment {
     		logGlobalOverlapping(graph, cliques, logger);
     	}
 
+    	if(logAverageRank) {
+    		logAverageRank(graph, logger);
+    	}
+    	
     	if(displayGraph) {
     		displayGraph(graph, "graph");
     	}
@@ -303,6 +308,7 @@ public class Experiment1 extends BaseExperiment {
 			logEnergy = readProperty(properties, "logEnergy", false);
 			logCheegerConstant = readProperty(properties, "logCheegerConstant", false);
 			logGlobalOverlapping = readProperty(properties, "logGlobalOverlapping", false);
+			logAverageRank = readProperty(properties, "logAverageRank", false);
 			
 			displayGraph = readProperty(properties, "displayGraph", false);
 			displayGraphOfCliques = readProperty(properties, "displayGraphOfCliques", false);

@@ -128,6 +128,19 @@ public class Graph extends Node {
 		return true;
 	}
 	
+	public double getAverageRank() {
+		double averageRank = 0;
+		
+		for(INode node : getNodes()) {
+			if(!(node instanceof PartitionNode)) continue;
+			
+			averageRank += ((PartitionNode) node).getPartition().getRank();
+		}
+		averageRank /= getSize();
+		
+		return averageRank;
+	}
+	
 	public void removeNode(INode nodeToRemove) {
 		nodes.remove(nodeToRemove);
 		

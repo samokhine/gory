@@ -10,6 +10,14 @@ import lombok.Getter;
 
 @EqualsAndHashCode(of={"arr"})
 public class Partition {
+	// descending
+	private static Comparator<Integer> SUMMONDS_COMPARATOR = new Comparator<Integer>() {
+		@Override
+		public int compare(Integer o1, Integer o2) {
+			return -1*o1.compareTo(o2);
+		}
+	};
+	
 	@Getter
 	private int sumOfDigits;
 
@@ -35,12 +43,7 @@ public class Partition {
 
 	public Partition(List<Integer> summands, boolean sort) {
 		if(sort) {
-			summands.sort(new Comparator<Integer>() {
-				@Override
-				public int compare(Integer o1, Integer o2) {
-					return -1*o1.compareTo(o2);
-				}
-			});
+			summands.sort(SUMMONDS_COMPARATOR);
 		}
 		
 		sumOfDigits = 0;
@@ -117,6 +120,21 @@ public class Partition {
 			}
 		}
 		return oddness;
+	}
+	
+	// https://en.wikipedia.org/wiki/Durfee_square
+	public int getRank() {
+		List<Integer> summands = getSummands();
+		summands.sort(SUMMONDS_COMPARATOR); // just on case
+		
+		int rank;
+		for(rank=0; rank<getNumberOfDigits(); rank++) {
+			if(rank>summands.get(rank)) {
+				return rank;
+			}
+		}
+		
+		return rank;
 	}
 	
 	public Partition normalize() {
