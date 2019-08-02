@@ -20,9 +20,13 @@ public class PartitionNode extends Node {
 	}
 	
 	public PartitionNode(Partition partition) {
-		this.partition = new Partition(partition.getSummands());
+		this(partition, true);
 	}
 
+	public PartitionNode(Partition partition, boolean sort) {
+		this.partition = new Partition(partition.getSummands(), sort);
+	}
+	
 	@Override
 	public INode clone(INode node) {
 		if(node instanceof PartitionNode) {

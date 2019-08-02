@@ -16,4 +16,13 @@ public class PartitionTest {
 		partition = new Partition("[100, 0, 0, 0, 0, 0, 0, 0, 0, 0]");
 		assertEquals(1, partition.getRank());
 	}
+
+	@Test
+	public void testSort() {
+		Partition partition = new Partition("[1, 5, 3]");
+		assertEquals("[5, 3, 1]", partition.toString());
+
+		partition = new Partition("[1, 5, 3]", false);
+		assertEquals("[1, 5, 3]", partition.toString());
+	}
 }

@@ -155,6 +155,10 @@ public abstract class BaseExperiment implements Experiment {
 	}
 
 	protected Set<Partition> parseListOfPartitions(String str) {
+		return parseListOfPartitions(str, true);
+	}
+
+	protected Set<Partition> parseListOfPartitions(String str, boolean sort) {
 		Set<Partition> partitions = new HashSet<>();
 		
 		if(str == null) str = "";
@@ -165,7 +169,7 @@ public abstract class BaseExperiment implements Experiment {
 			if(insertElement.indexOf('[') != 0) insertElement = "[" + insertElement;
 			if(insertElement.lastIndexOf(']') != insertElement.length() - 1) insertElement = insertElement + "]";
 
-			partitions.add(new Partition(insertElement));
+			partitions.add(new Partition(insertElement, sort));
 			//System.out.println(insertElement+" "+partitions.size());
 		}
 		

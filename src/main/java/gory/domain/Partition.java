@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -29,11 +31,20 @@ public class Partition {
 	}
 
 	public Partition(String summonds) {
+		this(summonds, true);
+	}
+
+	public Partition(String summonds, boolean sort) {
 		summonds = summonds.substring(1, summonds.length()-1);
 		arr = new int[summonds.split(",").length];
 		int i = 0;
 		for(String summond : summonds.split(",")) {
 			arr[i++] = Integer.valueOf(summond.trim());
+		}
+		
+		if(sort) {
+			Arrays.sort(arr);
+			ArrayUtils.reverse(arr);
 		}
 	}
 

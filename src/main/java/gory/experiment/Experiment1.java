@@ -55,6 +55,7 @@ public class Experiment1 extends BaseExperiment {
 	private boolean saveGraphInDotFormat;
 	private boolean saveGraphOfCliquesInDotFormat;
 	private Partition head;
+	private boolean orderSummonds;
 	private Map<Partition, Partition> replace = new HashMap<>();
 	private Set<Partition> create = new HashSet<>(); 
 	private Set<Partition> insert = new HashSet<>(); 
@@ -74,7 +75,7 @@ public class Experiment1 extends BaseExperiment {
     		graph.getProhibitedOddness().addAll(prohibitedOddness);
     		
 	    	for(Partition partition : create) {
-	    		graph.addNode(new PartitionNode(partition));
+	    		graph.addNode(new PartitionNode(partition, orderSummonds));
 	    	}
     	} else { 
     		graph = new Graph(numberOfDigits*numberOfDigits+" - "+numberOfDigits+" graph", distance);
@@ -331,9 +332,10 @@ public class Experiment1 extends BaseExperiment {
 			}
 
 			head = parsePartition(properties.getProperty("head"));
-			create = parseListOfPartitions(properties.getProperty("create"));
-			insert = parseListOfPartitions(properties.getProperty("insert"));
-			delete = parseListOfPartitions(properties.getProperty("delete"));
+			orderSummonds = readProperty(properties, "orderSummonds", true);
+			create = parseListOfPartitions(properties.getProperty("create"), orderSummonds);
+			insert = parseListOfPartitions(properties.getProperty("insert"), orderSummonds);
+			delete = parseListOfPartitions(properties.getProperty("delete"), orderSummonds);
 			
 			String deleteCliquesStr = properties.getProperty("deleteCliques");
 				if(deleteCliquesStr != null) {
