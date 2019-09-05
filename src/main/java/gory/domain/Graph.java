@@ -315,6 +315,8 @@ public class Graph extends Node {
 	public double getEnergy() {
  		double[][] matrix = getAdjacencyMatrix();
 		
+ 		if(matrix.length == 0) return 0;
+ 				
 		Matrix m = new Matrix(matrix);
 		
 		double[] eigs = m.eig().getRealEigenvalues();
