@@ -113,17 +113,12 @@ public class Experiment1 extends BaseExperiment {
 		    			continue;
 		    		}
 		    		
-		    		if(onlyDirectDescendants && partition.getAt(1) != headNode.getPartition().getAt(1)) {
-		    			continue;
+		    		if(!onlyDirectDescendants && !onlyLeft && !onlyRight
+		    				|| onlyDirectDescendants && partition.getAt(1) == headNode.getPartition().getAt(1) 
+		    				|| onlyLeft && partition.getAt(1) - 1 == headNode.getPartition().getAt(1) 
+		    				|| onlyRight && partition.getAt(1) + 1 == headNode.getPartition().getAt(1)) {
+			    		graph.addNode(new PartitionNode(partition));
 		    		}
-		    		if(onlyLeft && partition.getAt(1) - 1 != headNode.getPartition().getAt(1)) {
-		    			continue;
-		    		}
-		    		if(onlyRight && partition.getAt(1) + 1 != headNode.getPartition().getAt(1)) {
-		    			continue;
-		    		}
-		    		
-		    		graph.addNode(new PartitionNode(partition));
 		    	}
 		    	
 		    	for(Partition oldPartition : replace.keySet()) {
