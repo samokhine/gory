@@ -81,62 +81,61 @@ public class Experiment1 extends BaseExperiment {
     		graph = new Graph(numberOfDigits*numberOfDigits+" - "+numberOfDigits+" graph", distance);
        		graph.getProhibitedOddness().addAll(prohibitedOddness);
        	    		
-    		if(insert.isEmpty()) {
-				PartitionNode headNode;
-				if(head == null) {
-					List<Integer> summands = new ArrayList<>();
-			    	for(int i=1; i<=2*numberOfDigits-1; i=i+2) {
-			    		summands.add(i);
-			    	}
-			    	
-			    	headNode = new PartitionNode(new Partition(summands));
-				} else {
-			    	headNode = new PartitionNode(head);
-				}
-				
-		    	graph.addNode(headNode);
-		    	
-		    	List<Partition> partitions = PartitionBuilder.build(numberOfDigits*numberOfDigits, numberOfDigits);
-		    	if(extendedFamily && extendedFamilyDelta>0) {
-		    		partitions.addAll(PartitionBuilder.build(numberOfDigits*numberOfDigits-extendedFamilyDelta, numberOfDigits));
-		    		partitions.addAll(PartitionBuilder.build(numberOfDigits*numberOfDigits+extendedFamilyDelta, numberOfDigits));
-		    	}
-		    	for(Partition partition : partitions) {
-		    		if(familyMxmPlusOne) {
-			    		if(partition.getAt(numberOfDigits) == 0) {
-			    			partition.setAt(numberOfDigits, 1);
-			    		}
-		    		}
-		    		
-		    		int d = headNode.distanceTo(new PartitionNode(partition));
-		    		if(d <= 0 || d > distance) {
-		    			continue;
-		    		}
-		    		
-		    		if(!onlyDirectDescendants && !onlyLeft && !onlyRight
-		    				|| onlyDirectDescendants && partition.getAt(1) == headNode.getPartition().getAt(1) 
-		    				|| onlyLeft && partition.getAt(1) - 1 == headNode.getPartition().getAt(1) 
-		    				|| onlyRight && partition.getAt(1) + 1 == headNode.getPartition().getAt(1)) {
-			    		graph.addNode(new PartitionNode(partition));
-		    		}
+			PartitionNode headNode;
+			if(head == null) {
+				List<Integer> summands = new ArrayList<>();
+		    	for(int i=1; i<=2*numberOfDigits-1; i=i+2) {
+		    		summands.add(i);
 		    	}
 		    	
-		    	for(Partition oldPartition : replace.keySet()) {
-		    		Partition newPartition = replace.get(oldPartition);
-		    		graph.replaceNode(new PartitionNode(oldPartition), new PartitionNode(newPartition));
-		    	}
-		
-		    	if(removeHead) {
-		    		graph.removeNode(headNode);
-		    	} else {
-		        	if(logClusteringCoefficientForHead) {
-		    	    	logger.writeLine("Clustering coefficient for head of the family:");
-		    	    	logger.writeLine(""+headNode.getClusteringCoefficientUsingTriangles());
-		    	    	logger.writeLine("");
-		        	}
-		    	}
-		    	
+		    	headNode = new PartitionNode(new Partition(summands));
 			} else {
+		    	headNode = new PartitionNode(head);
+			}
+			
+	    	graph.addNode(headNode);
+	    	
+	    	List<Partition> partitions = PartitionBuilder.build(numberOfDigits*numberOfDigits, numberOfDigits);
+	    	if(extendedFamily && extendedFamilyDelta>0) {
+	    		partitions.addAll(PartitionBuilder.build(numberOfDigits*numberOfDigits-extendedFamilyDelta, numberOfDigits));
+	    		partitions.addAll(PartitionBuilder.build(numberOfDigits*numberOfDigits+extendedFamilyDelta, numberOfDigits));
+	    	}
+	    	for(Partition partition : partitions) {
+	    		if(familyMxmPlusOne) {
+		    		if(partition.getAt(numberOfDigits) == 0) {
+		    			partition.setAt(numberOfDigits, 1);
+		    		}
+	    		}
+	    		
+	    		int d = headNode.distanceTo(new PartitionNode(partition));
+	    		if(d <= 0 || d > distance) {
+	    			continue;
+	    		}
+	    		
+	    		if(!onlyDirectDescendants && !onlyLeft && !onlyRight
+	    				|| onlyDirectDescendants && partition.getAt(1) == headNode.getPartition().getAt(1) 
+	    				|| onlyLeft && partition.getAt(1) - 1 == headNode.getPartition().getAt(1) 
+	    				|| onlyRight && partition.getAt(1) + 1 == headNode.getPartition().getAt(1)) {
+		    		graph.addNode(new PartitionNode(partition));
+	    		}
+	    	}
+	    	
+	    	for(Partition oldPartition : replace.keySet()) {
+	    		Partition newPartition = replace.get(oldPartition);
+	    		graph.replaceNode(new PartitionNode(oldPartition), new PartitionNode(newPartition));
+	    	}
+	
+	    	if(removeHead) {
+	    		graph.removeNode(headNode);
+	    	} else {
+	        	if(logClusteringCoefficientForHead) {
+	    	    	logger.writeLine("Clustering coefficient for head of the family:");
+	    	    	logger.writeLine(""+headNode.getClusteringCoefficientUsingTriangles());
+	    	    	logger.writeLine("");
+	        	}
+	    	}
+		    	
+    		if(!insert.isEmpty()) {
 		    	for(Partition partition : insert) {
 		    		graph.addNode(new PartitionNode(partition));
 		    	}
