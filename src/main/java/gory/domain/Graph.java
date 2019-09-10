@@ -65,12 +65,8 @@ public class Graph extends Node {
 	}
 	
 	@Override
-	public INode clone(INode node) {
-		if(node instanceof Graph) {
-			return new Graph((Graph) node);
-		} else {
-			return null;
-		}
+	public INode cloneIt() {
+		return new Graph(this);
 	}
 
 	@Override

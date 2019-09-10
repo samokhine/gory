@@ -3,7 +3,7 @@ package gory.domain;
 import java.util.Set;
 
 public interface INode {
-	public INode clone(INode node);
+	public INode cloneIt();
 	public int distanceTo(INode node);
 	public void connect(INode node);
 	public Set<INode> getConnectedNodes();

@@ -28,12 +28,8 @@ public class PartitionNode extends Node {
 	}
 	
 	@Override
-	public INode clone(INode node) {
-		if(node instanceof PartitionNode) {
-			return new PartitionNode(((PartitionNode) node).getPartition());
-		} else {
-			return null;
-		}
+	public INode cloneIt() {
+		return new PartitionNode(getPartition());
 	}
 	
 	@Override

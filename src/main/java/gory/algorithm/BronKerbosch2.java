@@ -48,10 +48,24 @@ public class BronKerbosch2 {
         	cnt++;
         	Graph g = new Graph("Clique "+cnt, graph.getConnectionDistance());
         	for(INode node : clique) {
-        		g.addNode(node.clone(node));
+        		g.addNode(node.cloneIt());
         	}
         	graphs.add(g);
         }
+        
+        // add cliques based on "hanging" nodes
+        for(INode node : graph.getNodes()) {
+        	if(node.getConnectedNodes().isEmpty()) {
+            	Graph g = new Graph("Clique "+cnt, graph.getConnectionDistance());
+        		g.addNode(node.cloneIt());
+            	graphs.add(g);
+        	} else if(node.getConnectedNodes().size() == 1) {
+            	Graph g = new Graph("Clique "+cnt, graph.getConnectionDistance());
+        		g.addNode(node.cloneIt());
+        		g.addNode(node.getConnectedNodes().iterator().next().cloneIt());
+            	graphs.add(g);
+        	}
+        }        
         
         return graphs;
 	}

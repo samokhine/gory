@@ -28,7 +28,7 @@ public class BronKerbosch {
         	cnt++;
         	Graph g = new Graph("Clique "+cnt, graph.getConnectionDistance());
         	for(INode node : clique) {
-        		g.addNode(node.clone(node));
+        		g.addNode(node.cloneIt());
         	}
         	graphs.add(g);
         }

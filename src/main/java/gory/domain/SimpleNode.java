@@ -22,9 +22,9 @@ public class SimpleNode extends Node {
 	}
 
 	@Override
-	public INode clone(INode node) {
+	public INode cloneIt() {
 		INode clone = new SimpleNode(name);
-		clone.getConnectedNodes().addAll(node.getConnectedNodes());
+		clone.getConnectedNodes().addAll(getConnectedNodes());
 		return clone;
 	}
 
