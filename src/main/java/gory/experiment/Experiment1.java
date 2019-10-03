@@ -253,6 +253,8 @@ public class Experiment1 extends BaseExperiment {
 
     	if(displayGraphOfCliques || saveGraphOfCliquesInDotFormat) {
     		Graph graphOfCliques = buildGraphOfCliques(cliques, "Graph of cliques");
+
+    		logNotFullyConnectedMatrix(graphOfCliques, logger);
     		
     		if(displayGraphOfCliques) {
     			displayGraph(graphOfCliques, "graphOfCliques");

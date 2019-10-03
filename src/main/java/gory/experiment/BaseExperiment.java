@@ -331,6 +331,38 @@ public abstract class BaseExperiment implements Experiment {
 		logger.writeLine("");
 	}
 
+	protected void logNotFullyConnectedMatrix(Graph graph, OutputLogger logger) {
+		int columnWidth = 0;
+		Set<INode> notFullyConnectedNodes = new HashSet<>();
+		for(INode node : graph.getNodes()) {
+			if(node.getConnectedNodes().size()<graph.getSize()-1) {
+				notFullyConnectedNodes.add(node);
+				if(node.toString().length()>columnWidth) {
+					columnWidth = node.toString().length();
+				}
+			}
+		}
+		if(notFullyConnectedNodes.isEmpty()) return;
+		
+		columnWidth += 3;
+		
+		logger.writeLine("Not fully connected matrix:");
+		String line = StringUtils.leftPad("", columnWidth, " ");
+		for(INode node : notFullyConnectedNodes) {
+			line += StringUtils.leftPad(node.toString(), columnWidth, " ");
+		}
+		logger.writeLine(line);
+
+		for(INode node1 : notFullyConnectedNodes) {
+			line = StringUtils.leftPad(node1.toString(), columnWidth, " ");
+			for(INode node2 : notFullyConnectedNodes) {
+				line += StringUtils.leftPad(node1.isConnectedTo(node2) ? "1" : "0", columnWidth, " ");
+			}
+			logger.writeLine(line);
+		}
+		logger.writeLine("");
+	}
+	
 	public void displayGraph(Graph graph) {
 		displayGraph(graph, graph.getName());
 	}
