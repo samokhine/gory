@@ -4,217 +4,251 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 
 import gory.domain.Graph;
-import gory.domain.INode;
 import gory.domain.Partition;
 import gory.domain.PartitionNode;
 import gory.service.OutputLogger;
 import gory.service.PartitionBuilder;
 
 public class Experiment3 extends BaseExperiment {
-	private int numberOfRuns; // K
-	private int numberOfRandomPicks; // T
+	private int numberOfSteps; 
+	private double probabilityOfMistake; 
 	private int distance; // d
 	private int numberOfDigits; // m
 	
+	private boolean removeHead;
 	private boolean logNodes;
 	private boolean logMatrix;
 	private boolean logClusteringCoefficient;
 	private boolean logStatsOfDegrees; 
-	private boolean logCliques;
 	private boolean logDistributionOfCliques;
 	private boolean logCoalitionResource;
 	private boolean logDiameter;
 	private boolean logDensityAdjacentMatrix;
-	
-	private Set<Partition> deletes = new HashSet<>(); 
-	private boolean deleteHead;
-	private int deletAllCliquesOfSize;
-	private int numberOfCliquesToDelete;
-	
+	private boolean logGlobalOverlapping;
+	private boolean logCharacteristicPathLength;
+	private boolean logAverageEfficiency;
+	private boolean logEnergy;
+	private boolean logCheegerConstant;
+	private boolean logAverageRank;
+	private boolean displayGraph;
+	private boolean saveGraphInDotFormat;
+
+	private boolean logCliques;
+	private boolean logNodesByCliques;
+	private boolean logDensityAdjacentMatrixForGraphOfCliques;
+	private boolean displayGraphOfCliques;
+	private boolean saveGraphOfCliquesInDotFormat;
+
 	public void run(OutputLogger logger) throws IOException {
     	logger.writeLine("Running experiment 3");
     	logger.writeLine("");
     	
     	readParameters();
 		
-		List<Integer> summands = new ArrayList<>();
-    	for(int i=1; i<=2*numberOfDigits-1; i=i+2) {
-    		summands.add(i);
-    	}
-
-    	List<Partition> partitions = PartitionBuilder.build(numberOfDigits*numberOfDigits, numberOfDigits);
-    	PartitionNode head = new PartitionNode(new Partition(summands));
-
-    	Random random = new Random();
-
-    	if(numberOfRuns<=1) {
-    		Graph graph = buildGraph(head, 
-    				partitions, 
-    				deletes.isEmpty() ? numberOfRandomPicks : 0,
-    				random);
+    	List<Partition> prevPartitions = new ArrayList<>();
+    	int highDigit = 2*numberOfDigits-1;
+    	for(Partition partition : PartitionBuilder.build(numberOfDigits*numberOfDigits, numberOfDigits)) {
+    		if(Math.abs(highDigit - partition.getSummands().get(0))>1) continue;
     		
-    		if(!deletes.isEmpty()) {
-    			for(Partition delete : deletes) {
-    				graph.removeNode(new PartitionNode(delete));
+    		prevPartitions.add(partition);
+    	}
+		
+    	List<Integer> summands = new ArrayList<>();
+    	for(int j=1; j<=2*numberOfDigits-1; j=j+2) {
+    		summands.add(j);
+    	}
+    	Partition prevHead = new Partition(summands);
+    	
+    	Random random = new Random();
+    	for(int step=1; step<=numberOfSteps; step++) {
+    		numberOfDigits++;
+
+    		summands = new ArrayList<>();
+        	for(int j=1; j<=2*numberOfDigits-1; j=j+2) {
+        		summands.add(j);
+        	}
+        	Partition head = new Partition(summands);
+
+        	Graph graph = new Graph("Graph for step #"+step, distance);
+        	graph.addNode(new PartitionNode(head));
+        	
+        	List<Partition> partitions = new ArrayList<>();
+        	
+        	highDigit = 2*numberOfDigits-1;
+        	for(Partition prevPartition : prevPartitions) {
+        		if(prevPartition.equals(prevHead)) continue;
+        		
+        		summands = new ArrayList<>();
+    			summands.add(generateHighDigit(highDigit, random));
+        		summands.addAll(prevPartition.getSummands());
+        		
+        		partitions.add(new Partition(summands));
+        	}
+
+        	List<Partition> rightPartitions = new ArrayList<>();
+        	highDigit = 2*numberOfDigits;
+        	for(Partition partition : partitions) {
+        		summands = new ArrayList<>();
+    			summands.add(generateHighDigit(highDigit, random));
+
+    			int index = random.nextInt(numberOfDigits-1)+1;
+    			for(int j=1; j<numberOfDigits; j++) {
+    				int summond = partition.getSummands().get(j);
+    				if(j == index && summond>0) {
+    					summond--;
+    				}
+    				summands.add(summond);
     			}
-    		} else if(deletAllCliquesOfSize > 0) {
-    			graph.deleteAllCliquesOfSize(deletAllCliquesOfSize);
-    			if(deleteHead) {
-    				graph.removeNode(head);
+        		rightPartitions.add(new Partition(summands));
+        	}    	
+
+        	List<Partition> leftPartitions = new ArrayList<>();
+        	highDigit = 2*numberOfDigits - 2;
+        	for(Partition partition : partitions) {
+        		summands = new ArrayList<>();
+    			summands.add(generateHighDigit(highDigit, random));
+
+    			int index = random.nextInt(numberOfDigits-1)+1;
+    			for(int j=1; j<numberOfDigits; j++) {
+    				int summond = partition.getSummands().get(j);
+    				if(j == index && summond>0) {
+    					summond++;
+    				}
+    				summands.add(summond);
     			}
-	    	} else if(numberOfCliquesToDelete > 0) {
-    			graph.deleteNumberOfCliques(numberOfCliquesToDelete);
-    			if(deleteHead) {
-    				graph.removeNode(head);
-    			}
+        		leftPartitions.add(new Partition(summands));
+        	}  
+        	
+        	partitions.addAll(rightPartitions);
+        	partitions.addAll(leftPartitions);
+        	
+        	for(Partition partition : partitions) {
+        		graph.addNode(new PartitionNode(partition));
+        	} 
+        	
+	    	if(removeHead) {
+	    		graph.removeNode(new PartitionNode(head));
+	    	}
+        	
+        	prevPartitions = partitions;
+        	prevHead = head;
+        	
+        	logger.writeLine("Step #"+step);
+        	logger.writeLine("");
+        	
+        	Set<Graph> cliques = null;
+        	if(logCliques || logDistributionOfCliques || logNodesByCliques || logGlobalOverlapping
+        			|| displayGraphOfCliques || logDensityAdjacentMatrixForGraphOfCliques) {
+        		cliques = graph.getCliques();
+        	}
+        	
+        	if(logNodes) {
+        		logNodes(graph, logger);
+        	}
+        	
+        	if(logMatrix) {
+        		logMatrix(graph, logger);
+        	}
+        	
+        	if(logClusteringCoefficient) {
+        		logClusteringCoefficient(graph, logger);
+        	}
+
+        	if(logCoalitionResource) {
+        		logCoalitionResource(graph, logger);
+        	}
+
+        	if(logStatsOfDegrees) {
+        		logStatsOfDegrees(graph, logger); 
+        	}
+    		
+    		if(logCliques) {
+    			logCliques(graph, cliques, logger);
+    		}
+    	
+    		if(logDistributionOfCliques) {
+    			logDistributionOfCliques(cliques, logger);
     		}
     		
-	    	if(logNodes) {
-	    		logNodes(graph, logger);
-	    	}
-	    	
-	    	if(logMatrix) {
-	    		logMatrix(graph, logger);
-	    	}
-	    	
-	    	if(logClusteringCoefficient) {
-	    		logClusteringCoefficient(graph, logger);
-	    	}
-	
-	    	if(logCoalitionResource) {
-	    		logCoalitionResource(graph, logger);
-	    	}
-	
-	    	if(logStatsOfDegrees) {
-	    		logStatsOfDegrees(graph, logger); 
-	    	}
+    		if(logNodesByCliques) {
+    			logNodesByCliques(graph, cliques, logger);
+    		}
+        	
+        	if(logDiameter) {
+        		logDiameter(graph, logger);
+        	}
+        	
+        	if(logDensityAdjacentMatrix) {
+        		logDensityAdjacentMatrix(graph, logger);
+        	}
 
-	    	if(logCliques || logDistributionOfCliques) {
-	    		Set<Graph> cliques = graph.getCliques();
-	    		
-	    		if(logCliques) {
-	    			logCliques(graph, cliques, logger);
-	    		}
-	    	
-	    		if(logDistributionOfCliques) {
-	    			logDistributionOfCliques(cliques, logger);
-	    		}
-	    	}
-	    	
-	    	if(logDiameter) {
-	    		logDiameter(graph, logger);
-	    	}
-	    	
-	    	if(logDensityAdjacentMatrix) {
-	    		logDensityAdjacentMatrix(graph, logger);
-	    	}
-    	}  else {
-        	List<Double> clusteringCoefficients = new ArrayList<>();
-    		List<Map<Integer, ? extends Number>> nodeDegreeDistributions = new ArrayList<>();
-    		List<Map<Integer, ? extends Number>> cliqueSizeDistributions = new ArrayList<>();
-    		List<Map<Integer, ? extends Number>> cliqueCountDistributions = new ArrayList<>();
-    		List<Integer> diameters = new ArrayList<>();
-    		
-    		for(int run=1; run<=numberOfRuns; run++) {
-        		Graph graph = buildGraph(head, partitions, numberOfRandomPicks, random);
+        	if(logDensityAdjacentMatrixForGraphOfCliques) {
+    			Graph graphOfCliques = buildGraphOfCliques(cliques, "Graph of cliques for step #"+step);
+        		logDensityAdjacentMatrix(graphOfCliques, logger);
+        	}
+        	
+        	if(logCharacteristicPathLength) {
+        		logCharacteristicPathLength(graph, logger);
+        	}
 
-        		if(deletAllCliquesOfSize>0) {
-        			graph.deleteAllCliquesOfSize(deletAllCliquesOfSize);
-        			if(deleteHead) {
-        				graph.removeNode(head);
-        			}
-        		} else if(numberOfCliquesToDelete > 0) {
-        			graph.deleteNumberOfCliques(numberOfCliquesToDelete);
-        			if(deleteHead) {
-        				graph.removeNode(head);
-        			}
+        	if(logAverageEfficiency) {
+        		logAverageEfficiency(graph, logger);
+        	}
+
+        	if(logEnergy) {
+        		logEnergy(graph, logger);
+        	}
+
+        	if(logCheegerConstant) {
+        		logCheegerConstant(graph, logger);
+        	}
+
+        	if(logGlobalOverlapping) {
+        		logGlobalOverlapping(graph, cliques, logger);
+        	}
+
+        	if(logAverageRank) {
+        		logAverageRank(graph, logger);
+        	}
+        	
+        	if(displayGraph) {
+        		displayGraph(graph, "graph");
+        	}
+        	
+        	if(saveGraphInDotFormat) {
+        		saveInDotFormat(graph, "graph");
+        	}
+
+        	if(displayGraphOfCliques || saveGraphOfCliquesInDotFormat) {
+        		Graph graphOfCliques = buildGraphOfCliques(cliques, "Graph of cliques");
+
+        		logNotFullyConnectedMatrix(graphOfCliques, logger);
+        		
+        		if(displayGraphOfCliques) {
+        			displayGraph(graphOfCliques, "graphOfCliques");
         		}
         		
-		    	if(logClusteringCoefficient) {
-		    		clusteringCoefficients.add(graph.getClusteringCoefficientUsingMatrix());
-		    	}
-		    	
-		    	if(logStatsOfDegrees) {
-		    		nodeDegreeDistributions.add(graph.getNodeDegreeDistribution());
-		    	}
-
-		    	if(logDistributionOfCliques) {
-		    		Set<Graph> cliques = graph.getCliques();
-		    		cliqueSizeDistributions.add(getCliqueSizeDistribution(cliques));
-		    		cliqueCountDistributions.add(this.getCliquesCountBySize(cliques));
-		    	}
-		    	
-		    	if(logDiameter) {
-		    		diameters.add(graph.getDiameter());
-		    	}
-    		}
-
-	    	if(logClusteringCoefficient) {
-	    		AverageAndStdDev averageStdDev = getAverageAndStdDev(clusteringCoefficients);
-	    		logger.writeLine("Clustering coefficient:");
-	    		logger.writeLine(averageStdDev.toString());
-	    		logger.writeLine("");
-	    	}
-
-	    	if(logStatsOfDegrees) {
-	    		Map<Integer, AverageAndStdDev> results = merge(nodeDegreeDistributions);
-	    		logger.writeLine("Distribution of nodes:");
-	    		for(int degree : results.keySet()) {
-	    			logger.writeLine(degree+" "+results.get(degree));
-	    		}
-	    		logger.writeLine("");
-	    	}
-
-	    	if(logDistributionOfCliques) {
-	    		Map<Integer, AverageAndStdDev> cliqueSizeDistributionResults = merge(cliqueSizeDistributions);
-	    		Map<Integer, AverageAndStdDev> cliqueCountDistributionResults = merge(cliqueCountDistributions);
-	    		logger.writeLine("Distribution of cliques:");
-	    		for(int degree : cliqueSizeDistributionResults.keySet()) {
-	    			logger.writeLine(degree+" "+cliqueCountDistributionResults.get(degree)+" "+cliqueSizeDistributionResults.get(degree));
-	    		}
-	    		logger.writeLine("");
-	    	}
-	    	
-	    	if(logDiameter) {
-	    		AverageAndStdDev averageStdDev = getAverageAndStdDev(diameters);
-	    		logger.writeLine("Diameter:");
-	    		logger.writeLine(averageStdDev.toString());
-	    		logger.writeLine("");
-	    	}
+        		if(saveGraphOfCliquesInDotFormat) {
+        	   		saveInDotFormat(graphOfCliques, "graphOfCliques");
+        		}
+        	}
     	}
 	}
-	
-	private Graph buildGraph(PartitionNode head, List<Partition> partitions, int numToDelete, Random random) {
-    	Graph graph = new Graph(numberOfDigits*numberOfDigits+" - "+numberOfDigits+" graph", distance);
-    	graph.addNode(head);
-    	
-    	for(Partition partition : partitions) {
-    		int d = head.distanceTo(new PartitionNode(partition));
-    		if(d <= 0 || d > distance) {
-    			continue;
-    		}
-    		
-    		graph.addNode(new PartitionNode(partition));
-    	}
-	
-    	int j = Math.min(numToDelete, graph.getSize());
-    	for(int i=0; i<j; i++) {
-    		int n = random.nextInt(graph.getSize());
-    		INode node = graph.getNode(n);
-    		if(node != null) {
-    			graph.removeNode(node);
-    		}
-    	}
-    	
-    	return graph;
+
+	private int generateHighDigit(int highDigit, Random random) {
+		int nextInt = random.nextInt(100);
+		if(nextInt <= probabilityOfMistake*100) { // mistake
+			boolean isPlus = random.nextBoolean();
+			return highDigit + (isPlus ? 1 : -1);
+		} else {
+			return highDigit;
+		}
 	}
 	
 	private void readParameters() {
@@ -226,11 +260,12 @@ public class Experiment3 extends BaseExperiment {
 			Properties properties = new Properties();
 			properties.load(input);
 
-			numberOfRuns = readProperty(properties, "K", 10);
-			numberOfRandomPicks = readProperty(properties, "T", 100);
+			numberOfSteps = readProperty(properties, "numberOfSteps", 1);
+			probabilityOfMistake = readProperty(properties, "probabilityOfMistake", 0.1);
 			numberOfDigits = readProperty(properties, "m", 4);
 			distance = readProperty(properties, "d", 1);
 
+			removeHead = readProperty(properties, "removeHead", false);
 			logNodes = readProperty(properties, "logNodes", false);
 			logMatrix = readProperty(properties, "logMatrix", false);
 			logClusteringCoefficient = readProperty(properties, "logClusteringCoefficient", false);
@@ -240,21 +275,19 @@ public class Experiment3 extends BaseExperiment {
 			logCoalitionResource = readProperty(properties, "logCoalitionResource", false);
 			logDiameter = readProperty(properties, "logDiameter", false);
 			logDensityAdjacentMatrix = readProperty(properties, "logDensityAdjacentMatrix", false);
+			logDensityAdjacentMatrixForGraphOfCliques = readProperty(properties, "logDensityAdjacentMatrixForGraphOfCliques", false);
+			logNodesByCliques = readProperty(properties, "logNodesByCliques", false);
+			logCharacteristicPathLength = readProperty(properties, "logCharacteristicPathLength", false);
+			logAverageEfficiency = readProperty(properties, "logAverageEfficiency", false);
+			logEnergy = readProperty(properties, "logEnergy", false);
+			logCheegerConstant = readProperty(properties, "logCheegerConstant", false);
+			logGlobalOverlapping = readProperty(properties, "logGlobalOverlapping", false);
+			logAverageRank = readProperty(properties, "logAverageRank", false);
 			
-			String deleteStr = properties.getProperty("delete");
-			if(deleteStr == null) deleteStr = "";
-			deleteStr = deleteStr.replaceAll(" ", "");
-			String deleteElements[] = deleteStr.split("\\],\\[");
-			for(String deleteElement : deleteElements) {
-				if(deleteElement.isEmpty()) continue;
-				if(deleteElement.indexOf('[') != 0) deleteElement = "[" + deleteElement;
-				if(deleteElement.lastIndexOf(']') != deleteElement.length() - 1) deleteElement = deleteElement + "]";
-
-				deletes.add(new Partition(deleteElement));
-			}
-			deleteHead = readProperty(properties, "deleteHead", false);
-			deletAllCliquesOfSize = readProperty(properties, "deletAllCliquesOfSize", 0);
-			numberOfCliquesToDelete = readProperty(properties, "numberOfCliquesToDelete", 0);
+			displayGraph = readProperty(properties, "displayGraph", false);
+			displayGraphOfCliques = readProperty(properties, "displayGraphOfCliques", false);
+			saveGraphInDotFormat = readProperty(properties, "saveGraphInDotFormat", false);
+			saveGraphOfCliquesInDotFormat = readProperty(properties, "saveGraphOfCliquesInDotFormat", false);
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {
