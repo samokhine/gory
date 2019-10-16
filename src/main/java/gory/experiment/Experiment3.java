@@ -53,31 +53,32 @@ public class Experiment3 extends BaseExperiment {
     	
     	readParameters();
 		
-    	List<Partition> prevPartitions = new ArrayList<>();
-    	int highDigit = 2*numberOfDigits-1;
-    	for(Partition partition : PartitionBuilder.build(numberOfDigits*numberOfDigits, numberOfDigits)) {
-    		if(Math.abs(highDigit - partition.getSummands().get(0))>1) continue;
-    		
-    		prevPartitions.add(partition);
-    	}
-		
-    	List<Integer> summands = new ArrayList<>();
-    	for(int j=1; j<=2*numberOfDigits-1; j=j+2) {
-    		summands.add(j);
-    	}
-    	Partition prevHead = new Partition(summands);
-    	
     	Random random = new Random();
     	for(int run=1; run<=numberOfRuns; run++) {
     		List<Map<Integer, ? extends Number>> nodeDegreeDistributions = new ArrayList<>();
     		List<Map<Integer, ? extends Number>> cliqueCountDistributions = new ArrayList<>();
     		List<Double> densityAdjacentMatrixDistributions = new ArrayList<>();
-    		
+
+    		List<Partition> prevPartitions = new ArrayList<>();
+	    	int highDigit = 2*numberOfDigits-1;
+	    	for(Partition partition : PartitionBuilder.build(numberOfDigits*numberOfDigits, numberOfDigits)) {
+	    		if(Math.abs(highDigit - partition.getSummands().get(0))>1) continue;
+	    		
+	    		prevPartitions.add(partition);
+	    	}
+			
+	    	List<Integer> summands = new ArrayList<>();
+	    	for(int j=1; j<=2*numberOfDigits-1; j=j+2) {
+	    		summands.add(j);
+	    	}
+	    	Partition prevHead = new Partition(summands);
+     		
+    		int initialNumberOfDigits = numberOfDigits;
 	    	for(int step=1; step<=numberOfSteps; step++) {
-	    		numberOfDigits++;
+	    		initialNumberOfDigits++;
 	
 	    		summands = new ArrayList<>();
-	        	for(int j=1; j<=2*numberOfDigits-1; j=j+2) {
+	        	for(int j=1; j<=2*initialNumberOfDigits-1; j=j+2) {
 	        		summands.add(j);
 	        	}
 	        	Partition head = new Partition(summands);
@@ -87,7 +88,7 @@ public class Experiment3 extends BaseExperiment {
 	        	
 	        	List<Partition> partitions = new ArrayList<>();
 	        	
-	        	highDigit = 2*numberOfDigits-1;
+	        	highDigit = 2*initialNumberOfDigits-1;
 	        	for(Partition prevPartition : prevPartitions) {
 	        		if(prevPartition.equals(prevHead)) continue;
 	        		
@@ -99,13 +100,13 @@ public class Experiment3 extends BaseExperiment {
 	        	}
 	
 	        	List<Partition> rightPartitions = new ArrayList<>();
-	        	highDigit = 2*numberOfDigits;
+	        	highDigit = 2*initialNumberOfDigits;
 	        	for(Partition partition : partitions) {
 	        		summands = new ArrayList<>();
 	    			summands.add(generateHighDigit(highDigit, random));
 	
-	    			int index = random.nextInt(numberOfDigits-1)+1;
-	    			for(int j=1; j<numberOfDigits; j++) {
+	    			int index = random.nextInt(initialNumberOfDigits-1)+1;
+	    			for(int j=1; j<initialNumberOfDigits; j++) {
 	    				int summond = partition.getSummands().get(j);
 	    				if(j == index && summond>0) {
 	    					summond--;
@@ -116,13 +117,13 @@ public class Experiment3 extends BaseExperiment {
 	        	}    	
 	
 	        	List<Partition> leftPartitions = new ArrayList<>();
-	        	highDigit = 2*numberOfDigits - 2;
+	        	highDigit = 2*initialNumberOfDigits - 2;
 	        	for(Partition partition : partitions) {
 	        		summands = new ArrayList<>();
 	    			summands.add(generateHighDigit(highDigit, random));
 	
-	    			int index = random.nextInt(numberOfDigits-1)+1;
-	    			for(int j=1; j<numberOfDigits; j++) {
+	    			int index = random.nextInt(initialNumberOfDigits-1)+1;
+	    			for(int j=1; j<initialNumberOfDigits; j++) {
 	    				int summond = partition.getSummands().get(j);
 	    				if(j == index && summond>0) {
 	    					summond++;
