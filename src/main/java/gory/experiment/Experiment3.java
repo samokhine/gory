@@ -58,6 +58,7 @@ public class Experiment3 extends BaseExperiment {
     		List<Map<Integer, ? extends Number>> nodeDegreeDistributions = new ArrayList<>();
     		List<Map<Integer, ? extends Number>> cliqueCountDistributions = new ArrayList<>();
     		List<Double> densityAdjacentMatrixDistributions = new ArrayList<>();
+    		List<Double> densityAdjacentMatrixForGraphOfCliquesDistributions = new ArrayList<>();
 
     		List<Partition> prevPartitions = new ArrayList<>();
 	    	int highDigit = 2*numberOfDigits-1;
@@ -83,7 +84,7 @@ public class Experiment3 extends BaseExperiment {
 	        	}
 	        	Partition head = new Partition(summands);
 	
-	        	Graph graph = new Graph("Graph for step #"+step, distance);
+	        	Graph graph = new Graph("Graph for run #"+run+" and step #"+step, distance);
 	        	graph.addNode(new PartitionNode(head));
 	        	
 	        	List<Partition> partitions = new ArrayList<>();
@@ -147,124 +148,140 @@ public class Experiment3 extends BaseExperiment {
 	        	prevPartitions = partitions;
 	        	prevHead = head;
 	        	
-	        	Set<Graph> cliques = graph.getCliques();
+	        	Set<Graph> cliques = null;
+	        	if(logCliques || logDistributionOfCliques || logNodesByCliques || logGlobalOverlapping
+	        			|| displayGraphOfCliques || logDensityAdjacentMatrixForGraphOfCliques) {
+	        		cliques = graph.getCliques();
+	        	}
 	        	
-	        	nodeDegreeDistributions.add(graph.getNodeDegreeDistribution());
-	        	cliqueCountDistributions.add(getCliquesCountBySize(cliques));
-	        	densityAdjacentMatrixDistributions.add(graph.getDensityAdjacentMatrix());
+	        	logger.writeLine("Run #"+run+" and step #"+step);
+	        	logger.writeLine("");
 	        	
+	        	if(logNodes) {
+	        		logNodes(graph, logger);
+	        	}
+	        	
+	        	if(logMatrix) {
+	        		logMatrix(graph, logger);
+	        	}
+	        	
+	        	if(logClusteringCoefficient) {
+	        		logClusteringCoefficient(graph, logger);
+	        	}
+	
+	        	if(logCoalitionResource) {
+	        		logCoalitionResource(graph, logger);
+	        	}
+	
+	        	if(logStatsOfDegrees) {
+		    		nodeDegreeDistributions.add(graph.getNodeDegreeDistribution());
+	        		logStatsOfDegrees(graph, logger); 
+	        	}
+	    		
+	    		if(logCliques) {
+	    			logCliques(graph, cliques, logger);
+	    		}
+	    	
+	    		if(logDistributionOfCliques) {
+		    		cliqueCountDistributions.add(getCliquesCountBySize(cliques));
+	    			logDistributionOfCliques(cliques, logger);
+	    		}
+	    		
+	    		if(logNodesByCliques) {
+	    			logNodesByCliques(graph, cliques, logger);
+	    		}
+	        	
+	        	if(logDiameter) {
+	        		logDiameter(graph, logger);
+	        	}
+	        	
+	        	if(logDensityAdjacentMatrix) {
+		    		densityAdjacentMatrixDistributions.add(graph.getDensityAdjacentMatrix());
+	        		logDensityAdjacentMatrix(graph, logger);
+	        	}
+	
+	        	if(logDensityAdjacentMatrixForGraphOfCliques) {
+	    			Graph graphOfCliques = buildGraphOfCliques(cliques, "Graph of cliques for run #"+run+" and step #"+step);
+		    		densityAdjacentMatrixForGraphOfCliquesDistributions.add(graphOfCliques.getDensityAdjacentMatrix());
+	        		logDensityAdjacentMatrix(graphOfCliques, logger);
+	        	}
+	        	
+	        	if(logCharacteristicPathLength) {
+	        		logCharacteristicPathLength(graph, logger);
+	        	}
+	
+	        	if(logAverageEfficiency) {
+	        		logAverageEfficiency(graph, logger);
+	        	}
+	
+	        	if(logEnergy) {
+	        		logEnergy(graph, logger);
+	        	}
+	
+	        	if(logCheegerConstant) {
+	        		logCheegerConstant(graph, logger);
+	        	}
+	
+	        	if(logGlobalOverlapping) {
+	        		logGlobalOverlapping(graph, cliques, logger);
+	        	}
+	
+	        	if(logAverageRank) {
+	        		logAverageRank(graph, logger);
+	        	}
+	        	
+	        	if(displayGraph) {
+	        		displayGraph(graph, "graph");
+	        	}
+	        	
+	        	if(saveGraphInDotFormat) {
+	        		saveInDotFormat(graph, "graph");
+	        	}
+	
+	        	if(displayGraphOfCliques || saveGraphOfCliquesInDotFormat) {
+	        		Graph graphOfCliques = buildGraphOfCliques(cliques, "Graph of cliques");
+	
+	        		//logNotFullyConnectedMatrix(graphOfCliques, logger);
+	        		
+	        		if(displayGraphOfCliques) {
+	        			displayGraph(graphOfCliques, "graphOfCliques");
+	        		}
+	        		
+	        		if(saveGraphOfCliquesInDotFormat) {
+	        	   		saveInDotFormat(graphOfCliques, "graphOfCliques");
+	        		}
+	        	}
+		        	
 	        	if(step == numberOfSteps) {
-		        	logger.writeLine("Run #"+run+" Step #"+step);
-		        	logger.writeLine("");
-		        	
-		        	if(logNodes) {
-		        		logNodes(graph, logger);
-		        	}
-		        	
-		        	if(logMatrix) {
-		        		logMatrix(graph, logger);
-		        	}
-		        	
-		        	if(logClusteringCoefficient) {
-		        		logClusteringCoefficient(graph, logger);
-		        	}
-		
-		        	if(logCoalitionResource) {
-		        		logCoalitionResource(graph, logger);
-		        	}
-		
-		        	if(logStatsOfDegrees) {
-		        		logStatsOfDegrees(graph, logger); 
-		        	}
-		    		
-		    		if(logCliques) {
-		    			logCliques(graph, cliques, logger);
-		    		}
-		    	
-		    		if(logDistributionOfCliques) {
-		    			logDistributionOfCliques(cliques, logger);
-		    		}
-		    		
-		    		if(logNodesByCliques) {
-		    			logNodesByCliques(graph, cliques, logger);
-		    		}
-		        	
-		        	if(logDiameter) {
-		        		logDiameter(graph, logger);
-		        	}
-		        	
-		        	if(logDensityAdjacentMatrix) {
-		        		logDensityAdjacentMatrix(graph, logger);
-		        	}
-		
-		        	if(logDensityAdjacentMatrixForGraphOfCliques) {
-		    			Graph graphOfCliques = buildGraphOfCliques(cliques, "Graph of cliques for step #"+step);
-		        		logDensityAdjacentMatrix(graphOfCliques, logger);
-		        	}
-		        	
-		        	if(logCharacteristicPathLength) {
-		        		logCharacteristicPathLength(graph, logger);
-		        	}
-		
-		        	if(logAverageEfficiency) {
-		        		logAverageEfficiency(graph, logger);
-		        	}
-		
-		        	if(logEnergy) {
-		        		logEnergy(graph, logger);
-		        	}
-		
-		        	if(logCheegerConstant) {
-		        		logCheegerConstant(graph, logger);
-		        	}
-		
-		        	if(logGlobalOverlapping) {
-		        		logGlobalOverlapping(graph, cliques, logger);
-		        	}
-		
-		        	if(logAverageRank) {
-		        		logAverageRank(graph, logger);
-		        	}
-		        	
-		        	if(displayGraph) {
-		        		displayGraph(graph, "graph");
-		        	}
-		        	
-		        	if(saveGraphInDotFormat) {
-		        		saveInDotFormat(graph, "graph");
-		        	}
-		
-		        	if(displayGraphOfCliques || saveGraphOfCliquesInDotFormat) {
-		        		Graph graphOfCliques = buildGraphOfCliques(cliques, "Graph of cliques");
-		
-		        		logNotFullyConnectedMatrix(graphOfCliques, logger);
-		        		
-		        		if(displayGraphOfCliques) {
-		        			displayGraph(graphOfCliques, "graphOfCliques");
-		        		}
-		        		
-		        		if(saveGraphOfCliquesInDotFormat) {
-		        	   		saveInDotFormat(graphOfCliques, "graphOfCliques");
-		        		}
-		        	}
-		        	
-		    		Map<Integer, AverageAndStdDev> results = merge(nodeDegreeDistributions);
-		    		logger.writeLine("Distribution of nodes for run #"+run+":");
-		    		for(int degree : results.keySet()) {
-		    			logger.writeLine(degree+" "+results.get(degree));
-		    		}
-		    		logger.writeLine("");
-		    		
-		    		Map<Integer, AverageAndStdDev> cliqueCountDistributionResults = merge(cliqueCountDistributions);
-		    		logger.writeLine("Distribution of cliques for run #"+run+":");
-		    		for(int degree : cliqueCountDistributionResults.keySet()) {
-		    			logger.writeLine(degree+" "+cliqueCountDistributionResults.get(degree));
-		    		}
-		    		logger.writeLine("");
+			    	if(logStatsOfDegrees) {
+			    		Map<Integer, AverageAndStdDev> results = merge(nodeDegreeDistributions);
+			    		logger.writeLine("Distribution of nodes for run #"+run+":");
+			    		for(int degree : results.keySet()) {
+			    			logger.writeLine(degree+" "+results.get(degree));
+			    		}
+			    		logger.writeLine("");
+			    	}
+			    	
+			    	if(logDistributionOfCliques) {
+			    		Map<Integer, AverageAndStdDev> cliqueCountDistributionResults = merge(cliqueCountDistributions);
+			    		logger.writeLine("Distribution of cliques for run #"+run+":");
+			    		for(int degree : cliqueCountDistributionResults.keySet()) {
+			    			logger.writeLine(degree+" "+cliqueCountDistributionResults.get(degree));
+			    		}
+			    		logger.writeLine("");
+			    	}
+			    	
+			    	if(logDensityAdjacentMatrix) {
+			    		logger.writeLine("Distribution of DAM of graph for run #"+run+":");
+			    		logger.writeLine(""+getAverageAndStdDev(densityAdjacentMatrixDistributions));
+			    		logger.writeLine("");
+			    	}
 
-		    		logger.writeLine("Distribution of DAM for run #"+run+":");
-		    		logger.writeLine(""+getAverageAndStdDev(densityAdjacentMatrixDistributions));
-		    		logger.writeLine("");
+			    	if(logDensityAdjacentMatrixForGraphOfCliques) {
+			    		logger.writeLine("Distribution of DAM of graph of cliques for run #"+run+":");
+			    		logger.writeLine(""+getAverageAndStdDev(densityAdjacentMatrixForGraphOfCliquesDistributions));
+			    		logger.writeLine("");
+			    	}
 	        	}
 	    	}
     	}
