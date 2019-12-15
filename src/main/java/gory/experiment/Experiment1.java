@@ -21,6 +21,7 @@ import gory.service.PartitionBuilder;
 public class Experiment1 extends BaseExperiment {
 	private int distance; // d
 	private int numberOfDigits; // m
+	private int start;
 	
 	private boolean removeHead;
 	private boolean onlyDirectDescendants;
@@ -78,13 +79,10 @@ public class Experiment1 extends BaseExperiment {
 	    		graph.addNode(new PartitionNode(partition, orderSummonds));
 	    	}
     	} else { 
-    		graph = new Graph(numberOfDigits*numberOfDigits+" - "+numberOfDigits+" graph", distance);
-       		graph.getProhibitedOddness().addAll(prohibitedOddness);
-       	    		
 			PartitionNode headNode;
 			if(head == null) {
 				List<Integer> summands = new ArrayList<>();
-		    	for(int i=1; i<=2*numberOfDigits-1; i=i+2) {
+		    	for(int i=start; i<=start+2*numberOfDigits-1; i=i+2) {
 		    		summands.add(i);
 		    	}
 		    	
@@ -92,10 +90,14 @@ public class Experiment1 extends BaseExperiment {
 			} else {
 		    	headNode = new PartitionNode(head);
 			}
+			int sumOfDigits = headNode.getPartition().getSumOfDigits();
 			
+    		graph = new Graph(sumOfDigits+" - "+numberOfDigits+" graph", distance);
+       		graph.getProhibitedOddness().addAll(prohibitedOddness);
+       	    		
 	    	graph.addNode(headNode);
 	    	
-	    	List<Partition> partitions = PartitionBuilder.build(numberOfDigits*numberOfDigits, numberOfDigits);
+	    	List<Partition> partitions = PartitionBuilder.build(sumOfDigits, numberOfDigits);
 	    	if(extendedFamily && extendedFamilyDelta>0) {
 	    		partitions.addAll(PartitionBuilder.build(numberOfDigits*numberOfDigits-extendedFamilyDelta, numberOfDigits));
 	    		partitions.addAll(PartitionBuilder.build(numberOfDigits*numberOfDigits+extendedFamilyDelta, numberOfDigits));
@@ -277,6 +279,7 @@ public class Experiment1 extends BaseExperiment {
 
 			numberOfDigits = readProperty(properties, "m", 4);
 			distance = readProperty(properties, "d", 1);
+			start = readProperty(properties, "start", 1);
 
 			removeHead = readProperty(properties, "removeHead", false);
 			onlyDirectDescendants = readProperty(properties, "onlyDirectDescendants", false);
