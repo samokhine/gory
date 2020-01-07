@@ -293,6 +293,8 @@ public abstract class BaseExperiment implements Experiment {
 		Graph graph = new Graph(name, connectionDistance);
 		
 		for(Graph clique : cliques) {
+			if(clique.getSize()<3) continue;
+			
 			graph.addNode(clique);
 		}
 		
