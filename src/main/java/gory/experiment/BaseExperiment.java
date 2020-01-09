@@ -13,6 +13,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.graphstream.stream.file.FileSinkDOT;
@@ -285,17 +286,20 @@ public abstract class BaseExperiment implements Experiment {
 	}
 
 	protected Graph buildGraphOfCliques(Set<Graph> cliques, String name) {
-		return buildGraphOfCliques(cliques, name, 1);
+		return buildGraphOfCliques(cliques, name, 1, false);
 	}
 
 	
-	protected Graph buildGraphOfCliques(Set<Graph> cliques, String name, int connectionDistance) {
+	protected Graph buildGraphOfCliques(Set<Graph> cliques, String name, int connectionDistance, boolean onlyConnected) {
 		Graph graph = new Graph(name, connectionDistance);
 		
 		for(Graph clique : cliques) {
-			if(clique.getSize()<3) continue;
-			
 			graph.addNode(clique);
+		}
+
+		if(onlyConnected) {
+			Set<INode> disconnectedNodes = graph.getNodes().stream().filter(node -> node.getDegree() == 0).collect(Collectors.toSet());
+			disconnectedNodes.forEach(node -> graph.removeNode(node));
 		}
 		
 		return graph;

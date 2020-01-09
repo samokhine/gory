@@ -217,7 +217,7 @@ public class Experiment1 extends BaseExperiment {
     	}
 
     	if(logDensityAdjacentMatrixForGraphOfCliques) {
-			Graph graphOfCliques = buildGraphOfCliques(cliques, "Graph of cliques");
+			Graph graphOfCliques = buildGraphOfCliques(cliques, "Graph of only connected cliques", distance, true);
     		logDensityAdjacentMatrix(graphOfCliques, logger);
     	}
     	
