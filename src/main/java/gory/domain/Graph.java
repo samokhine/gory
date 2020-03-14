@@ -242,6 +242,8 @@ public class Graph extends Node {
 		
 		double sumOfDistances = 0;
 		for(INode nodeStart : getNodes()) {
+			if(nodeStart.getConnectedNodes().isEmpty()) continue;
+			
 			Map<INode, Integer> shortestDistances = algorithm.getShortestDistances(this, nodeStart);
 			
 			for(INode nodeEnd : shortestDistances.keySet()) {

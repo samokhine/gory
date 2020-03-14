@@ -7,8 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
 
 import gory.domain.Graph;
+import gory.domain.INode;
 import gory.domain.Partition;
 import gory.domain.PartitionNode;
 import gory.service.OutputLogger;
@@ -30,6 +34,10 @@ public class Experiment7 extends BaseExperiment {
 	private boolean logStatsOfDegrees;
 	private boolean logHammingDistance;
 	private boolean logEnergy;
+	private boolean logCliques;
+	private boolean logDistributionOfCliques;
+	private boolean logAverageEfficiency;
+	private boolean logPayoutMatrix;
 	
 	private boolean displayGraph;
 
@@ -53,6 +61,29 @@ public class Experiment7 extends BaseExperiment {
     	if(logHammingDistance) {
     		logHammingDistance(graphA, graphB, logger);
     	}
+    	
+    	if(logPayoutMatrix) {
+        	logger.writeLine("Payout Matrix:");
+        	for(INode aNode : graphA.getNodes()) {
+        		String line = "";
+            	for(INode bNode : graphA.getNodes()) {
+            		int sum = 0;
+            		for(int i=0; i<Math.min(((PartitionNode) aNode).getSummands().size(), ((PartitionNode) bNode).getSummands().size()); i++) {
+            			int aSummand = ((PartitionNode) aNode).getSummands().get(i);
+            			int bSummand = ((PartitionNode) bNode).getSummands().get(i);
+            			
+            			if(aSummand > bSummand) {
+            				sum += 1;
+            			} else if(aSummand < bSummand) {
+            				sum -= 1;
+            			}
+            		}
+            		line += StringUtils.leftPad(""+sum, 4, " ");
+            	}
+            	logger.writeLine(line);
+        	}
+        	logger.writeLine("");
+    	}
 	}
 
 	private Graph processGraph(String graphName, List<Partition> partitions, OutputLogger logger) {
@@ -62,6 +93,11 @@ public class Experiment7 extends BaseExperiment {
 		
     	for(Partition partition : partitions) {
     		graph.addNode(new PartitionNode(partition));
+    	}
+    	
+    	Set<Graph> cliques = null;
+    	if(logCliques || logDistributionOfCliques) {
+    		cliques = graph.getCliques();
     	}
     	
     	if(logNodes) {
@@ -92,6 +128,18 @@ public class Experiment7 extends BaseExperiment {
     		logEnergy(graph, logger);
     	}
     	
+    	if(logAverageEfficiency) {
+    		logAverageEfficiency(graph, logger);
+    	}
+    	
+		if(logCliques) {
+			logCliques(graph, cliques, logger);
+		}
+	
+		if(logDistributionOfCliques) {
+			logDistributionOfCliques(cliques, logger);
+		}
+
     	if(displayGraph) {
     		displayGraph(graph);
     	}
@@ -121,6 +169,10 @@ public class Experiment7 extends BaseExperiment {
 			logStatsOfDegrees = readProperty(properties, "logStatsOfDegrees", false);
 			logHammingDistance = readProperty(properties, "logHammingDistance", false);
 			logEnergy = readProperty(properties, "logEnergy", false);
+			logCliques = readProperty(properties, "logCliques", false);
+			logDistributionOfCliques = readProperty(properties, "logDistributionOfCliques", false); 
+			logAverageEfficiency = readProperty(properties, "logAverageEfficiency", false);
+			logPayoutMatrix = readProperty(properties, "logPayoutMatrix", false);
 			
 			displayGraph = readProperty(properties, "displayGraph", false);
 		} catch (IOException ex) {
