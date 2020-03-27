@@ -9,10 +9,7 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
-
 import gory.domain.Graph;
-import gory.domain.INode;
 import gory.domain.Partition;
 import gory.domain.PartitionNode;
 import gory.service.OutputLogger;
@@ -63,26 +60,7 @@ public class Experiment7 extends BaseExperiment {
     	}
     	
     	if(logPayoutMatrix) {
-        	logger.writeLine("Payout Matrix:");
-        	for(INode aNode : graphA.getNodes()) {
-        		String line = "";
-            	for(INode bNode : graphA.getNodes()) {
-            		int sum = 0;
-            		for(int i=0; i<Math.min(((PartitionNode) aNode).getSummands().size(), ((PartitionNode) bNode).getSummands().size()); i++) {
-            			int aSummand = ((PartitionNode) aNode).getSummands().get(i);
-            			int bSummand = ((PartitionNode) bNode).getSummands().get(i);
-            			
-            			if(aSummand > bSummand) {
-            				sum += 1;
-            			} else if(aSummand < bSummand) {
-            				sum -= 1;
-            			}
-            		}
-            		line += StringUtils.leftPad(""+sum, 4, " ");
-            	}
-            	logger.writeLine(line);
-        	}
-        	logger.writeLine("");
+    		logPayoutMatrix(graphA, graphB, logger);
     	}
 	}
 

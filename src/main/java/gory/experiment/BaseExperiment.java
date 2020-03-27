@@ -562,4 +562,38 @@ public abstract class BaseExperiment implements Experiment {
 		logger.writeLine(""+df4.format(graph.getAverageRank()));
 		logger.writeLine("");
 	}
+	
+	public void logPayoutMatrix(Graph graphA, Graph graphB, OutputLogger logger) {
+		int columnWidth = 4;
+		logger.writeLine("Payout Matrix:");
+    	
+		// header
+    	String line = StringUtils.leftPad("", columnWidth, " ");
+    	for(int i=1; i<=graphB.getNodes().size(); i++) {
+    		line += StringUtils.leftPad("B"+i, columnWidth, " ");
+    	}
+    	logger.writeLine(line);
+    	
+    	// matrix
+    	int aCount = 0;
+    	for(INode aNode : graphA.getNodes()) {
+    		line = StringUtils.leftPad("A"+(++aCount), columnWidth, " ");
+        	for(INode bNode : graphB.getNodes()) {
+        		int sum = 0;
+        		for(int i=0; i<Math.min(((PartitionNode) aNode).getSummands().size(), ((PartitionNode) bNode).getSummands().size()); i++) {
+        			int aSummand = ((PartitionNode) aNode).getSummands().get(i);
+        			int bSummand = ((PartitionNode) bNode).getSummands().get(i);
+        			
+        			if(aSummand > bSummand) {
+        				sum += 1;
+        			} else if(aSummand < bSummand) {
+        				sum -= 1;
+        			}
+        		}
+        		line += StringUtils.leftPad(""+sum, columnWidth, " ");
+        	}
+        	logger.writeLine(line);
+    	}
+    	logger.writeLine("");
+	}
 }
