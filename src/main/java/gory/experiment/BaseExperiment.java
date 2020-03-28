@@ -564,20 +564,25 @@ public abstract class BaseExperiment implements Experiment {
 	}
 	
 	public void logPayoutMatrix(Graph graphA, Graph graphB, OutputLogger logger) {
-		int columnWidth = 4;
+		int columnWidth = 5;
+		String sumHeaderName = "Sum";
 		logger.writeLine("Payout Matrix:");
     	
 		// header
     	String line = StringUtils.leftPad("", columnWidth, " ");
-    	for(int i=1; i<=graphB.getNodes().size(); i++) {
+    	int bSize = graphB.getNodes().size();
+    	for(int i=1; i<=bSize; i++) {
     		line += StringUtils.leftPad("B"+i, columnWidth, " ");
     	}
+    	line += StringUtils.leftPad(""+sumHeaderName, columnWidth, " ");
     	logger.writeLine(line);
     	
-    	// matrix
+    	int[] bResults = new int[bSize];
     	int aCount = 0;
     	for(INode aNode : graphA.getNodes()) {
     		line = StringUtils.leftPad("A"+(++aCount), columnWidth, " ");
+    		int sumResult = 0;
+    		int bCount = 0;
         	for(INode bNode : graphB.getNodes()) {
         		int sum = 0;
         		for(int i=0; i<Math.min(((PartitionNode) aNode).getSummands().size(), ((PartitionNode) bNode).getSummands().size()); i++) {
@@ -590,10 +595,23 @@ public abstract class BaseExperiment implements Experiment {
         				sum -= 1;
         			}
         		}
-        		line += StringUtils.leftPad(""+sum, columnWidth, " ");
+        		int result = sum > 0 ? 1 : sum < 0 ? -1 :0;
+        		line += StringUtils.leftPad(""+result, columnWidth, " ");
+        		sumResult += result;
+        		
+        		bResults[bCount++] += result;
         	}
+    		line += StringUtils.leftPad(""+sumResult, columnWidth, " ");
         	logger.writeLine(line);
     	}
+    	
+		// footer
+    	line = StringUtils.leftPad(sumHeaderName, columnWidth, " ");
+    	for(int i=1; i<=bSize; i++) {
+    		line += StringUtils.leftPad(""+bResults[i-1], columnWidth, " ");
+    	}
+    	logger.writeLine(line);
+    	
     	logger.writeLine("");
 	}
 }
