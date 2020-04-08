@@ -4,12 +4,16 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
-import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
 
 import gory.domain.Graph;
+import gory.domain.INode;
 import gory.domain.Partition;
 import gory.domain.PartitionNode;
 import gory.service.OutputLogger;
@@ -17,12 +21,14 @@ import gory.service.OutputLogger;
 public class Experiment7 extends BaseExperiment {
 	private static final String PROPERTIES_FILE = "experiment7.properties";
 	
-	private List<Partition> aPartitions = new ArrayList<>();
+	private List<Partition> allAPartitions = new ArrayList<>();
 	private List<Partition> allBPartitions = new ArrayList<>();
 
 	private int numPartitionsToSelect;
 	private int distance;
+	private int numberOfRuns; 
 	
+	/*
 	private boolean logNodes;
 	private boolean logClusteringCoefficient;
 	private boolean logDiameter;
@@ -35,8 +41,8 @@ public class Experiment7 extends BaseExperiment {
 	private boolean logDistributionOfCliques;
 	private boolean logAverageEfficiency;
 	private boolean logPayoutMatrix;
-	
 	private boolean displayGraph;
+	*/
 
 	@Override
 	public void run(OutputLogger logger) throws IOException {
@@ -45,16 +51,89 @@ public class Experiment7 extends BaseExperiment {
 
     	readParameters(logger);
 
-    	Random random = new Random();
-    	List<Partition> selectedBPartitions = new ArrayList<>();
-    	while(selectedBPartitions.size()<numPartitionsToSelect) {
-    		int index = random.nextInt(allBPartitions.size());
-    		selectedBPartitions.add(allBPartitions.remove(index));
+    	String sep = "        ";
+    	
+    	String[] headers = new String[] {
+    		"#Run", 
+    		"Winner",
+    		"Win/Lost/Draw",
+    		"Win/Lost DAM",
+    		"Win/Lost CPL",
+    		"Win/Lost Av Degree"
+    	};
+    	
+    	StringBuilder line = new StringBuilder();
+    	Arrays.asList(headers).stream().forEach(header -> {
+        	line.append(header+sep);
+    	});
+    	logger.writeLine(line.toString());
+
+    	for(int i=1; i<=numberOfRuns; i++) {
+        	Graph graphA = buildGraph("Graph A", allAPartitions, numPartitionsToSelect);
+        	Graph graphB = buildGraph("Graph B", allBPartitions, numPartitionsToSelect);
+
+        	int aWins = 0, bWins = 0, draws = 0;
+        	Iterator<INode> aNodesIterator =  graphA.getNodes().iterator();
+        	Iterator<INode> bNodesIterator =  graphB.getNodes().iterator();
+        	while(aNodesIterator.hasNext() && bNodesIterator.hasNext()) {
+        		INode aNode = aNodesIterator.next();
+        		INode bNode = bNodesIterator.next();
+        		
+        		int sum = 0;
+        		for(int j=0; j<Math.min(((PartitionNode) aNode).getSummands().size(), ((PartitionNode) bNode).getSummands().size()); j++) {
+        			int aSummand = ((PartitionNode) aNode).getSummands().get(j);
+        			int bSummand = ((PartitionNode) bNode).getSummands().get(j);
+        			
+        			if(aSummand > bSummand) {
+        				sum += 1;
+        			} else if(aSummand < bSummand) {
+        				sum -= 1;
+        			}
+        		}
+        		if(sum > 0) {
+        			aWins++;
+        		} else if(sum < 0) {
+        			bWins++;
+        		} else {
+        			draws++;
+        		}
+        	}
+  
+        	boolean aWon = aWins >= bWins;
+        	
+        	double aDAM = graphA.getDensityAdjacentMatrix();
+        	double bDAM = graphB.getDensityAdjacentMatrix();
+        	
+        	double aCPL = graphA.getCharacteristicPathLength();
+        	double bCPL = graphB.getCharacteristicPathLength();
+        	
+        	double aAverageDegree = graphA.getSumOfDegrees()/graphA.getSize();
+        	double bAverageDegree = graphB.getSumOfDegrees()/graphB.getSize();
+        	
+        	line.setLength(0);
+
+        	String cell = ""+i;
+        	line.append(StringUtils.rightPad(cell, headers[0].length()+sep.length(), " "));
+        	
+        	cell = aWon ? "A" : "B";
+        	line.append(StringUtils.rightPad(cell, headers[1].length()+sep.length(), " "));
+        	
+        	cell = (aWon ? aWins : bWins) + "/" + (aWon ? bWins : aWins) + "/" + draws;
+        	line.append(StringUtils.rightPad(cell, headers[2].length()+sep.length(), " "));
+
+        	cell = ""+df4.format(aWon ? aDAM : bDAM) + "/" + df4.format(aWon ? bDAM : aDAM);
+        	line.append(StringUtils.rightPad(cell, headers[3].length()+sep.length(), " "));
+
+        	cell = ""+df4.format(aWon ? aCPL : bCPL) + "/" + df4.format(aWon ? bCPL : aCPL);
+        	line.append(StringUtils.rightPad(cell, headers[4].length()+sep.length(), " "));
+
+        	cell = ""+df4.format(aWon ? aAverageDegree : bAverageDegree) + "/" + df4.format(aWon ? bAverageDegree : aAverageDegree);
+        	line.append(StringUtils.rightPad(cell, headers[5].length()+sep.length(), " "));
+        	
+        	logger.writeLine(line.toString());
     	}
     	
-    	Graph graphA = processGraph("Graph A", aPartitions, logger);
-    	Graph graphB = processGraph("Graph B", selectedBPartitions, logger);
-    	
+    	/*
     	if(logHammingDistance) {
     		logHammingDistance(graphA, graphB, logger);
     	}
@@ -62,8 +141,30 @@ public class Experiment7 extends BaseExperiment {
     	if(logPayoutMatrix) {
     		logPayoutMatrix(graphA, graphB, logger);
     	}
+    	*/
 	}
 
+	private Graph buildGraph(String graphName, List<Partition> allPartitions, int numPartitionsToSelect) {
+		List<Partition> partitions = new ArrayList<>(allPartitions);
+		
+    	Random random = new Random();
+
+    	List<Partition> selectedPartitions = new ArrayList<>();
+    	while(selectedPartitions.size()<numPartitionsToSelect) {
+    		int index = random.nextInt(partitions.size());
+    		selectedPartitions.add(partitions.remove(index));
+    	}
+
+		Graph graph = new Graph(graphName, distance);
+		
+    	for(Partition partition : selectedPartitions) {
+    		graph.addNode(new PartitionNode(partition));
+    	}
+
+    	return graph;
+	}
+	
+	/*
 	private Graph processGraph(String graphName, List<Partition> partitions, OutputLogger logger) {
     	partitions.stream().forEach(partition -> partition.normalize());
 
@@ -124,6 +225,7 @@ public class Experiment7 extends BaseExperiment {
     	
     	return graph;
 	}
+	*/
 	
 	private Properties readParameters(OutputLogger logger) {
 		Properties properties = new Properties();
@@ -133,12 +235,13 @@ public class Experiment7 extends BaseExperiment {
 
 			properties.load(input);
 			
-			aPartitions = new ArrayList<>(parseListOfPartitions(properties.getProperty("aPartitions")));
+			allAPartitions = new ArrayList<>(parseListOfPartitions(properties.getProperty("aPartitions")));
 			allBPartitions = new ArrayList<>(parseListOfPartitions(properties.getProperty("bPartitions")));
 
 			distance = readProperty(properties, "distance", 1);
 			numPartitionsToSelect = readProperty(properties, "numPartitionsToSelect", 10);
 			
+			/*
 			logNodes = readProperty(properties, "logNodes", false);
 			logClusteringCoefficient = readProperty(properties, "logClusteringCoefficient", false);
 			logDiameter = readProperty(properties, "logDiameter", false);
@@ -151,8 +254,10 @@ public class Experiment7 extends BaseExperiment {
 			logDistributionOfCliques = readProperty(properties, "logDistributionOfCliques", false); 
 			logAverageEfficiency = readProperty(properties, "logAverageEfficiency", false);
 			logPayoutMatrix = readProperty(properties, "logPayoutMatrix", false);
-			
 			displayGraph = readProperty(properties, "displayGraph", false);
+			*/
+			numberOfRuns = readProperty(properties, "numberOfRuns", 1);
+
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {
