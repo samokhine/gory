@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -24,25 +25,24 @@ public class Experiment7 extends BaseExperiment {
 	private List<Partition> allAPartitions = new ArrayList<>();
 	private List<Partition> allBPartitions = new ArrayList<>();
 
-	private int numPartitionsToSelect;
-	private int distance;
-	private int numberOfRuns; 
-	
-	/*
 	private boolean logNodes;
 	private boolean logClusteringCoefficient;
 	private boolean logDiameter;
 	private boolean logDensityAdjacentMatrix;
 	private boolean logCharacteristicPathLength;
 	private boolean logStatsOfDegrees;
-	private boolean logHammingDistance;
 	private boolean logEnergy;
 	private boolean logCliques;
 	private boolean logDistributionOfCliques;
 	private boolean logAverageEfficiency;
-	private boolean logPayoutMatrix;
 	private boolean displayGraph;
-	*/
+
+	private boolean logHammingDistance;
+	private boolean logPayoutMatrix;
+
+	private int numPartitionsToSelect;
+	private int distance;
+	private int numberOfRuns; 
 
 	@Override
 	public void run(OutputLogger logger) throws IOException {
@@ -51,15 +51,15 @@ public class Experiment7 extends BaseExperiment {
 
     	readParameters(logger);
 
-    	String sep = "        ";
+    	String sep = "   ";
     	
     	String[] headers = new String[] {
-    		"#Run", 
-    		"Winner",
-    		"Win/Lost/Draw",
-    		"Win/Lost DAM",
-    		"Win/Lost CPL",
-    		"Win/Lost Av Degree"
+    		"#", 
+    		"W Aj/Bj",
+    		"w,l,d",
+    		"W/l DAM",
+    		//"Win/Lost CPL",
+    		"W/l Deg"
     	};
     	
     	StringBuilder line = new StringBuilder();
@@ -71,6 +71,17 @@ public class Experiment7 extends BaseExperiment {
     	for(int i=1; i<=numberOfRuns; i++) {
         	Graph graphA = buildGraph("Graph A", allAPartitions, numPartitionsToSelect);
         	Graph graphB = buildGraph("Graph B", allBPartitions, numPartitionsToSelect);
+
+        	processGraph(graphA, logger);
+        	processGraph(graphB, logger);
+        	
+        	if(logHammingDistance) {
+        		logHammingDistance(graphA, graphB, logger);
+        	}
+        	
+        	if(logPayoutMatrix) {
+        		logPayoutMatrix(graphA, graphB, logger);
+        	}
 
         	int aWins = 0, bWins = 0, draws = 0;
         	Iterator<INode> aNodesIterator =  graphA.getNodes().iterator();
@@ -104,8 +115,8 @@ public class Experiment7 extends BaseExperiment {
         	double aDAM = graphA.getDensityAdjacentMatrix();
         	double bDAM = graphB.getDensityAdjacentMatrix();
         	
-        	double aCPL = graphA.getCharacteristicPathLength();
-        	double bCPL = graphB.getCharacteristicPathLength();
+        	//double aCPL = graphA.getCharacteristicPathLength();
+        	//double bCPL = graphB.getCharacteristicPathLength();
         	
         	double aAverageDegree = graphA.getSumOfDegrees()/graphA.getSize();
         	double bAverageDegree = graphB.getSumOfDegrees()/graphB.getSize();
@@ -121,27 +132,17 @@ public class Experiment7 extends BaseExperiment {
         	cell = (aWon ? aWins : bWins) + "/" + (aWon ? bWins : aWins) + "/" + draws;
         	line.append(StringUtils.rightPad(cell, headers[2].length()+sep.length(), " "));
 
-        	cell = ""+df4.format(aWon ? aDAM : bDAM) + "/" + df4.format(aWon ? bDAM : aDAM);
+        	cell = ""+df1.format(aWon ? aDAM : bDAM) + "/" + df1.format(aWon ? bDAM : aDAM);
         	line.append(StringUtils.rightPad(cell, headers[3].length()+sep.length(), " "));
 
-        	cell = ""+df4.format(aWon ? aCPL : bCPL) + "/" + df4.format(aWon ? bCPL : aCPL);
+        	//cell = ""+df4.format(aWon ? aCPL : bCPL) + "/" + df4.format(aWon ? bCPL : aCPL);
+        	//line.append(StringUtils.rightPad(cell, headers[4].length()+sep.length(), " "));
+
+        	cell = ""+df1.format(aWon ? aAverageDegree : bAverageDegree) + "/" + df1.format(aWon ? bAverageDegree : aAverageDegree);
         	line.append(StringUtils.rightPad(cell, headers[4].length()+sep.length(), " "));
 
-        	cell = ""+df4.format(aWon ? aAverageDegree : bAverageDegree) + "/" + df4.format(aWon ? bAverageDegree : aAverageDegree);
-        	line.append(StringUtils.rightPad(cell, headers[5].length()+sep.length(), " "));
-        	
         	logger.writeLine(line.toString());
     	}
-    	
-    	/*
-    	if(logHammingDistance) {
-    		logHammingDistance(graphA, graphB, logger);
-    	}
-    	
-    	if(logPayoutMatrix) {
-    		logPayoutMatrix(graphA, graphB, logger);
-    	}
-    	*/
 	}
 
 	private Graph buildGraph(String graphName, List<Partition> allPartitions, int numPartitionsToSelect) {
@@ -164,16 +165,7 @@ public class Experiment7 extends BaseExperiment {
     	return graph;
 	}
 	
-	/*
-	private Graph processGraph(String graphName, List<Partition> partitions, OutputLogger logger) {
-    	partitions.stream().forEach(partition -> partition.normalize());
-
-		Graph graph = new Graph(graphName, distance);
-		
-    	for(Partition partition : partitions) {
-    		graph.addNode(new PartitionNode(partition));
-    	}
-    	
+	private Graph processGraph(Graph graph, OutputLogger logger) {
     	Set<Graph> cliques = null;
     	if(logCliques || logDistributionOfCliques) {
     		cliques = graph.getCliques();
@@ -225,7 +217,6 @@ public class Experiment7 extends BaseExperiment {
     	
     	return graph;
 	}
-	*/
 	
 	private Properties readParameters(OutputLogger logger) {
 		Properties properties = new Properties();
@@ -239,9 +230,7 @@ public class Experiment7 extends BaseExperiment {
 			allBPartitions = new ArrayList<>(parseListOfPartitions(properties.getProperty("bPartitions")));
 
 			distance = readProperty(properties, "distance", 1);
-			numPartitionsToSelect = readProperty(properties, "numPartitionsToSelect", 10);
 			
-			/*
 			logNodes = readProperty(properties, "logNodes", false);
 			logClusteringCoefficient = readProperty(properties, "logClusteringCoefficient", false);
 			logDiameter = readProperty(properties, "logDiameter", false);
@@ -255,7 +244,8 @@ public class Experiment7 extends BaseExperiment {
 			logAverageEfficiency = readProperty(properties, "logAverageEfficiency", false);
 			logPayoutMatrix = readProperty(properties, "logPayoutMatrix", false);
 			displayGraph = readProperty(properties, "displayGraph", false);
-			*/
+
+			numPartitionsToSelect = readProperty(properties, "numPartitionsToSelect", 10);
 			numberOfRuns = readProperty(properties, "numberOfRuns", 1);
 
 		} catch (IOException ex) {

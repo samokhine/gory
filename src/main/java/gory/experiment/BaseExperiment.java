@@ -27,6 +27,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 public abstract class BaseExperiment implements Experiment {
+	protected static final DecimalFormat df1 = new DecimalFormat("0.0");
 	protected static final DecimalFormat df2 = new DecimalFormat("0.00");
 	protected static final DecimalFormat df4 = new DecimalFormat("0.0000");
 
