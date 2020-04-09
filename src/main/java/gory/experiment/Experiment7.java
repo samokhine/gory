@@ -61,16 +61,15 @@ public class Experiment7 extends BaseExperiment {
     		//"Win/Lost CPL",
     		"W/l Deg"
     	};
+    	String[][] rows = new String[numberOfRuns][headers.length];
     	
     	StringBuilder line = new StringBuilder();
-    	Arrays.asList(headers).stream().forEach(header -> {
-        	line.append(header+sep);
-    	});
-    	logger.writeLine(line.toString());
-
     	for(int i=1; i<=numberOfRuns; i++) {
         	Graph graphA = buildGraph("Graph A", allAPartitions, numPartitionsToSelect);
         	Graph graphB = buildGraph("Graph B", allBPartitions, numPartitionsToSelect);
+
+        	logger.writeLine("Run #"+i);
+        	logger.writeLine("");
 
         	processGraph(graphA, logger);
         	processGraph(graphB, logger);
@@ -123,24 +122,38 @@ public class Experiment7 extends BaseExperiment {
         	
         	line.setLength(0);
 
+        	int j=0;
         	String cell = ""+i;
-        	line.append(StringUtils.rightPad(cell, headers[0].length()+sep.length(), " "));
+        	rows[i-1][j++] = cell;
         	
         	cell = aWon ? "A" : "B";
-        	line.append(StringUtils.rightPad(cell, headers[1].length()+sep.length(), " "));
+        	rows[i-1][j++] = cell;
         	
         	cell = (aWon ? aWins : bWins) + "/" + (aWon ? bWins : aWins) + "/" + draws;
-        	line.append(StringUtils.rightPad(cell, headers[2].length()+sep.length(), " "));
+        	rows[i-1][j++] = cell;
 
         	cell = ""+df1.format(aWon ? aDAM : bDAM) + "/" + df1.format(aWon ? bDAM : aDAM);
-        	line.append(StringUtils.rightPad(cell, headers[3].length()+sep.length(), " "));
+        	rows[i-1][j++] = cell;
 
         	//cell = ""+df4.format(aWon ? aCPL : bCPL) + "/" + df4.format(aWon ? bCPL : aCPL);
         	//line.append(StringUtils.rightPad(cell, headers[4].length()+sep.length(), " "));
 
         	cell = ""+df1.format(aWon ? aAverageDegree : bAverageDegree) + "/" + df1.format(aWon ? bAverageDegree : aAverageDegree);
-        	line.append(StringUtils.rightPad(cell, headers[4].length()+sep.length(), " "));
+        	rows[i-1][j++] = cell;
+    	}
+    	
+    	line.setLength(0);
+    	Arrays.asList(headers).stream().forEach(header -> {
+        	line.append(header+sep);
+    	});
+    	logger.writeLine(line.toString());
 
+    	
+    	for(int i=1; i<=numberOfRuns; i++) {
+        	line.setLength(0);
+        	for(int j=1; j<=headers.length; j++) {
+            	line.append(StringUtils.rightPad(rows[i-1][j-1], headers[j-1].length()+sep.length(), " "));
+        	}
         	logger.writeLine(line.toString());
     	}
 	}
