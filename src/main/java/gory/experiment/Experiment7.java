@@ -36,6 +36,8 @@ public class Experiment7 extends BaseExperiment {
 	private boolean logDistributionOfCliques;
 	private boolean logAverageEfficiency;
 	private boolean displayGraph;
+	private boolean orderSummonds;
+	private boolean logDistanceDistribution;
 
 	private boolean logHammingDistance;
 	private boolean logPayoutMatrix;
@@ -172,7 +174,7 @@ public class Experiment7 extends BaseExperiment {
 		Graph graph = new Graph(graphName, distance);
 		
     	for(Partition partition : selectedPartitions) {
-    		graph.addNode(new PartitionNode(partition));
+    		graph.addNode(new PartitionNode(partition, orderSummonds));
     	}
 
     	return graph;
@@ -224,6 +226,10 @@ public class Experiment7 extends BaseExperiment {
 			logDistributionOfCliques(cliques, logger);
 		}
 
+		if(logDistanceDistribution) {
+			logDistanceDistribution(graph, logger);
+		}
+		
     	if(displayGraph) {
     		displayGraph(graph);
     	}
@@ -257,6 +263,8 @@ public class Experiment7 extends BaseExperiment {
 			logAverageEfficiency = readProperty(properties, "logAverageEfficiency", false);
 			logPayoutMatrix = readProperty(properties, "logPayoutMatrix", false);
 			displayGraph = readProperty(properties, "displayGraph", false);
+			orderSummonds = readProperty(properties, "orderSummonds", false);
+			logDistanceDistribution = readProperty(properties, "logDistanceDistribution", false);
 
 			numPartitionsToSelect = readProperty(properties, "numPartitionsToSelect", 10);
 			numberOfRuns = readProperty(properties, "numberOfRuns", 1);

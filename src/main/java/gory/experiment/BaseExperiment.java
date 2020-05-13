@@ -615,4 +615,24 @@ public abstract class BaseExperiment implements Experiment {
     	
     	logger.writeLine("");
 	}
+	
+	public void logDistanceDistribution(Graph graph, OutputLogger logger) {
+		List<INode> nodes = new ArrayList<>(graph.getNodes());
+		
+		List<Integer> distances = new ArrayList<>();
+		for(int i=0; i<nodes.size(); i++) {
+			INode node1 = nodes.get(i);
+			for(int j=i+1; j<nodes.size(); j++) {
+				INode node2 = nodes.get(j);
+				distances.add(node1.distanceTo(node2));
+			}			
+		}
+
+		AverageAndStdDev averageAndStdDev = getAverageAndStdDev(distances);
+		
+		logger.writeLine("Distance distribution for "+graph.getName());
+		logger.writeLine(averageAndStdDev.toString());
+    	logger.writeLine("");
+
+	}
 }
