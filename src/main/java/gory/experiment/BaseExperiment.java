@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -616,22 +617,36 @@ public abstract class BaseExperiment implements Experiment {
     	logger.writeLine("");
 	}
 	
-	public void logDistanceDistribution(Graph graph, OutputLogger logger) {
-		List<INode> nodes = new ArrayList<>(graph.getNodes());
+	public void logDistanceDistribution(Graph graphA, Graph graphB, OutputLogger logger) {
+		List<INode> anodes = new ArrayList<>(graphA.getNodes());
+		List<INode> bnodes = new ArrayList<>(graphB.getNodes());
 		
-		List<Integer> distances = new ArrayList<>();
-		for(int i=0; i<nodes.size(); i++) {
-			INode node1 = nodes.get(i);
-			for(int j=i+1; j<nodes.size(); j++) {
-				INode node2 = nodes.get(j);
-				distances.add(node1.distanceTo(node2));
+		Map<Integer, AtomicInteger> distanceCounts = new HashMap<>();
+		for(int i=0; i<anodes.size(); i++) {
+			List<Integer> aSummands = ((PartitionNode) anodes.get(i)).getSummands();
+			for(int j=0; j<bnodes.size(); j++) {
+				List<Integer> bSummands = ((PartitionNode) bnodes.get(j)).getSummands();
+				
+				for(int k=0; k<Math.min(aSummands.size(), bSummands.size()); k++) {
+					int distance = Math.abs(aSummands.get(k) - bSummands.get(k));
+					AtomicInteger count = distanceCounts.get(distance);
+					if(count == null) {
+						count = new AtomicInteger();
+					}
+					count.incrementAndGet();
+					distanceCounts.put(distance, count);
+				}
 			}			
 		}
 
-		AverageAndStdDev averageAndStdDev = getAverageAndStdDev(distances);
+		int totalCount = distanceCounts.values().stream().map(count -> count.get()).reduce(0, (a, b) -> a + b);
+		List<Integer> distances = new ArrayList<>(distanceCounts.keySet());
+		Collections.sort(distances);
 		
-		logger.writeLine("Distance distribution for "+graph.getName());
-		logger.writeLine(averageAndStdDev.toString());
+		logger.writeLine("Distance distribution");
+		distances.forEach(distance -> {
+			logger.writeLine(distance+": "+df2.format(1.0*distanceCounts.get(distance).get()/totalCount));
+		});
     	logger.writeLine("");
 
 	}

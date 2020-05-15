@@ -84,6 +84,10 @@ public class Experiment7 extends BaseExperiment {
         		logPayoutMatrix(graphA, graphB, logger);
         	}
 
+    		if(logDistanceDistribution) {
+    			logDistanceDistribution(graphA, graphB, logger);
+    		}
+        	
         	int aWins = 0, bWins = 0, draws = 0;
         	Iterator<INode> aNodesIterator =  graphA.getNodes().iterator();
         	Iterator<INode> bNodesIterator =  graphB.getNodes().iterator();
@@ -226,10 +230,6 @@ public class Experiment7 extends BaseExperiment {
 			logDistributionOfCliques(cliques, logger);
 		}
 
-		if(logDistanceDistribution) {
-			logDistanceDistribution(graph, logger);
-		}
-		
     	if(displayGraph) {
     		displayGraph(graph);
     	}
