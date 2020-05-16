@@ -645,7 +645,7 @@ public abstract class BaseExperiment implements Experiment {
 		
 		logger.writeLine("Distance distribution");
 		distances.forEach(distance -> {
-			logger.writeLine(distance+": "+df2.format(1.0*distanceCounts.get(distance).get()/totalCount));
+			logger.writeLine(distance+" "+distanceCounts.get(distance)+" "+df2.format(1.0*distanceCounts.get(distance).get()/totalCount));
 		});
     	logger.writeLine("");
 
