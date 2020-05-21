@@ -618,17 +618,22 @@ public abstract class BaseExperiment implements Experiment {
 	}
 	
 	public void logDistanceDistribution(Graph graphA, Graph graphB, OutputLogger logger) {
-		List<INode> anodes = new ArrayList<>(graphA.getNodes());
-		List<INode> bnodes = new ArrayList<>(graphB.getNodes());
+		List<INode> nodes = new ArrayList<>(graphA.getNodes());
+		nodes.addAll(graphB.getNodes());
 		
+		List<Integer> allDistances = new ArrayList<>();
+				
 		Map<Integer, AtomicInteger> distanceCounts = new HashMap<>();
-		for(int i=0; i<anodes.size(); i++) {
-			List<Integer> aSummands = ((PartitionNode) anodes.get(i)).getSummands();
-			for(int j=0; j<bnodes.size(); j++) {
-				List<Integer> bSummands = ((PartitionNode) bnodes.get(j)).getSummands();
+		for(int i=0; i<nodes.size(); i++) {
+			List<Integer> aSummands = ((PartitionNode) nodes.get(i)).getSummands();
+			for(int j=0; j<nodes.size(); j++) {
+				List<Integer> bSummands = ((PartitionNode) nodes.get(j)).getSummands();
 				
 				for(int k=0; k<Math.min(aSummands.size(), bSummands.size()); k++) {
 					int distance = Math.abs(aSummands.get(k) - bSummands.get(k));
+					
+					allDistances.add(distance);
+					
 					AtomicInteger count = distanceCounts.get(distance);
 					if(count == null) {
 						count = new AtomicInteger();
@@ -645,8 +650,9 @@ public abstract class BaseExperiment implements Experiment {
 		
 		logger.writeLine("Distance distribution");
 		distances.forEach(distance -> {
-			logger.writeLine(distance+" "+distanceCounts.get(distance)+" "+df2.format(1.0*distanceCounts.get(distance).get()/totalCount));
+			logger.writeLine(distance+" "+distanceCounts.get(distance)+" "+df4.format(1.0*distanceCounts.get(distance).get()/totalCount));
 		});
+		logger.writeLine(getAverageAndStdDev(allDistances).toString());
     	logger.writeLine("");
 
 	}
