@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -617,7 +618,7 @@ public abstract class BaseExperiment implements Experiment {
     	logger.writeLine("");
 	}
 	
-	public void logDistanceDistribution(Graph graphA, Graph graphB, OutputLogger logger) {
+	public AverageAndStdDev logDistanceDistribution(Graph graphA, Graph graphB, OutputLogger logger) {
 		List<INode> nodes = new ArrayList<>(graphA.getNodes());
 		nodes.addAll(graphB.getNodes());
 		
@@ -648,12 +649,36 @@ public abstract class BaseExperiment implements Experiment {
 		List<Integer> distances = new ArrayList<>(distanceCounts.keySet());
 		Collections.sort(distances);
 		
+		AverageAndStdDev averageAndStdDev = getAverageAndStdDev(allDistances);
+		
 		logger.writeLine("Distance distribution");
 		distances.forEach(distance -> {
 			logger.writeLine(distance+" "+distanceCounts.get(distance)+" "+df4.format(1.0*distanceCounts.get(distance).get()/totalCount));
 		});
-		logger.writeLine(getAverageAndStdDev(allDistances).toString());
+		logger.writeLine(averageAndStdDev.toString());
     	logger.writeLine("");
 
+    	return averageAndStdDev;
+	}
+	
+	public void logConfidenceInterval(String name, List<Double> measurments, int numberOfRuns, OutputLogger logger) {
+		Map<Double, Double> zs = new LinkedHashMap<>();
+		zs.put(80., 1.282);
+		zs.put(85., 1.440);
+		zs.put(90., 1.645);
+		zs.put(95., 1.960);
+		zs.put(99., 2.576);
+		zs.put(99.5, 2.807);
+		zs.put(99.9, 3.291);
+		
+		AverageAndStdDev averageAndStdDev = getAverageAndStdDev(measurments);
+		
+		logger.writeLine("Confidence Intervals for average "+name+" of "+df4.format(averageAndStdDev.getAverage())+":");
+		zs.keySet().forEach(confidenceInterval -> {
+			double z = zs.get(confidenceInterval);
+			double interval = z * averageAndStdDev.getStdDev() / Math.sqrt(numberOfRuns);
+			logger.writeLine(df2.format(confidenceInterval)+"% +/-"+df4.format(interval));
+		});
+		logger.writeLine("");
 	}
 }

@@ -38,6 +38,7 @@ public class Experiment7 extends BaseExperiment {
 	private boolean displayGraph;
 	private boolean orderSummonds;
 	private boolean logDistanceDistribution;
+	private boolean logConfidenceInterval;
 
 	private boolean logHammingDistance;
 	private boolean logPayoutMatrix;
@@ -65,6 +66,7 @@ public class Experiment7 extends BaseExperiment {
     	};
     	String[][] rows = new String[numberOfRuns][headers.length];
     	
+    	List<Double> distances = new ArrayList<>();
     	StringBuilder line = new StringBuilder();
     	for(int i=1; i<=numberOfRuns; i++) {
         	Graph graphA = buildGraph("Graph A", allAPartitions, numPartitionsToSelect);
@@ -85,7 +87,8 @@ public class Experiment7 extends BaseExperiment {
         	}
 
     		if(logDistanceDistribution) {
-    			logDistanceDistribution(graphA, graphB, logger);
+    			AverageAndStdDev averageAndStdDev = logDistanceDistribution(graphA, graphB, logger);
+    			distances.add(averageAndStdDev.getAverage());
     		}
         	
         	int aWins = 0, bWins = 0, draws = 0;
@@ -153,7 +156,6 @@ public class Experiment7 extends BaseExperiment {
         	line.append(header+sep);
     	});
     	logger.writeLine(line.toString());
-
     	
     	for(int i=1; i<=numberOfRuns; i++) {
         	line.setLength(0);
@@ -161,6 +163,11 @@ public class Experiment7 extends BaseExperiment {
             	line.append(StringUtils.rightPad(rows[i-1][j-1], headers[j-1].length()+sep.length(), " "));
         	}
         	logger.writeLine(line.toString());
+    	}
+    	logger.writeLine("");
+    	
+    	if(logConfidenceInterval) {
+    		logConfidenceInterval("distance", distances, numberOfRuns, logger);
     	}
 	}
 
@@ -265,6 +272,7 @@ public class Experiment7 extends BaseExperiment {
 			displayGraph = readProperty(properties, "displayGraph", false);
 			orderSummonds = readProperty(properties, "orderSummonds", false);
 			logDistanceDistribution = readProperty(properties, "logDistanceDistribution", false);
+			logConfidenceInterval = readProperty(properties, "logConfidenceInterval", false);
 
 			numPartitionsToSelect = readProperty(properties, "numPartitionsToSelect", 10);
 			numberOfRuns = readProperty(properties, "numberOfRuns", 1);
