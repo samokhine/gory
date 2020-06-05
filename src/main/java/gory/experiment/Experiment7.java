@@ -177,7 +177,7 @@ public class Experiment7 extends BaseExperiment {
     	Random random = new Random();
 
     	List<Partition> selectedPartitions = new ArrayList<>();
-    	while(selectedPartitions.size()<numPartitionsToSelect) {
+    	while(partitions.size()>0 && selectedPartitions.size()<numPartitionsToSelect) {
     		int index = random.nextInt(partitions.size());
     		selectedPartitions.add(partitions.remove(index));
     	}
