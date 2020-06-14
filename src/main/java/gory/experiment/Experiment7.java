@@ -18,6 +18,7 @@ import gory.domain.INode;
 import gory.domain.Partition;
 import gory.domain.PartitionNode;
 import gory.service.OutputLogger;
+import gory.service.PartitionBuilder;
 
 public class Experiment7 extends BaseExperiment {
 	private static final String PROPERTIES_FILE = "experiment7.properties";
@@ -39,6 +40,7 @@ public class Experiment7 extends BaseExperiment {
 	private boolean orderSummonds;
 	private boolean logDistanceDistribution;
 	private boolean logConfidenceInterval;
+	private boolean generateRandom;
 
 	private boolean logHammingDistance;
 	private boolean logPayoutMatrix;
@@ -69,8 +71,12 @@ public class Experiment7 extends BaseExperiment {
     	List<Double> distances = new ArrayList<>();
     	StringBuilder line = new StringBuilder();
     	for(int i=1; i<=numberOfRuns; i++) {
-        	Graph graphA = buildGraph("Graph A", allAPartitions, numPartitionsToSelect);
-        	Graph graphB = buildGraph("Graph B", allBPartitions, numPartitionsToSelect);
+        	Graph graphA = buildGraph("Graph A", 
+        			generateRandom ? PartitionBuilder.buildRandom(allAPartitions.get(0).getSumOfDigits(), allAPartitions.get(0).getNumberOfDigits(), numPartitionsToSelect) : allAPartitions, 
+        			numPartitionsToSelect);
+        	Graph graphB = buildGraph("Graph B", 
+        			generateRandom ? PartitionBuilder.buildRandom(allBPartitions.get(0).getSumOfDigits(), allBPartitions.get(0).getNumberOfDigits(), numPartitionsToSelect) : allBPartitions, 
+        			numPartitionsToSelect);
 
         	logger.writeLine("Run #"+i);
         	logger.writeLine("");
@@ -273,6 +279,7 @@ public class Experiment7 extends BaseExperiment {
 			orderSummonds = readProperty(properties, "orderSummonds", false);
 			logDistanceDistribution = readProperty(properties, "logDistanceDistribution", false);
 			logConfidenceInterval = readProperty(properties, "logConfidenceInterval", false);
+			generateRandom = readProperty(properties, "logConfidenceInterval", false);
 
 			numPartitionsToSelect = readProperty(properties, "numPartitionsToSelect", 10);
 			numberOfRuns = readProperty(properties, "numberOfRuns", 1);

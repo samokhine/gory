@@ -46,10 +46,12 @@ public class Partition {
 			Arrays.sort(arr);
 			ArrayUtils.reverse(arr);
 		}
+		sumOfDigits = Arrays.stream(arr).sum();;
 	}
 
 	public Partition(List<Integer> summands) {
 		this(summands, true);
+		sumOfDigits = Arrays.stream(arr).sum();;
 	}
 
 	public Partition(List<Integer> summands, boolean sort) {

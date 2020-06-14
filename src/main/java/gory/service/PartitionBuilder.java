@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 import gory.domain.Partition;
@@ -15,6 +16,30 @@ public class PartitionBuilder {
 		return build(n, m, null);
 	}
 
+	static public List<Partition> buildRandom(int n, int m, int num) {
+		List<Partition> partitions = new ArrayList<>();
+		int cnt1 = 0;
+		while(cnt1++ < num) {
+			List<Integer> tmp = new ArrayList<>();
+			for(int j=1; j<=m-1; j++) {
+				tmp.add(ThreadLocalRandom.current().nextInt(0, n));
+			}
+			
+			Collections.sort(tmp);
+			tmp.add(0, 0);
+			tmp.add(n);
+			
+			List<Integer> summands = new ArrayList<>();
+			for(int j=1; j<=m; j++) {
+				int summand = tmp.get(j) - tmp.get(j-1);
+				summands.add(summand);
+			}
+			Partition partition = new Partition(summands);
+			partitions.add(partition);
+		}
+		return partitions;
+	}
+	
 	static public List<Partition> build(int n, int m, IPartitionFilter filter) {
 		List<Partition> partitions = Collections.synchronizedList(new ArrayList<>());
 
