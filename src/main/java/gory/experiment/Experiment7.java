@@ -40,7 +40,8 @@ public class Experiment7 extends BaseExperiment {
 	private boolean orderSummonds;
 	private boolean logDistanceDistribution;
 	private boolean logConfidenceInterval;
-	private boolean generateRandom;
+	private boolean generateARandom;
+	private boolean generateBRandom;
 
 	private boolean logHammingDistance;
 	private boolean logPayoutMatrix;
@@ -72,10 +73,10 @@ public class Experiment7 extends BaseExperiment {
     	StringBuilder line = new StringBuilder();
     	for(int i=1; i<=numberOfRuns; i++) {
         	Graph graphA = buildGraph("Graph A", 
-        			generateRandom ? PartitionBuilder.buildRandom(allAPartitions.get(0).getSumOfDigits(), allAPartitions.get(0).getNumberOfDigits(), numPartitionsToSelect) : allAPartitions, 
+        			generateARandom ? PartitionBuilder.buildRandom(allAPartitions.get(0).getSumOfDigits(), allAPartitions.get(0).getNumberOfDigits(), numPartitionsToSelect) : allAPartitions, 
         			numPartitionsToSelect);
         	Graph graphB = buildGraph("Graph B", 
-        			generateRandom ? PartitionBuilder.buildRandom(allBPartitions.get(0).getSumOfDigits(), allBPartitions.get(0).getNumberOfDigits(), numPartitionsToSelect) : allBPartitions, 
+        			generateBRandom ? PartitionBuilder.buildRandom(allBPartitions.get(0).getSumOfDigits(), allBPartitions.get(0).getNumberOfDigits(), numPartitionsToSelect) : allBPartitions, 
         			numPartitionsToSelect);
 
         	logger.writeLine("Run #"+i);
@@ -279,7 +280,8 @@ public class Experiment7 extends BaseExperiment {
 			orderSummonds = readProperty(properties, "orderSummonds", false);
 			logDistanceDistribution = readProperty(properties, "logDistanceDistribution", false);
 			logConfidenceInterval = readProperty(properties, "logConfidenceInterval", false);
-			generateRandom = readProperty(properties, "logConfidenceInterval", false);
+			generateARandom = readProperty(properties, "generateARandom", false);
+			generateBRandom = readProperty(properties, "generateBRandom", false);
 
 			numPartitionsToSelect = readProperty(properties, "numPartitionsToSelect", 10);
 			numberOfRuns = readProperty(properties, "numberOfRuns", 1);
