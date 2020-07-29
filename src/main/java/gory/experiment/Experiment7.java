@@ -47,7 +47,7 @@ public class Experiment7 extends BaseExperiment {
 	private boolean logPayoutMatrix;
 
 	private int numPartitionsToSelect;
-	private int distance;
+	private int distanceA, distanceB;
 	private int numberOfRuns; 
 
 	@Override
@@ -74,10 +74,12 @@ public class Experiment7 extends BaseExperiment {
     	for(int i=1; i<=numberOfRuns; i++) {
         	Graph graphA = buildGraph("Graph A", 
         			generateARandom ? PartitionBuilder.buildRandom(allAPartitions.get(0).getSumOfDigits(), allAPartitions.get(0).getNumberOfDigits(), numPartitionsToSelect) : allAPartitions, 
-        			numPartitionsToSelect);
+        			numPartitionsToSelect, 
+        			distanceA);
         	Graph graphB = buildGraph("Graph B", 
         			generateBRandom ? PartitionBuilder.buildRandom(allBPartitions.get(0).getSumOfDigits(), allBPartitions.get(0).getNumberOfDigits(), numPartitionsToSelect) : allBPartitions, 
-        			numPartitionsToSelect);
+        			numPartitionsToSelect, 
+        			distanceB);
 
         	logger.writeLine("Run #"+i);
         	logger.writeLine("");
@@ -178,7 +180,7 @@ public class Experiment7 extends BaseExperiment {
     	}
 	}
 
-	private Graph buildGraph(String graphName, List<Partition> allPartitions, int numPartitionsToSelect) {
+	private Graph buildGraph(String graphName, List<Partition> allPartitions, int numPartitionsToSelect, int distance) {
 		List<Partition> partitions = new ArrayList<>(allPartitions);
 		
     	Random random = new Random();
@@ -262,7 +264,8 @@ public class Experiment7 extends BaseExperiment {
 			allAPartitions = new ArrayList<>(parseListOfPartitions(properties.getProperty("aPartitions")));
 			allBPartitions = new ArrayList<>(parseListOfPartitions(properties.getProperty("bPartitions")));
 
-			distance = readProperty(properties, "distance", 1);
+			distanceA = readProperty(properties, "distanceA", 1);
+			distanceB = readProperty(properties, "distanceB", 1);
 			
 			logNodes = readProperty(properties, "logNodes", false);
 			logClusteringCoefficient = readProperty(properties, "logClusteringCoefficient", false);
