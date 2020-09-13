@@ -67,15 +67,15 @@ public class Experiment4 extends BaseExperiment {
     		Graph graph = new Graph("Graph", distance);
 	    	
     		if(!create.isEmpty()) {
-        		numberOfDigits = create.iterator().next().getNumberOfDigits();
+        		numberOfDigits = (int) create.iterator().next().getNumberOfDigits();
         		
     	    	for(Partition partition : create) {
     	    		graph.addNode(new PartitionNode(partition));
     	    	}
     		} else {
-				List<Integer> summands = new ArrayList<>();
+				List<Double> summands = new ArrayList<>();
 		    	for(int i=1; i<=2*numberOfDigits-1; i=i+2) {
-		    		summands.add(i);
+		    		summands.add(1.0 * i);
 		    	}
 		    	PartitionNode headNode = new PartitionNode(new Partition(summands));
 		    	graph.addNode(headNode);

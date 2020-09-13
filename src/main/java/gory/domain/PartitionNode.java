@@ -42,10 +42,10 @@ public class PartitionNode extends Node {
 	}
 
 	public int getNumberOfDigits() {
-		return partition.getNumberOfDigits();
+		return (int) partition.getNumberOfDigits();
 	}
 
-	public List<Integer> getSummands() {
+	public List<Double> getSummands() {
 		return partition.getSummands();
 	}
 }

@@ -35,15 +35,15 @@ public class BlottoPartitionFilter implements IPartitionFilter {
 	private boolean checkRepetitions(Partition partition) {
 		Map<Integer, Integer> repetitionCounts = new HashMap<>();
 		
-		for(int summand : partition.getSummands()) {
-			Integer count = repetitionCounts.get(summand);
+		for(double summand : partition.getSummands()) {
+			Integer count = repetitionCounts.get((int) summand);
 			if(count == null) count = 0;
 			count++;
 			if(count > maxNumRepetitions) {
 				return false;
 			}
 			
-			repetitionCounts.put(summand, count);
+			repetitionCounts.put((int) summand, count);
 		}
 		
 		return true;

@@ -68,9 +68,9 @@ public class Experiment3 extends BaseExperiment {
 	    		prevPartitions.add(partition);
 	    	}
 			
-	    	List<Integer> summands = new ArrayList<>();
+	    	List<Double> summands = new ArrayList<>();
 	    	for(int j=1; j<=2*numberOfDigits-1; j=j+2) {
-	    		summands.add(j);
+	    		summands.add(1.0 * j);
 	    	}
 	    	Partition prevHead = new Partition(summands);
      		
@@ -80,7 +80,7 @@ public class Experiment3 extends BaseExperiment {
 	
 	    		summands = new ArrayList<>();
 	        	for(int j=1; j<=2*initialNumberOfDigits-1; j=j+2) {
-	        		summands.add(j);
+	        		summands.add(1.0 * j);
 	        	}
 	        	Partition head = new Partition(summands);
 	
@@ -94,7 +94,7 @@ public class Experiment3 extends BaseExperiment {
 	        		if(prevPartition.equals(prevHead)) continue;
 	        		
 	        		summands = new ArrayList<>();
-	    			summands.add(generateHighDigit(highDigit, random));
+	    			summands.add(1.0 * generateHighDigit(highDigit, random));
 	        		summands.addAll(prevPartition.getSummands());
 	        		
 	        		partitions.add(new Partition(summands));
@@ -104,11 +104,11 @@ public class Experiment3 extends BaseExperiment {
 	        	highDigit = 2*initialNumberOfDigits;
 	        	for(Partition partition : partitions) {
 	        		summands = new ArrayList<>();
-	    			summands.add(generateHighDigit(highDigit, random));
+	    			summands.add(1.0 * generateHighDigit(highDigit, random));
 	
 	    			int index = random.nextInt(initialNumberOfDigits-1)+1;
 	    			for(int j=1; j<initialNumberOfDigits; j++) {
-	    				int summond = partition.getSummands().get(j);
+	    				double summond = partition.getSummands().get(j);
 	    				if(j == index && summond>0) {
 	    					summond--;
 	    				}
@@ -121,11 +121,11 @@ public class Experiment3 extends BaseExperiment {
 	        	highDigit = 2*initialNumberOfDigits - 2;
 	        	for(Partition partition : partitions) {
 	        		summands = new ArrayList<>();
-	    			summands.add(generateHighDigit(highDigit, random));
+	    			summands.add(1.0 * generateHighDigit(highDigit, random));
 	
 	    			int index = random.nextInt(initialNumberOfDigits-1)+1;
 	    			for(int j=1; j<initialNumberOfDigits; j++) {
-	    				int summond = partition.getSummands().get(j);
+	    				double summond = partition.getSummands().get(j);
 	    				if(j == index && summond>0) {
 	    					summond++;
 	    				}

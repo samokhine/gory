@@ -29,10 +29,10 @@ public class PartitionBuilder {
 			tmp.add(0, 0);
 			tmp.add(n);
 			
-			List<Integer> summands = new ArrayList<>();
+			List<Double> summands = new ArrayList<>();
 			for(int j=1; j<=m; j++) {
 				int summand = tmp.get(j) - tmp.get(j-1);
-				summands.add(summand);
+				summands.add(1.0 * summand);
 			}
 			Partition partition = new Partition(summands);
 			partitions.add(partition);
@@ -50,9 +50,9 @@ public class PartitionBuilder {
 			final int iFinal = i;
 			executor.submit(new Callable<Void>() {
 				public Void call() {
-					List<Integer> summands = new ArrayList<>();
+					List<Double> summands = new ArrayList<>();
 					for(int j=1; j<=m; j++) {
-						summands.add(j == 1 ? iFinal : 0);
+						summands.add(1.0 * (j == 1 ? iFinal : 0));
 					}
 					Partition partition = new Partition(summands);
 		
@@ -78,7 +78,7 @@ public class PartitionBuilder {
 				partitions.add(current);
 			}
 		} else if(position<m) {
-			int max = Math.min(current.getAt(position), n-sum);
+			int max = (int) Math.min(current.getAt(position), n-sum);
 			for(int i=1; i<=max; i++) {
 				Partition partition = current.clone();
 				partition.setAt(position+1, i);

@@ -55,9 +55,9 @@ public class StrategyFileParser {
 		
 		String[] parts = line.split(" ");
 		
-		List<Integer> summands = new ArrayList<>();
+		List<Double> summands = new ArrayList<>();
 		for(int i=3; i<parts.length-1; i++) {
-			summands.add(Integer.valueOf(parts[i]));
+			summands.add(Double.valueOf(parts[i]));
 		}
 		
 		Partition partition = new Partition(summands);

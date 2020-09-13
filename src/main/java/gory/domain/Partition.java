@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -13,17 +14,17 @@ import lombok.Getter;
 @EqualsAndHashCode(of={"arr"})
 public class Partition {
 	// descending
-	private static Comparator<Integer> SUMMONDS_COMPARATOR = new Comparator<Integer>() {
+	private static Comparator<Double> SUMMONDS_COMPARATOR = new Comparator<Double>() {
 		@Override
-		public int compare(Integer o1, Integer o2) {
+		public int compare(Double o1, Double o2) {
 			return -1*o1.compareTo(o2);
 		}
 	};
 	
 	@Getter
-	private int sumOfDigits;
+	private double sumOfDigits;
 
-	private int[] arr;
+	private double[] arr;
 	
 	@Override
 	public String toString() {
@@ -36,59 +37,59 @@ public class Partition {
 
 	public Partition(String summonds, boolean sort) {
 		summonds = summonds.substring(1, summonds.length()-1);
-		arr = new int[summonds.split(",").length];
+		arr = new double[summonds.split(",").length];
 		int i = 0;
 		for(String summond : summonds.split(",")) {
-			arr[i++] = Integer.valueOf(summond.trim());
+			arr[i++] = Double.valueOf(summond.trim());
 		}
 		
 		if(sort) {
 			Arrays.sort(arr);
 			ArrayUtils.reverse(arr);
 		}
-		sumOfDigits = Arrays.stream(arr).sum();;
+		sumOfDigits = Arrays.stream(arr).sum();
 	}
 
-	public Partition(List<Integer> summands) {
+	public Partition(List<Double> summands) {
 		this(summands, true);
 		sumOfDigits = Arrays.stream(arr).sum();;
 	}
 
-	public Partition(List<Integer> summands, boolean sort) {
+	public Partition(List<Double> summands, boolean sort) {
 		if(sort) {
 			summands.sort(SUMMONDS_COMPARATOR);
 		}
 		
 		sumOfDigits = 0;
-		for(int summand : summands) {
+		for(double summand : summands) {
 			sumOfDigits += summand;
 		}
 		
-		this.arr = new int[summands.size()];
+		this.arr = new double[summands.size()];
 		for(int i=0; i<summands.size(); i++) {
 			this.arr[i] = summands.get(i);
 		}
 	}
 	
-	public int getNumberOfDigits() {
+	public double getNumberOfDigits() {
 		return arr.length;
 	}
 	
 	// position is 1-based
-	public int getAt(int position) {
+	public double getAt(int position) {
 		return arr[position-1];
 	}
 
 	// position is 1-based
-	public int setAt(int position, int value) {
+	public double setAt(int position, int value) {
 		sumOfDigits = sumOfDigits - getAt(position) + value; 
 		return arr[position-1] = value;
 	}
 
-	public List<Integer> getSummands() {
-		List<Integer> summonds = new ArrayList<>(this.arr.length);
+	public List<Double> getSummands() {
+		List<Double> summonds = new ArrayList<>(this.arr.length);
 		
-		for(int i : arr) {
+		for(double i : arr) {
 			summonds.add(i);
 		}
 		
@@ -104,7 +105,7 @@ public class Partition {
 		
 		int distance = 0;
 		for(int i=1; i<=getNumberOfDigits(); i++) {
-			int d = Math.abs(getAt(i) - partition.getAt(i));
+			int d = (int) Math.round(Math.abs(getAt(i) - partition.getAt(i)));
 			if(d > distance) distance = d;
 		}
 		
@@ -117,7 +118,7 @@ public class Partition {
 	
 	public int getEvenness() {
 		int evenness = 0;
-		for(int summand :  getSummands()) {
+		for(double summand : getSummands()) {
 			if(summand%2 == 0) {
 				evenness++;
 			}
@@ -127,7 +128,7 @@ public class Partition {
 
 	public int getOddness() {
 		int oddness = 0;
-		for(int summand :  getSummands()) {
+		for(double summand : getSummands()) {
 			if(summand%2 == 1) {
 				oddness++;
 			}
@@ -137,7 +138,7 @@ public class Partition {
 	
 	// https://en.wikipedia.org/wiki/Durfee_square
 	public int getRank() {
-		List<Integer> summands = getSummands();
+		List<Double> summands = getSummands();
 		summands.sort(SUMMONDS_COMPARATOR); // just on case
 		
 		int rank;
@@ -154,9 +155,18 @@ public class Partition {
 		arr = Arrays.stream(arr)
 		        .boxed()
 		        .sorted(Comparator.reverseOrder())
-		        .mapToInt(Integer::intValue)
+		        .mapToDouble(Double::doubleValue)
 		        .toArray();
 		
 		return this;
+	}
+	
+	public void applyNormalDistribution(double standardDeviation) {
+		if(standardDeviation <= 0) return;
+		
+		Random random = new Random();
+		for(int i=0; i<arr.length; i++) {
+			arr[i] = Math.round(100.0 * (arr[i] +  random.nextGaussian() * standardDeviation))/100.0;
+		}
 	}
 }

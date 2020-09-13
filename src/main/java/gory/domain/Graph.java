@@ -463,11 +463,11 @@ public class Graph extends Node {
 	}
 	
 	public int getCoalitionResource() {
-		int coalitionResource = 0;
+		double coalitionResource = 0;
 		for(INode node : nodes) {
-			int sumOfSummonds = 0;
+			double sumOfSummonds = 0;
 			if(node instanceof PartitionNode) {
-				for(int summond : ((PartitionNode) node).getSummands()) {
+				for(double summond : ((PartitionNode) node).getSummands()) {
 					sumOfSummonds += summond;
 				}
 			}
@@ -476,7 +476,7 @@ public class Graph extends Node {
 			coalitionResource += degree * sumOfSummonds;
 		}
 		
-		return coalitionResource;
+		return (int) coalitionResource;
 	}
 	
 	public int getSumOfDegrees() {

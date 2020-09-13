@@ -73,11 +73,11 @@ public class Experiment7 extends BaseExperiment {
     	StringBuilder line = new StringBuilder();
     	for(int i=1; i<=numberOfRuns; i++) {
         	Graph graphA = buildGraph("Graph A", 
-        			generateARandom ? PartitionBuilder.buildRandom(allAPartitions.get(0).getSumOfDigits(), allAPartitions.get(0).getNumberOfDigits(), numPartitionsToSelect) : allAPartitions, 
+        			generateARandom ? PartitionBuilder.buildRandom((int) allAPartitions.get(0).getSumOfDigits(), (int) allAPartitions.get(0).getNumberOfDigits(), numPartitionsToSelect) : allAPartitions, 
         			numPartitionsToSelect, 
         			distanceA);
         	Graph graphB = buildGraph("Graph B", 
-        			generateBRandom ? PartitionBuilder.buildRandom(allBPartitions.get(0).getSumOfDigits(), allBPartitions.get(0).getNumberOfDigits(), numPartitionsToSelect) : allBPartitions, 
+        			generateBRandom ? PartitionBuilder.buildRandom((int) allBPartitions.get(0).getSumOfDigits(), (int) allBPartitions.get(0).getNumberOfDigits(), numPartitionsToSelect) : allBPartitions, 
         			numPartitionsToSelect, 
         			distanceB);
 
@@ -109,8 +109,8 @@ public class Experiment7 extends BaseExperiment {
         		
         		int sum = 0;
         		for(int j=0; j<Math.min(((PartitionNode) aNode).getSummands().size(), ((PartitionNode) bNode).getSummands().size()); j++) {
-        			int aSummand = ((PartitionNode) aNode).getSummands().get(j);
-        			int bSummand = ((PartitionNode) bNode).getSummands().get(j);
+        			double aSummand = ((PartitionNode) aNode).getSummands().get(j);
+        			double bSummand = ((PartitionNode) bNode).getSummands().get(j);
         			
         			if(aSummand > bSummand) {
         				sum += 1;

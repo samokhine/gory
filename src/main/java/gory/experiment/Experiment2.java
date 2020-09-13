@@ -43,9 +43,9 @@ public class Experiment2 extends BaseExperiment {
 		
     	List<Partition> partitions = PartitionBuilder.build(sumOfDigits, numberOfDigits);
     	if(onlyFamilyOfTheHead) {
-    		List<Integer> summands = new ArrayList<>();
+    		List<Double> summands = new ArrayList<>();
         	for(int i=1; i<=2*numberOfDigits-1; i=i+2) {
-        		summands.add(i);
+        		summands.add(1.0 * i);
         	}
         	
         	Partition head = new Partition(summands);

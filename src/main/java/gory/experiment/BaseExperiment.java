@@ -589,8 +589,8 @@ public abstract class BaseExperiment implements Experiment {
         	for(INode bNode : graphB.getNodes()) {
         		int sum = 0;
         		for(int i=0; i<Math.min(((PartitionNode) aNode).getSummands().size(), ((PartitionNode) bNode).getSummands().size()); i++) {
-        			int aSummand = ((PartitionNode) aNode).getSummands().get(i);
-        			int bSummand = ((PartitionNode) bNode).getSummands().get(i);
+        			double aSummand = ((PartitionNode) aNode).getSummands().get(i);
+        			double bSummand = ((PartitionNode) bNode).getSummands().get(i);
         			
         			if(aSummand > bSummand) {
         				sum += 1;
@@ -626,12 +626,12 @@ public abstract class BaseExperiment implements Experiment {
 				
 		Map<Integer, AtomicInteger> distanceCounts = new HashMap<>();
 		for(int i=0; i<nodes.size(); i++) {
-			List<Integer> aSummands = ((PartitionNode) nodes.get(i)).getSummands();
+			List<Double> aSummands = ((PartitionNode) nodes.get(i)).getSummands();
 			for(int j=0; j<nodes.size(); j++) {
-				List<Integer> bSummands = ((PartitionNode) nodes.get(j)).getSummands();
+				List<Double> bSummands = ((PartitionNode) nodes.get(j)).getSummands();
 				
 				for(int k=0; k<Math.min(aSummands.size(), bSummands.size()); k++) {
-					int distance = Math.abs(aSummands.get(k) - bSummands.get(k));
+					int distance = (int) Math.round(Math.abs(aSummands.get(k) - bSummands.get(k)));
 					
 					allDistances.add(distance);
 					

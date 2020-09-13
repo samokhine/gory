@@ -57,6 +57,7 @@ public class Experiment1 extends BaseExperiment {
 	private boolean saveGraphOfCliquesInDotFormat;
 	private Partition head;
 	private boolean orderSummonds;
+	private double standardDeviation;
 	private Map<Partition, Partition> replace = new HashMap<>();
 	private Set<Partition> create = new HashSet<>(); 
 	private Set<Partition> insert = new HashSet<>(); 
@@ -71,26 +72,27 @@ public class Experiment1 extends BaseExperiment {
 		
     	Graph graph = null;
     	if(!create.isEmpty()) {
-    		numberOfDigits = create.iterator().next().getNumberOfDigits();
+    		numberOfDigits = (int) create.iterator().next().getNumberOfDigits();
     		graph = new Graph(numberOfDigits*numberOfDigits+" - "+numberOfDigits+" graph", distance);
     		graph.getProhibitedOddness().addAll(prohibitedOddness);
     		
 	    	for(Partition partition : create) {
+	    		partition.applyNormalDistribution(standardDeviation);
 	    		graph.addNode(new PartitionNode(partition, orderSummonds));
 	    	}
     	} else { 
 			PartitionNode headNode;
 			if(head == null) {
-				List<Integer> summands = new ArrayList<>();
+				List<Double> summands = new ArrayList<>();
 		    	for(int i=start; i<=start+2*numberOfDigits-1; i=i+2) {
-		    		summands.add(i);
+		    		summands.add(1.0 * i);
 		    	}
 		    	
 		    	headNode = new PartitionNode(new Partition(summands));
 			} else {
 		    	headNode = new PartitionNode(head);
 			}
-			int sumOfDigits = headNode.getPartition().getSumOfDigits();
+			int sumOfDigits = (int) headNode.getPartition().getSumOfDigits();
 			
     		graph = new Graph(sumOfDigits+" - "+numberOfDigits+" graph", distance);
        		graph.getProhibitedOddness().addAll(prohibitedOddness);
@@ -103,6 +105,8 @@ public class Experiment1 extends BaseExperiment {
 	    		partitions.addAll(PartitionBuilder.build(numberOfDigits*numberOfDigits+extendedFamilyDelta, numberOfDigits));
 	    	}
 	    	for(Partition partition : partitions) {
+	    		partition.applyNormalDistribution(standardDeviation);
+	    		
 	    		if(familyMxmPlusOne) {
 		    		if(partition.getAt(numberOfDigits) == 0) {
 		    			partition.setAt(numberOfDigits, 1);
@@ -332,6 +336,8 @@ public class Experiment1 extends BaseExperiment {
 
 			head = parsePartition(properties.getProperty("head"));
 			orderSummonds = readProperty(properties, "orderSummonds", true);
+			standardDeviation = readProperty(properties, "standardDeviation", 0.0);
+			
 			create = parseListOfPartitions(properties.getProperty("create"), orderSummonds);
 			insert = parseListOfPartitions(properties.getProperty("insert"), orderSummonds);
 			delete = parseListOfPartitions(properties.getProperty("delete"), orderSummonds);
