@@ -105,8 +105,6 @@ public class Experiment1 extends BaseExperiment {
 	    		partitions.addAll(PartitionBuilder.build(numberOfDigits*numberOfDigits+extendedFamilyDelta, numberOfDigits));
 	    	}
 	    	for(Partition partition : partitions) {
-	    		partition.applyNormalDistribution(standardDeviation);
-	    		
 	    		if(familyMxmPlusOne) {
 		    		if(partition.getAt(numberOfDigits) == 0) {
 		    			partition.setAt(numberOfDigits, 1);
@@ -122,7 +120,9 @@ public class Experiment1 extends BaseExperiment {
 	    				|| onlyDirectDescendants && partition.getAt(1) == headNode.getPartition().getAt(1) 
 	    				|| onlyLeft && partition.getAt(1) - 1 == headNode.getPartition().getAt(1) 
 	    				|| onlyRight && partition.getAt(1) + 1 == headNode.getPartition().getAt(1)) {
-		    		graph.addNode(new PartitionNode(partition));
+
+		    		partition.applyNormalDistribution(standardDeviation);
+	    			graph.addNode(new PartitionNode(partition));
 	    		}
 	    	}
 	    	
