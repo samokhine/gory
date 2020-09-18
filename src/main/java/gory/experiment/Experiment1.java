@@ -20,6 +20,7 @@ import gory.service.PartitionBuilder;
 
 public class Experiment1 extends BaseExperiment {
 	private int distance; // d
+	private double realDistance; // dga
 	private int numberOfDigits; // m
 	private int start;
 	
@@ -58,6 +59,7 @@ public class Experiment1 extends BaseExperiment {
 	private Partition head;
 	private boolean orderSummonds;
 	private double standardDeviation;
+	private int geneAccuracy;
 	private Map<Partition, Partition> replace = new HashMap<>();
 	private Set<Partition> create = new HashSet<>(); 
 	private Set<Partition> insert = new HashSet<>(); 
@@ -73,11 +75,11 @@ public class Experiment1 extends BaseExperiment {
     	Graph graph = null;
     	if(!create.isEmpty()) {
     		numberOfDigits = (int) create.iterator().next().getNumberOfDigits();
-    		graph = new Graph(numberOfDigits*numberOfDigits+" - "+numberOfDigits+" graph", distance);
+    		graph = new Graph(numberOfDigits*numberOfDigits+" - "+numberOfDigits+" graph", realDistance);
     		graph.getProhibitedOddness().addAll(prohibitedOddness);
     		
 	    	for(Partition partition : create) {
-	    		partition.applyNormalDistribution(standardDeviation);
+	    		partition.applyNormalDistribution(standardDeviation, geneAccuracy);
 	    		graph.addNode(new PartitionNode(partition, orderSummonds));
 	    	}
     	} else { 
@@ -94,7 +96,7 @@ public class Experiment1 extends BaseExperiment {
 			}
 			int sumOfDigits = (int) headNode.getPartition().getSumOfDigits();
 			
-    		graph = new Graph(sumOfDigits+" - "+numberOfDigits+" graph", distance);
+    		graph = new Graph(sumOfDigits+" - "+numberOfDigits+" graph", realDistance);
        		graph.getProhibitedOddness().addAll(prohibitedOddness);
        	    		
 	    	graph.addNode(headNode);
@@ -111,7 +113,7 @@ public class Experiment1 extends BaseExperiment {
 		    		}
 	    		}
 	    		
-	    		int d = headNode.distanceTo(new PartitionNode(partition));
+	    		double d = headNode.distanceTo(new PartitionNode(partition));
 	    		if(d <= 0 || d > distance) {
 	    			continue;
 	    		}
@@ -121,7 +123,7 @@ public class Experiment1 extends BaseExperiment {
 	    				|| onlyLeft && partition.getAt(1) - 1 == headNode.getPartition().getAt(1) 
 	    				|| onlyRight && partition.getAt(1) + 1 == headNode.getPartition().getAt(1)) {
 
-		    		partition.applyNormalDistribution(standardDeviation);
+		    		partition.applyNormalDistribution(standardDeviation, geneAccuracy);
 	    			graph.addNode(new PartitionNode(partition));
 	    		}
 	    	}
@@ -283,6 +285,7 @@ public class Experiment1 extends BaseExperiment {
 
 			numberOfDigits = readProperty(properties, "m", 4);
 			distance = readProperty(properties, "d", 1);
+			realDistance = readProperty(properties, "dga", 1.0);
 			start = readProperty(properties, "start", 1);
 
 			removeHead = readProperty(properties, "removeHead", false);
@@ -337,6 +340,7 @@ public class Experiment1 extends BaseExperiment {
 			head = parsePartition(properties.getProperty("head"));
 			orderSummonds = readProperty(properties, "orderSummonds", true);
 			standardDeviation = readProperty(properties, "standardDeviation", 0.0);
+			geneAccuracy = readProperty(properties, "geneAccuracy", 2);
 			
 			create = parseListOfPartitions(properties.getProperty("create"), orderSummonds);
 			insert = parseListOfPartitions(properties.getProperty("insert"), orderSummonds);

@@ -4,7 +4,7 @@ import java.util.Set;
 
 public interface INode {
 	public INode cloneIt();
-	public int distanceTo(INode node);
+	public double distanceTo(INode node);
 	public void connect(INode node);
 	public Set<INode> getConnectedNodes();
 	public boolean isConnectedTo(INode node);

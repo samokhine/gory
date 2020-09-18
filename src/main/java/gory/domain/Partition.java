@@ -100,12 +100,12 @@ public class Partition {
 		return getNumberOfDigits() == partition.getNumberOfDigits() && getSumOfDigits() == partition.getSumOfDigits();
 	}
 	
-	public int distanceTo(Partition partition) {
+	public double distanceTo(Partition partition) {
 		if(getNumberOfDigits() != partition.getNumberOfDigits()) return -1;
 		
-		int distance = 0;
+		double distance = 0;
 		for(int i=1; i<=getNumberOfDigits(); i++) {
-			int d = (int) Math.round(Math.abs(getAt(i) - partition.getAt(i)));
+			double d = Math.abs(getAt(i) - partition.getAt(i));
 			if(d > distance) distance = d;
 		}
 		
@@ -161,12 +161,13 @@ public class Partition {
 		return this;
 	}
 	
-	public void applyNormalDistribution(double standardDeviation) {
+	public void applyNormalDistribution(double standardDeviation, int geneAccuracy) {
 		if(standardDeviation <= 0) return;
 		
+		double accuracy = Math.pow(10, geneAccuracy);
 		Random random = new Random();
 		for(int i=0; i<arr.length; i++) {
-			arr[i] = Math.round(100.0 * (arr[i] +  random.nextGaussian() * standardDeviation))/100.0;
+			arr[i] = Math.round(accuracy * (arr[i] +  random.nextGaussian() * standardDeviation))/accuracy;
 		}
 	}
 }

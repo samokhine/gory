@@ -33,7 +33,7 @@ public class PartitionNode extends Node {
 	}
 	
 	@Override
-	public int distanceTo(INode node) {
+	public double distanceTo(INode node) {
 		if(node instanceof PartitionNode) {
 			return partition.distanceTo(((PartitionNode) node).getPartition());
 		} else {

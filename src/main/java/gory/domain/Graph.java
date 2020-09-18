@@ -31,7 +31,7 @@ public class Graph extends Node {
 	private String name;
 
 	@Getter
-	private int connectionDistance = 1;
+	private double connectionDistance = 1.0;
 
 	@Getter @Setter
 	private Integer id;
@@ -46,7 +46,7 @@ public class Graph extends Node {
 		this.name = name;
 	}
 
-	public Graph(String name, int connectionDistance) {
+	public Graph(String name, double connectionDistance) {
 		this.name = name;
 		this.connectionDistance = connectionDistance;
 	}
@@ -70,7 +70,7 @@ public class Graph extends Node {
 	}
 
 	@Override
-	public int distanceTo(INode node) {
+	public double distanceTo(INode node) {
 		if(node instanceof Graph) {
 			return distanceTo((Graph) node);
 		} else {
@@ -102,7 +102,7 @@ public class Graph extends Node {
 		if(nodes.contains(newNode)) return false;
 		
 		for(INode node : nodes) {
-			int distance = node.distanceTo(newNode);
+			double distance = node.distanceTo(newNode);
 			if(distance >= 0 && distance <= connectionDistance && testOddness(node, newNode)) {
 				node.connect(newNode);
 			}
@@ -169,7 +169,7 @@ public class Graph extends Node {
 						foundConnectedNodes = true;
 						break;
 					} else {
-						int distance = node1.distanceTo(node2);
+						double distance = node1.distanceTo(node2);
 						if(distance >= 0 && distance <= connectionDistance) {
 							foundConnectedNodes = true;
 							break;

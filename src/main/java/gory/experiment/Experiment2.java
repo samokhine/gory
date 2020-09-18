@@ -51,7 +51,7 @@ public class Experiment2 extends BaseExperiment {
         	Partition head = new Partition(summands);
         	List<Partition> familyOfTheHead = new ArrayList<>();
         	for(Partition partition : partitions) {
-        		int d = head.distanceTo(partition);
+        		double d = head.distanceTo(partition);
         		if(d <= 0 || d > distance) {
         			continue;
         		}

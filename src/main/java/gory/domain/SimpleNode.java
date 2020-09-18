@@ -29,7 +29,7 @@ public class SimpleNode extends Node {
 	}
 
 	@Override
-	public int distanceTo(INode node) {
+	public double distanceTo(INode node) {
 		return node.isConnectedTo(this) ? 1 : 0;
 	}
 }

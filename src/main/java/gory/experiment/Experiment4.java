@@ -82,7 +82,7 @@ public class Experiment4 extends BaseExperiment {
 		    	
 		    	List<Partition> partitions = PartitionBuilder.build(numberOfDigits*numberOfDigits, numberOfDigits);
 		    	for(Partition partition : partitions) {
-		    		int d = headNode.distanceTo(new PartitionNode(partition));
+		    		double d = headNode.distanceTo(new PartitionNode(partition));
 		    		if(d <= 0 || d > distance) {
 		    			continue;
 		    		}
