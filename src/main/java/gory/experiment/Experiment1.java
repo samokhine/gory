@@ -1,8 +1,10 @@
 package gory.experiment;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import gory.domain.Graph;
 import gory.domain.INode;
@@ -19,6 +22,8 @@ import gory.service.OutputLogger;
 import gory.service.PartitionBuilder;
 
 public class Experiment1 extends BaseExperiment {
+	private static final String PROEPRTIES_FILE_NAME = "experiment1.properties";
+	
 	private int distance; // d
 	private double realDistance; // dga
 	private int numberOfDigits; // m
@@ -60,6 +65,7 @@ public class Experiment1 extends BaseExperiment {
 	private boolean orderSummonds;
 	private double standardDeviation;
 	private int geneAccuracy;
+	private boolean saveResultAsCreate;
 	private Map<Partition, Partition> replace = new HashMap<>();
 	private Set<Partition> create = new HashSet<>(); 
 	private Set<Partition> insert = new HashSet<>(); 
@@ -272,12 +278,24 @@ public class Experiment1 extends BaseExperiment {
     	   		saveInDotFormat(graphOfCliques, "graphOfCliques");
     		}
     	}
-	}
+    	
+    	if(saveResultAsCreate) {
+    		String create = graph.getNodes().stream().map(n -> ((PartitionNode) n).getPartition().toString()).collect(Collectors.joining(","));
+
+    		InputStream input = new FileInputStream(PROEPRTIES_FILE_NAME);
+			Properties properties = new Properties();
+			properties.load(input);
+			properties.setProperty("create", create);
+ 
+	   		OutputStream output = new FileOutputStream(PROEPRTIES_FILE_NAME);
+	   		properties.store(output, null);
+    	}
+	}	
 	
 	private void readParameters() {
 		InputStream input = null;
 		try {
-			input = new FileInputStream("experiment1.properties");
+			input = new FileInputStream(PROEPRTIES_FILE_NAME);
 
 			// load a properties file
 			Properties properties = new Properties();
@@ -341,6 +359,7 @@ public class Experiment1 extends BaseExperiment {
 			orderSummonds = readProperty(properties, "orderSummonds", true);
 			standardDeviation = readProperty(properties, "standardDeviation", 0.0);
 			geneAccuracy = readProperty(properties, "geneAccuracy", 2);
+			saveResultAsCreate = readProperty(properties, "saveResultAsCreate", false);
 			
 			create = parseListOfPartitions(properties.getProperty("create"), orderSummonds);
 			insert = parseListOfPartitions(properties.getProperty("insert"), orderSummonds);
