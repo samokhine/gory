@@ -1,10 +1,13 @@
 package gory.experiment;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,6 +23,7 @@ import gory.domain.Partition;
 import gory.domain.PartitionNode;
 import gory.service.OutputLogger;
 import gory.service.PartitionBuilder;
+import lombok.Cleanup;
 
 public class Experiment1 extends BaseExperiment {
 	private static final String PROEPRTIES_FILE_NAME = "experiment1.properties";
@@ -282,13 +286,34 @@ public class Experiment1 extends BaseExperiment {
     	if(saveResultAsCreate) {
     		String create = graph.getNodes().stream().map(n -> ((PartitionNode) n).getPartition().toString()).collect(Collectors.joining(","));
 
-    		InputStream input = new FileInputStream(PROEPRTIES_FILE_NAME);
-			Properties properties = new Properties();
-			properties.load(input);
-			properties.setProperty("create", create);
- 
-	   		OutputStream output = new FileOutputStream(PROEPRTIES_FILE_NAME);
-	   		properties.store(output, null);
+    		@Cleanup
+    		BufferedReader reader = new BufferedReader(new FileReader(PROEPRTIES_FILE_NAME));
+    		List<String> lines = new ArrayList<>();
+    		boolean found = false;
+    		String line = reader.readLine();
+    		while(line != null) {
+    			if(line.indexOf("create=")>=0) {
+    				line = "create="+create;
+    				found = true;
+    			}
+    			lines.add(line);
+    			
+    			line = reader.readLine();
+    		}
+    		
+    		if(!found) {
+				line = "create="+create;
+    			lines.add(line);
+    		}
+
+    		File file = new File(PROEPRTIES_FILE_NAME);
+    		file.delete();
+    		
+    		@Cleanup
+    		BufferedWriter writer = new BufferedWriter(new FileWriter(PROEPRTIES_FILE_NAME));
+    		for(String l : lines) {
+    			writer.write(l+System.lineSeparator());
+    		}
     	}
 	}	
 	
