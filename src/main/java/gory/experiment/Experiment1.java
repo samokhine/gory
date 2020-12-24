@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -90,7 +91,7 @@ public class Experiment1 extends BaseExperiment {
     		
 	    	for(Partition partition : create) {
 	    		partition.applyNormalDistribution(standardDeviation, geneAccuracy);
-	    		graph.addNode(new PartitionNode(partition, orderSummonds));
+	    		graph.addNode(new PartitionNode(partition, null, orderSummonds));
 	    	}
     	} else { 
 			PartitionNode headNode;
@@ -116,6 +117,7 @@ public class Experiment1 extends BaseExperiment {
 	    		partitions.addAll(PartitionBuilder.build(numberOfDigits*numberOfDigits-extendedFamilyDelta, numberOfDigits));
 	    		partitions.addAll(PartitionBuilder.build(numberOfDigits*numberOfDigits+extendedFamilyDelta, numberOfDigits));
 	    	}
+	    	Random random = new Random();
 	    	for(Partition partition : partitions) {
 	    		if(familyMxmPlusOne) {
 		    		if(partition.getAt(numberOfDigits) == 0) {
@@ -134,7 +136,8 @@ public class Experiment1 extends BaseExperiment {
 	    				|| onlyRight && partition.getAt(1) + 1 == headNode.getPartition().getAt(1)) {
 
 		    		partition.applyNormalDistribution(standardDeviation, geneAccuracy);
-	    			graph.addNode(new PartitionNode(partition));
+		    		partition.setW(-1.0 + 2.0 * random.nextInt(partitions.size()+1)/partitions.size());
+	    			graph.addNode(new PartitionNode(partition, partition.getW()));
 	    		}
 	    	}
 	    	

@@ -22,7 +22,7 @@ public class PartitionTest {
 		Partition partition = new Partition("[1, 5, 3]");
 		assertEquals("[5, 3, 1]", partition.toString());
 
-		partition = new Partition("[1, 5, 3]", false);
+		partition = new Partition("[1, 5, 3]", null, false);
 		assertEquals("[1, 5, 3]", partition.toString());
 	}
 }

@@ -165,15 +165,33 @@ public abstract class BaseExperiment implements Experiment {
 	protected Set<Partition> parseListOfPartitions(String str, boolean sort) {
 		Set<Partition> partitions = new HashSet<>();
 		
+		final String wMarker = ",w=";
+		
 		if(str == null) str = "";
 		str = str.replaceAll(" ", "");
-		String insertElements[] = str.split("\\],\\[");
+		String insertElements[] = str.toLowerCase().split("\\],\\[");
 		for(String insertElement : insertElements) {
 			if(insertElement.isEmpty()) continue;
+			
+			Double w = null;
+			int i = insertElement.indexOf(wMarker);
+			if(i > 0) {
+				String wElement = insertElement.substring(i);
+				wElement = StringUtils.replace(wElement, wMarker, "");
+				wElement = StringUtils.replace(wElement, "]", "");
+				try {
+					w = Double.valueOf(wElement);
+				} catch(Exception e) {
+					// eat it up
+				}
+
+				insertElement = insertElement.substring(0, i);
+			}
+			
 			if(insertElement.indexOf('[') != 0) insertElement = "[" + insertElement;
 			if(insertElement.lastIndexOf(']') != insertElement.length() - 1) insertElement = insertElement + "]";
 
-			partitions.add(new Partition(insertElement, sort));
+			partitions.add(new Partition(insertElement, w, sort));
 			//System.out.println(insertElement+" "+partitions.size());
 		}
 		

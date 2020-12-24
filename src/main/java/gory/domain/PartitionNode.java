@@ -18,13 +18,17 @@ public class PartitionNode extends Node {
 	public String toString() {
 		return partition.toString();
 	}
-	
+
 	public PartitionNode(Partition partition) {
-		this(partition, true);
+		this(partition, null);
+	}
+	
+	public PartitionNode(Partition partition, Double w) {
+		this(partition, w, true);
 	}
 
-	public PartitionNode(Partition partition, boolean sort) {
-		this.partition = new Partition(partition.getSummands(), sort);
+	public PartitionNode(Partition partition, Double w, boolean sort) {
+		this.partition = new Partition(partition.getSummands(), w, sort);
 	}
 	
 	@Override
@@ -41,6 +45,11 @@ public class PartitionNode extends Node {
 		}
 	}
 
+	@Override
+	public Double getW() {
+		return partition.getW();
+	}
+	
 	public int getNumberOfDigits() {
 		return (int) partition.getNumberOfDigits();
 	}

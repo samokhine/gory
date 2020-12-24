@@ -13,4 +13,6 @@ public interface INode {
 	
 	public Integer getId();
 	public void setId(Integer id);
+	
+	public Double getW();
 }

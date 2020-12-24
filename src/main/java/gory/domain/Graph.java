@@ -538,7 +538,15 @@ public class Graph extends Node {
 					continue;
 				}
 				
-				gsGraph.addEdge(node.toString()+" - "+connectedNode.toString(), node.toString(), connectedNode.toString());
+				INode from = node, to = connectedNode;
+				boolean directed = false;
+				if(node.getW() != null && connectedNode.getW() != null) {
+					from = node.getW().doubleValue() >= connectedNode.getW().doubleValue() ? node : connectedNode;
+					to = node.getW().doubleValue() < connectedNode.getW().doubleValue() ? node : connectedNode;
+					directed = true;
+				}
+				
+				gsGraph.addEdge(node.toString()+" - "+connectedNode.toString(), from.toString(), to.toString(), directed);
 			}
 		}
 		

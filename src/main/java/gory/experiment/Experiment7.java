@@ -194,7 +194,7 @@ public class Experiment7 extends BaseExperiment {
 		Graph graph = new Graph(graphName, distance);
 		
     	for(Partition partition : selectedPartitions) {
-    		graph.addNode(new PartitionNode(partition, orderSummonds));
+    		graph.addNode(new PartitionNode(partition, null, orderSummonds));
     	}
 
     	return graph;

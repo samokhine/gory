@@ -1,18 +1,23 @@
 package gory.domain;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 
 @EqualsAndHashCode(of={"arr"})
 public class Partition {
+	protected static final DecimalFormat df2 = new DecimalFormat("0.00");
+	
 	// descending
 	private static Comparator<Double> SUMMONDS_COMPARATOR = new Comparator<Double>() {
 		@Override
@@ -26,16 +31,26 @@ public class Partition {
 
 	private double[] arr;
 	
+	@Getter @Setter
+	private Double w;
+	
 	@Override
 	public String toString() {
-		return getSummands().toString();
+		List<String> stringSummonds = getSummands().stream().map(s -> s.toString()).collect(Collectors.toList());
+		if(w != null) stringSummonds.add("w="+df2.format(w));
+		
+		return stringSummonds.toString();
 	}
 
 	public Partition(String summonds) {
-		this(summonds, true);
+		this(summonds, null);
 	}
 
-	public Partition(String summonds, boolean sort) {
+	public Partition(String summonds, Double w) {
+		this(summonds, w, true);
+	}
+
+	public Partition(String summonds, Double w, boolean sort) {
 		summonds = summonds.substring(1, summonds.length()-1);
 		arr = new double[summonds.split(",").length];
 		int i = 0;
@@ -48,14 +63,20 @@ public class Partition {
 			ArrayUtils.reverse(arr);
 		}
 		sumOfDigits = Arrays.stream(arr).sum();
+		
+		this.w = w;
 	}
 
 	public Partition(List<Double> summands) {
-		this(summands, true);
+		this(summands, null);
+	}
+
+	public Partition(List<Double> summands, Double w) {
+		this(summands, w, true);
 		sumOfDigits = Arrays.stream(arr).sum();;
 	}
 
-	public Partition(List<Double> summands, boolean sort) {
+	public Partition(List<Double> summands, Double w, boolean sort) {
 		if(sort) {
 			summands.sort(SUMMONDS_COMPARATOR);
 		}
@@ -69,6 +90,8 @@ public class Partition {
 		for(int i=0; i<summands.size(); i++) {
 			this.arr[i] = summands.get(i);
 		}
+		
+		this.w = w;
 	}
 	
 	public double getNumberOfDigits() {

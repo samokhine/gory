@@ -45,4 +45,9 @@ public abstract class Node implements INode {
         }
         return possible > 0 ? 1.0 * actual / possible : 0;
 	}
+	
+	@Override
+	public Double getW() {
+		return null;
+	}
 }
