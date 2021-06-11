@@ -158,6 +158,23 @@ public abstract class BaseExperiment implements Experiment {
 		return values;
 	}
 
+	protected Set<Integer> parseListOfIntegers(String str) {
+		Set<Integer> integers = new HashSet<>();
+		
+		if(str != null) {
+			for(String part : str.split(",")) {
+				try {
+					integers.add(Integer.valueOf(part.trim()));
+				} catch(Exception e) {
+					// do nothing
+				}
+			}
+		}
+		
+		return integers;
+	}
+
+	
 	protected Set<Partition> parseListOfPartitions(String str) {
 		return parseListOfPartitions(str, true);
 	}

@@ -3,4 +3,6 @@
 .project
 .settings/
 bin/
-
+graph.png
+graphOfCliques.png
+output.txt

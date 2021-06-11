@@ -76,6 +76,7 @@ public class Experiment1 extends BaseExperiment {
 	private Set<Partition> insert = new HashSet<>(); 
 	private Set<Partition> delete = new HashSet<>(); 
 	private Set<Integer> prohibitedOddness = new HashSet<>();
+	private Set<Integer> deleteNodesWithDegrees = new HashSet<>();
 	
 	public void run(OutputLogger logger) throws IOException {
     	logger.writeLine("Running experiment 1");
@@ -160,6 +161,18 @@ public class Experiment1 extends BaseExperiment {
 		    	for(Partition partition : insert) {
 		    		graph.addNode(new PartitionNode(partition));
 		    	}
+			}
+    	}
+    	
+    	if(!deleteNodesWithDegrees.isEmpty()) {
+    		List<INode> nodesToRemove = new ArrayList<>();
+			for(INode node : graph.getNodes()) {
+				if(deleteNodesWithDegrees.contains(node.getDegree())) {
+					nodesToRemove.add(node);
+				}
+			}
+			for(INode node : nodesToRemove) {
+				graph.removeNode(node);
 			}
     	}
     		
@@ -403,16 +416,8 @@ public class Experiment1 extends BaseExperiment {
 				}
 			}
 			
-			String po = properties.getProperty("prohibitedOddness");
-			if(po != null) {
-				for(String part : po.split(",")) {
-					try {
-						prohibitedOddness.add(Integer.valueOf(part.trim()));
-					} catch(Exception e) {
-						// do nothing
-					}
-				}
-			}
+			prohibitedOddness = parseListOfIntegers(properties.getProperty("prohibitedOddness"));
+			deleteNodesWithDegrees = parseListOfIntegers(properties.getProperty("deleteNodesWithDegrees"));
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {
