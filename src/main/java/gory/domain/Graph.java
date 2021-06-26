@@ -182,11 +182,15 @@ public class Graph extends Node {
 			return foundConnectedNodes ? 1 : -1;
 		}
 	}
-	
+
 	public Set<Graph> getCliques() {
+		return this.getCliques(null);
+	}
+
+	public Set<Graph> getCliques(Integer maxAllowedDegree) {
 		BronKerbosch2 algorithm = new BronKerbosch2();
 		
-		Set<Graph> cliques = algorithm.findMaxCliques(this);
+		Set<Graph> cliques = algorithm.findMaxCliques(this, maxAllowedDegree);
 	
 		Map<Integer, Integer> countBySize = new HashMap<>();
 		for(Graph clique : cliques) {

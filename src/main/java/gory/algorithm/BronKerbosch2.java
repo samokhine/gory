@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -13,12 +14,14 @@ import gory.domain.INode;
 public class BronKerbosch2 {
 	private boolean[] connectivityMatrix;
 	
-	public Set<Graph> findMaxCliques(Graph graph) {
+	public Set<Graph> findMaxCliques(Graph graph, Integer maxAllowedDegree) {
 		Set<Set<INode>> cliques = new HashSet<>();
         
 		Set<INode> potentialClique = new HashSet<>();
         Set<INode> candidates = new HashSet<>();
         Set<INode> alreadyFound = new HashSet<>();
+        
+        Random randomGenerator= new Random();
         
         int N = graph.getSize();
         connectivityMatrix = new boolean[N*N/2-N/2];
@@ -31,7 +34,15 @@ public class BronKerbosch2 {
             
         	int j=0;
             for(INode node2 : graph.getNodes()) {
-            	connectivityMatrix[k++] = node2.isConnectedTo(node1);
+            	boolean isConnected = node2.isConnectedTo(node1);
+            	if(isConnected && maxAllowedDegree != null && maxAllowedDegree.intValue() < node2.getDegree()) {
+            		int randomNumber = randomGenerator.nextInt(node2.getDegree()) + 1;
+            		if(randomNumber > maxAllowedDegree.intValue()) {
+            			isConnected = false;
+            		}
+            	}
+            	
+            	connectivityMatrix[k++] = isConnected;
             	j++;
             	if(j>=i-1) break;
             }

@@ -71,6 +71,7 @@ public class Experiment1 extends BaseExperiment {
 	private double standardDeviation;
 	private int geneAccuracy;
 	private boolean saveResultAsCreate;
+	private Integer maxAllowedDegreeForClique;
 	private Map<Partition, Partition> replace = new HashMap<>();
 	private Set<Partition> create = new HashSet<>(); 
 	private Set<Partition> insert = new HashSet<>(); 
@@ -179,7 +180,7 @@ public class Experiment1 extends BaseExperiment {
     	Set<Graph> cliques = null;
     	if(logCliques || logDistributionOfCliques || logNodesByCliques || !deleteCliques.isEmpty() || logCliquesMatrices || logGlobalOverlapping
     			|| displayGraphOfCliques || logDensityAdjacentMatrixForGraphOfCliques) {
-    		cliques = graph.getCliques();
+    		cliques = graph.getCliques(maxAllowedDegreeForClique);
     	}
     	
     	if(!deleteCliques.isEmpty()) {
@@ -190,14 +191,14 @@ public class Experiment1 extends BaseExperiment {
     				graph.removeNode(node);
     			}
     		}
-    		cliques = graph.getCliques();
+    		cliques = graph.getCliques(maxAllowedDegreeForClique);
     	}
     	
     	if(!delete.isEmpty()) {
 	    	for(Partition p : delete) {
 	    		graph.removeNode(new PartitionNode(p));
 	    	}
-			cliques = graph.getCliques();
+			cliques = graph.getCliques(maxAllowedDegreeForClique);
     	}
     	
     	if(logNodes) {
@@ -418,6 +419,10 @@ public class Experiment1 extends BaseExperiment {
 			
 			prohibitedOddness = parseListOfIntegers(properties.getProperty("prohibitedOddness"));
 			deleteNodesWithDegrees = parseListOfIntegers(properties.getProperty("deleteNodesWithDegrees"));
+			
+			maxAllowedDegreeForClique = properties.getProperty("maxAllowedDegreeForClique", null) == null ? 
+					null : 
+					readProperty(properties, "maxAllowedDegreeForClique", Integer.MAX_VALUE);
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {
