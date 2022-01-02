@@ -2,6 +2,8 @@
 .classpath
 .project
 .settings/
+.DS_Store
+build/
 bin/
 graph.png
 graphOfCliques.png

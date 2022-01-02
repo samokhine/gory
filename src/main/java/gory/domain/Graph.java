@@ -531,8 +531,9 @@ public class Graph extends Node {
 		// add nodes
 		for(INode node : getNodes()) {
 			String nodeId = node.toString();
-			org.graphstream.graph.Node gsNode = gsGraph.addNode(nodeId);
-			gsNode.addAttribute("ui.label", nodeId);
+			//org.graphstream.graph.Node gsNode = 
+			gsGraph.addNode(nodeId);
+			// gsNode.addAttribute("ui.label", nodeId);
 		}
 
 		// add edges
@@ -547,7 +548,7 @@ public class Graph extends Node {
 				if(node.getW() != null && connectedNode.getW() != null) {
 					from = node.getW().doubleValue() >= connectedNode.getW().doubleValue() ? node : connectedNode;
 					to = node.getW().doubleValue() < connectedNode.getW().doubleValue() ? node : connectedNode;
-					directed = true;
+					// directed = true;
 				}
 				
 				gsGraph.addEdge(node.toString()+" - "+connectedNode.toString(), from.toString(), to.toString(), directed);
