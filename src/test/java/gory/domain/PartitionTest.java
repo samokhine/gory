@@ -20,9 +20,9 @@ public class PartitionTest {
 	@Test
 	public void testSort() {
 		Partition partition = new Partition("[1, 5, 3]");
-		assertEquals("[5, 3, 1]", partition.toString());
+		assertEquals("[5.0, 3.0, 1.0]", partition.toString());
 
 		partition = new Partition("[1, 5, 3]", null, false);
-		assertEquals("[1, 5, 3]", partition.toString());
+		assertEquals("[1.0, 5.0, 3.0]", partition.toString());
 	}
 }
